@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-commerce{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<header class="bg-white shadow">
+    <nav class="max-w-7xl mx-auto px-4 py-4">
+        <ul class="flex space-x-4">
+            {% if app.user %}
+                {% if not is_granted('ROLE_BANNED') %}
+                    <li><a href="{{ path('home_page') }}" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
+                    <li><a href="{{ path('product_page') }}" class="text-blue-500 hover:text-blue-700">Produits</a></li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li><a href="{{ path('app_admin_index') }}" class="text-blue-500 hover:text-blue-700">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{{ path('profile') }}" class="text-blue-500 hover:text-blue-700">Mon profile</a></li>
+                    <li><a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700">Déconnexion</a></li>
+                {% else %}
+                    <li class="text-red-500">Vous êtes banni et ne pouvez pas accéder au site.</li>
+                    <li><a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700">Déconnexion</a></li>
+                {% endif %}
+            {% else %}
+                <li><a href="{{ path('home_page') }}" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
+                <li><a href="{{ path('product_page') }}" class="text-blue-500 hover:text-blue-700">Produits</a></li>
+                <li><a href="{{ path('login') }}" class="text-blue-500 hover:text-blue-700">Connexion</a></li>
+                <li><a href="{{ path('register') }}" class="text-blue-500 hover:text-blue-700">Inscription</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+{% if not is_granted('ROLE_BANNED') %}
+    <main class="max-w-7xl mx-auto p-6">
+        {% block body %}{% endblock %}
+    </main>
+{% else %}
+    <h1>Accès Refusé</h1>
+    <p>Votre compte a été banni. Pour plus d'informations, contactez l'administrateur.</p>
+{% endif %}
+
+<footer class="bg-gray-800 text-white py-4">
+    <div class="max-w-7xl mx-auto text-center">
+        <p>&copy; {{ "now"|date("Y") }} Footer</p>
+    </div>
+</footer>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>
