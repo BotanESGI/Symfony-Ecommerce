@@ -4,25 +4,104 @@
 
 {% block body %}
     <h1 class="text-2xl font-bold mb-4">Nos produits</h1>
-    <p class="text-gray-700 mb-6">Nos produits : </p>
+    <p class="text-gray-700 mb-6">Explorez nos catégories :</p>
 
-    <form method="GET" action="{{ path('product_page') }}" class="mb-4">
-        <input type="text" name="search" placeholder="Rechercher un produit..." class="border rounded px-4 py-2 mr-2">
-        <button type="submit" class="bg-blue-500 text-white rounded px-4 py-2">Rechercher</button>
+    <!-- Category -->
+    <div class="overflow-x-auto whitespace-nowrap scrollbar-hide mb-6 cursor-grab" id="scrollable-menu">
+        <nav>
+            <ul class="flex space-x-4 border-b pb-2">
+                <li>
+                    <a href="{{ path('product_page') }}"
+                       class="px-4 py-2 rounded border hover:bg-gray-100 {% if selectedCategoryId is null %}bg-blue-500 text-white{% else %}text-gray-700{% endif %}">
+                        Tous
+                    </a>
+                </li>
+                {% for category in categories %}
+                    <li>
+                        <a href="{{ path('product_page', { category: category.id }) }}"
+                           class="px-4 py-2 rounded border text-white hover:opacity-90"
+                           style="background-color: {{ category.color }};">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Recherche de produits -->
+    <form method="GET" action="{{ path('product_page') }}" class="mb-4 flex items-center">
+        <input type="text" name="search" placeholder="Rechercher un produit..."
+               class="border rounded px-4 py-2 w-full max-w-md mr-2">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Rechercher
+        </button>
     </form>
 
+    <!-- Liste des produits -->
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for product in products %}
-            <li class="bg-white shadow rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105"> <!-- Ajout d'effets de transformation -->
-                <a href="{{ path('product_detail', { id: product.id }) }}" class="block hover:shadow-lg" title="Cliquer ici pour en savoir plus sur l'article">
-                    <img src="{{ product.image }}" alt="Image de {{ product.name }}" class="w-full h-48 object-cover">
+            <li class="bg-white shadow rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
+                <a href="{{ path('product_detail', { id: product.id, category: app.request.get('category') is not null ? app.request.get('category') : product.defaultCategory.id }) }}"
+                   class="block hover:shadow-lg"
+                   title="Cliquer ici pour en savoir plus sur l'article">
+                    <img src="{{ product.image }}"
+                         alt="Image de {{ product.name }}"
+                         class="w-full h-48 object-cover">
                     <div class="p-4">
                         <h2 class="text-xl font-semibold text-gray-900">#{{ loop.index }} - {{ product.name }}</h2>
                         <p class="text-gray-600 mt-2">{{ product.description }}</p>
-                        <p class="text-gray-800 font-bold mt-2">Prix: {{ product.price | number_format(2, ',', ' ') }} €</p> <!-- Affichage du prix -->
+                        <p class="text-gray-800 font-bold mt-2">Prix: {{ product.price | number_format(2, ',', ' ') }} €</p>
                     </div>
                 </a>
             </li>
         {% endfor %}
     </ul>
+
+    <script>
+        const scrollableMenu = document.getElementById('scrollable-menu');
+
+        let isMouseDown = false;
+        let startX;
+        let scrollLeft;
+
+        // Début du glissement sur le menu
+        scrollableMenu.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            scrollLeft = scrollableMenu.scrollLeft;
+            startX = e.pageX - scrollableMenu.offsetLeft;
+            scrollableMenu.classList.remove('cursor-grab');
+            scrollableMenu.classList.add('cursor-grabbing');
+        });
+
+        // Arrêt du glissement lorsque la souris sort du menu
+        scrollableMenu.addEventListener('mouseleave', () => {
+            isMouseDown = false;
+            scrollableMenu.classList.remove('cursor-grabbing');
+            scrollableMenu.classList.add('cursor-grab');
+        });
+
+        // Arrêt du glissement à la fin du clic
+        scrollableMenu.addEventListener('mouseup', () => {
+            isMouseDown = false;
+            scrollableMenu.classList.remove('cursor-grabbing');
+            scrollableMenu.classList.add('cursor-grab');
+        });
+
+        // Défilement horizontal
+        scrollableMenu.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+            e.preventDefault();
+            const x = e.pageX - scrollableMenu.offsetLeft;
+            const walk = (x - startX) * 2;
+            scrollableMenu.scrollLeft = scrollLeft - walk;
+        });
+
+        const links = scrollableMenu.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+            });
+        });
+    </script>
 {% endblock %}

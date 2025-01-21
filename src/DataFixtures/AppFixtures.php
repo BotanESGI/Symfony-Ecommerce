@@ -23,13 +23,20 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        // Couleurs catégories
+        $colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300', '#581845', '#DAF7A6', '#C70039', '#900C3F', '#2E86C1'];
+
         // Catégories
         $categories = [];
-        $categoryNames = ['Electronics', 'Home Appliances', 'Books', 'Toys', 'Fashion'];
+        $categoryNames = [
+            'Electronics', 'Home Appliances', 'Books', 'Toys', 'Fashion', 'Sports', 'Beauty', 'Automotive', 'Health', 'Garden',
+            'Furniture', 'Pets', 'Groceries', 'Jewelry', 'Music', 'Movies', 'Tools', 'Office Supplies', 'Travel', 'Baby Products'
+        ];
 
-        foreach ($categoryNames as $categoryName) {
+        foreach ($categoryNames as $index => $categoryName) {
             $category = new Category();
             $category->setName($categoryName);
+            $category->setColor($colors[$index % count($colors)]); // Assigner une couleur
             $manager->persist($category);
             $categories[] = $category;
         }
@@ -37,11 +44,8 @@ class AppFixtures extends Fixture
         // Utilisateurs
         $users = [];
         $names = [
-            ['Botan', 'ESGI'],
-            ['Jane', 'Smith'],
-            ['Alice', 'Johnson'],
-            ['Bob', 'Brown'],
-            ['Emily', 'Davis'],
+            ['Botan', 'ESGI'], ['Jane', 'Smith'], ['Alice', 'Johnson'], ['Bob', 'Brown'], ['Emily', 'Davis'],
+            ['Michael', 'Clark'], ['Sarah', 'Wilson'], ['David', 'Hall'], ['Laura', 'Taylor'], ['Chris', 'Martinez']
         ];
 
         foreach ($names as $index => [$firstName, $lastName]) {
@@ -50,7 +54,7 @@ class AppFixtures extends Fixture
             $user->setPassword(password_hash('password', PASSWORD_BCRYPT));
             $user->setRoles(['ROLE_USER']);
             $user->setName($firstName);
-            $user->setLastName($lastName);
+            $user->setLastname($lastName);
             $user->setIsVerified(true);
             $manager->persist($user);
             $users[] = $user;
@@ -76,21 +80,42 @@ class AppFixtures extends Fixture
         $bannedUser->setIsVerified(false);
         $manager->persist($bannedUser);
 
-        // Produits
-        $productsData = [
-            ['type' => 'PHYSICAL', 'name' => 'Headphones', 'description' => 'Noise-cancelling headphones', 'price' => 199.99, 'weight' => 0.5, 'dimensions' => '20x10x10 cm'],
-            ['type' => 'DIGITAL', 'name' => 'Laptop', 'description' => 'High performance laptop', 'price' => 999.99, 'fileSize' => 2.5, 'downloadLink' => 'http://example.com/laptop-download'],
-            ['type' => 'DIGITAL', 'name' => 'Smartphone', 'description' => 'Latest model smartphone', 'price' => 799.99, 'fileSize' => 1.5, 'downloadLink' => 'http://example.com/smartphone-download'],
+        $productsData = [];
+        $productNames = [
+            'Headphones', 'Laptop', 'Smartphone', 'Camera', 'Tablet', 'Smartwatch', 'Printer', 'Router', 'Monitor', 'Keyboard',
+            'Mouse', 'Speaker', 'Desk', 'Chair', 'Shelf', 'Lamp', 'Backpack', 'Sunglasses', 'Shoes', 'Jacket'
         ];
 
+        foreach ($productNames as $index => $name) {
+            $type = rand(0, 1) ? 'PHYSICAL' : 'DIGITAL';
+            $data = [
+                'type' => $type,
+                'name' => $name,
+                'description' => "{$name} description",
+                'price' => rand(50, 1000),
+            ];
+
+            if ($type === 'PHYSICAL') {
+                $data['weight'] = rand(1, 10);
+                $data['dimensions'] = rand(10, 100) . 'x' . rand(10, 100) . 'x' . rand(10, 100) . ' cm';
+            } else {
+                $data['fileSize'] = rand(1, 5);
+                $data['downloadLink'] = "http://example.com/{$name}-download";
+            }
+
+            $productsData[] = $data;
+        }
+
         $products = [];
+        $defaultCategory = $categories[array_rand($categories)];
+
         foreach ($productsData as $data) {
             if ($data['type'] === 'PHYSICAL') {
-                $product = new PhysicalProduct();
+                $product = new PhysicalProduct($defaultCategory);
                 $product->setWeight($data['weight']);
                 $product->setDimensions($data['dimensions']);
             } else {
-                $product = new DigitalProduct();
+                $product = new DigitalProduct($defaultCategory);
                 $product->setFileSize($data['fileSize']);
                 $product->setDownloadLink($data['downloadLink']);
             }
@@ -99,7 +124,6 @@ class AppFixtures extends Fixture
             $product->setDescription($data['description']);
             $product->setPrice($data['price']);
             $product->setImage('https://picsum.photos/200/300?random=' . rand(1, 100));
-
 
             $category = $categories[array_rand($categories)];
             $product->addCategory($category);
@@ -165,7 +189,7 @@ class AppFixtures extends Fixture
                 $manager->persist($orderItem);
             }
 
-            //Avis
+            // Avis
             foreach ($products as $product) {
                 $review = new Review();
                 $review->setContent('Great product!');
@@ -173,6 +197,7 @@ class AppFixtures extends Fixture
                 $review->setUser($user);
                 $review->setProduct($product);
                 $review->setStatus(ReviewStatusEnum::VALIDATED);
+                $review->setDatePublication(new \DateTime());
                 $manager->persist($review);
             }
 

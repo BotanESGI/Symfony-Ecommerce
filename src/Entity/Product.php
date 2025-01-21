@@ -42,8 +42,12 @@ abstract class Product
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
     private Collection $categories;
 
-    public function __construct()
+    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private Category $defaultCategory;
+    public function __construct(Category $defaultCategory)
     {
+        $this->defaultCategory = $defaultCategory;
         $this->reviews = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->categories = new ArrayCollection();
@@ -184,6 +188,20 @@ abstract class Product
             }
         }
 
+        return $this;
+    }
+
+    public function getDefaultCategory(): Category
+    {
+        return $this->defaultCategory;
+    }
+
+    public function setDefaultCategory(Category $defaultCategory): static
+    {
+        if ($defaultCategory === null) {
+            throw new \InvalidArgumentException("defaultCategory cannot be null.");
+        }
+        $this->defaultCategory = $defaultCategory;
         return $this;
     }
 }

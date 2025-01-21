@@ -30,6 +30,9 @@ class Review
     #[ORM\Column]
     private ?string $status = null;
 
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $datePublication = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,4 +93,15 @@ class Review
         return $this;
     }
 
+    public function getDatePublication(): ?\DateTimeInterface
+    {
+        return $this->datePublication;
+    }
+
+
+    public function setDatePublication(\DateTimeInterface $datePublication): static
+    {
+        $this->datePublication = $datePublication;
+        return $this;
+    }
 }
