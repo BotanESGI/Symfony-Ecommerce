@@ -1,0 +1,37 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        App\Entity\User:
+            algorithm: 'bcrypt'
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        users_in_memory: { memory: null }
+        users_in_database:
+            entity:
+                class: App\Entity\User
+                property: email
+    role_hierarchy:
+        ROLE_USER: [ ]
+        ROLE_ADMIN: [ ROLE_USER ]
+        ROLE_BANNED: [ ]
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: users_in_database
+            form_login:
+                login_path: login
+                check_path: login
+                enable_csrf: true
+                default_target_path: post_login_check
+
+            logout:
+                path: logout
+                target: login
+                invalidate_session: false
+    access_control:
+     - { path: ^/admin, roles: ROLE_ADMIN }
+    # - { path: ^/profile, roles: ROLE_USER }

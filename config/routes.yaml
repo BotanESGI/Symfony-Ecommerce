@@ -1,0 +1,13 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+default:
+    path: /
+    controller: App\Controller\HomeController::index
+    
+app_forgot_password:
+    path: /forgot-password
+    controller: App\Controller\AuthController::forgotPassword

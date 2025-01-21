@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto mt-10">
+        <h1 class="text-2xl font-bold text-center mb-4">Créer un compte</h1>
+        <p class="text-gray-600 text-sm mb-4">
+            Votre mot de passe doit respecter les règles suivantes :
+        </p>
+        <ul class="list-disc list-inside">
+            <li>Au moins 8 caractères</li>
+            <li>Au moins une lettre majuscule</li>
+            <li>Au moins un chiffre</li>
+            <li>Au moins un caractère spécial</li>
+        </ul>
+        {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'}}) }}
+
+        <div class="mb-4">
+            {{ form_label(form.name, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+            {{ form_widget(form.name, {
+                'attr': {
+                    'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+                    'placeholder': 'Entrez votre prénom',
+                    'required': 'required'
+                }
+            }) }}
+            {% if form.name.vars.errors|length > 0 %}
+                <p class="text-red-500 text-xs italic">{{ form_errors(form.name) }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+            {{ form_widget(form.lastname, {
+                'attr': {
+                    'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+                    'placeholder': 'Entrez votre nom',
+                    'required': 'required'
+                }
+            }) }}
+            {% if form.lastname.vars.errors|length > 0 %}
+                <p class="text-red-500 text-xs italic">{{ form_errors(form.lastname) }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            {{ form_label(form.email, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+            {{ form_widget(form.email, {
+                'attr': {
+                    'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+                    'placeholder': 'Entrez votre email',
+                    'required': 'required'
+                }
+            }) }}
+            {% if form.email.vars.errors|length > 0 %}
+                <p class="text-red-500 text-xs italic">{{ form_errors(form.email) }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            {{ form_label(form.password, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+            {{ form_widget(form.password, {
+                'attr': {
+                    'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+                    'placeholder': 'Entrez votre mot de passe',
+                    'required': 'required'
+                }
+            }) }}
+            {% if form.password.vars.errors|length > 0 %}
+                <p class="text-red-500 text-xs italic">{{ form_errors(form.password) }}</p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">S'inscrire</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('login') }}" class="mt-3 text-center block text-blue-600 hover:underline">Déjà un compte? Connectez-vous ici.</a>
+    </div>
+{% endblock %}

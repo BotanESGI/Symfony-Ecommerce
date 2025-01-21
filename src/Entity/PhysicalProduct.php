@@ -7,33 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class PhysicalProduct extends Product
 {
-    #[ORM\Column(length: 255)]
-    private ?string $weight = null;
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $characteristics = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $dimensions = null;
-
-    public function getWeight(): ?string
+    public function getCharacteristics(): ?array
     {
-        return $this->weight;
+        return $this->characteristics;
     }
 
-    public function setWeight(string $weight): static
+    public function setCharacteristics(array $characteristics): static
     {
-        $this->weight = $weight;
+        $this->characteristics = $characteristics;
         return $this;
     }
 
-
-    public function getDimensions(): ?string
-    {
-        return $this->dimensions;
-    }
-
-
-    public function setDimensions(string $dimensions): static
-    {
-        $this->dimensions = $dimensions;
-        return $this;
-    }
 }

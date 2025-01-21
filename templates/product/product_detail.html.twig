@@ -15,10 +15,15 @@
         </div>
     {% endfor %}
 
-    <nav class="bg-gray-100 p-3 rounded mb-4">
+    <nav class="max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg flex flex-col md:flex-row mb-4">
         <ol class="flex items-center space-x-2 text-sm">
             <li>
                 <a href="{{ path('home_page') }}" class="text-blue-600 hover:underline">Accueil</a>
+            </li>
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
             </li>
             <li>
                 <a href="{{ path('product_page') }}" class="text-blue-600 hover:underline">Produits</a>
@@ -42,12 +47,27 @@
 
 
     <div class="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg flex flex-col md:flex-row">
-        <div class="md:w-1/2">
+        <div class="relative md:w-1/2">
+        <span class="absolute top-2 left-2 bg-gray-800 text-white text-sm font-medium px-2 py-1 rounded-lg z-10">
+            {{ productType }}
+        </span>
             <img src="{{ product.image }}" alt="Image de {{ product.name }}" class="w-full h-auto max-h-80 object-cover rounded-lg mb-6">
         </div>
         <div class="md:w-1/2 md:pl-6">
-            <h1 class="text-3xl font-bold mb-2">{{ product.name }}</h1>
-
+            <div class="mb-2">
+                <div class="flex flex-wrap gap-2">
+                    {% if product.tags|length > 0 %}
+                        {% for tag in product.tags %}
+                            <span class="bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full" style="background-color: {{ tag.color }}; color: {{ tag.color == '#FFFFFF' ? '#000000' : '#FFFFFF' }};">
+                            {{ tag.name }}
+                        </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-gray-500 italic">Aucun tag disponible pour ce produit.</span>
+                    {% endif %}
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold mb-2">{{ product.name }}</h2>
             <div class="mb-4">
                 <p class="text-gray-700">{{ product.description }}</p>
             </div>
@@ -96,6 +116,17 @@
     </div>
 
     <div class="max-w-6xl mx-auto p-6 mt-10 bg-white shadow-md rounded-lg">
+        <h2 class="text-xl font-semibold pb-3">Caractéristiques du produit</h2>
+        {% if productType == 'Produit physique' %}
+            <ul class="list-disc list-inside">
+                {% for key, value in product.getCharacteristics() %}
+                    <li>{{ key|replace({'_': ' '})|capitalize }} : {{ value }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="max-w-6xl mx-auto p-6 mt-10 bg-white shadow-md rounded-lg">
         <div class="mb-4">
             <h2 class="text-xl font-semibold">Avis Client</h2>
             {# Ajouter la note moyenne avant les avis individuels #}
@@ -137,7 +168,7 @@
                             </div>
                             <p class="text-gray-500 text-sm mt-2">Publié par <strong>{{ a.user.name }}</strong> le {{ a.datePublication|date('d/m/Y H:i') }}</p>
                             {% if app.user and app.user == a.user %}
-                                <form action="{{ path('delete_review', {'id': product.id, 'avisId': a.id}) }}" method="post" class="mt-2">
+                                <form action="{{ path('delete_review', {'id': product.id, 'reviewId': a.id, 'categoryId': categoryId}) }}" method="post" class="mt-2">
                                     <button type="submit" class="text-red-500 hover:underline">Supprimer mon avis</button>
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ a.id) }}">
                                 </form>
@@ -158,7 +189,7 @@
         {% if app.user %}
             <div class="mt-6">
                 <h3 class="text-lg font-semibold mb-4">Ajouter un avis</h3>
-                <form action="{{ path('add_review', {'id': product.id}) }}" method="post" class="space-y-4">
+                <form action="{{ path('add_review', {'id': product.id, 'categoryId': categoryId}) }}" method="post" class="space-y-4">
                     <textarea name="content" rows="4" class="w-full p-3 border rounded-lg focus:ring focus:ring-blue-300" placeholder="Écrivez votre avis ici..."></textarea>
                     <div class="flex items-center space-x-4">
                         <label for="rating" class="block text-gray-700">Note :</label>

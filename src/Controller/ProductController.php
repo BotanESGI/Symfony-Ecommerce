@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\DigitalProduct;
 
 class ProductController extends AbstractController
 {
@@ -29,7 +30,18 @@ class ProductController extends AbstractController
         if ($categoryId) {
             $products = $productRepository->findByCategory($categoryId);
             $defaultCategoryProducts = $productRepository->findBy(['defaultCategory' => $categoryId]);
-            $products = array_merge($products, $defaultCategoryProducts);
+
+            // Créer un tableau pour stocker les identifiants des produits déjà présents
+            $existingProductIds = array_map(function($product) {
+                return $product->getId();
+            }, $products);
+
+            // Ajouter les produits de la catégorie par défaut uniquement s'ils ne sont pas déjà présents pour eviter les doublons
+            foreach ($defaultCategoryProducts as $defaultProduct) {
+                if (!in_array($defaultProduct->getId(), $existingProductIds)) {
+                    $products[] = $defaultProduct;
+                }
+            }
         } else {
             $products = $productRepository->findAll();
         }
@@ -79,11 +91,16 @@ class ProductController extends AbstractController
             throw $this->createNotFoundException('Catégorie incorrect.');
         }
 
+        $tags = $product->getTags();
+        $productType = $product instanceof DigitalProduct ? 'Produit digital' : 'Produit physique';
+
         return $this->render('product/product_detail.html.twig', [
             'product' => $product,
+            'productType' => $productType,
             'review' => $review,
             'categoryId' => $categoryId,
             'categoryName' => $categoryName,
+            'tags' => $tags,
         ]);
     }
 }

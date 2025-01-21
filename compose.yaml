@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+    
+    php:
+        build:
+            context: .
+        volumes:
+            - .:/app:rw
+        ports:
+            - "8000:8000"
+    
+    database:
+        image: postgres:16-alpine
+        environment:
+            POSTGRES_DB: app
+            POSTGRES_PASSWORD: root
+            POSTGRES_USER: root
+        volumes:
+            - database_data:/var/lib/postgresql/data:rw
+        ports:
+            - "5432:5432"    
+
+    mailer:
+        image: axllent/mailpit
+        ports:
+            - "1025:1025"  # SMTP
+            - "8025:8025"  # Interface Web
+        environment:
+            MP_SMTP_AUTH_ACCEPT_ANY: 1
+            MP_SMTP_AUTH_ALLOW_INSECURE: 1
+            
+    adminer:
+        image: adminer
+        ports:
+            - "8080:8080"  # Adminer accessible sur http://localhost:8080
+
+volumes:
+    database_data:
