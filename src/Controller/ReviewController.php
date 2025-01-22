@@ -13,9 +13,16 @@ use App\Enum\ReviewStatusEnum;
 
 class ReviewController extends AbstractController
 {
-    #[Route('/product/{id}/{categoryId}/add-review', name: 'add_review', methods: ['POST'])]
-    public function addReview(Request $request, Product $product, int $id, int $categoryId, EntityManagerInterface $em): Response
+    #[Route('/product/{id}/add-review', name: 'add_review', methods: ['POST'])]
+    public function addReview(Request $request, Product $product, int $id, EntityManagerInterface $em): Response
     {
+        //Récupere la page par laquelle il est venue
+        $referer = $request->headers->get('referer');
+
+        if (!$referer) {
+            $referer = $this->generateUrl('home_page');
+        }
+
         // Vérifie si l'utilisateur est banni
         if ($this->isGranted('ROLE_BANNED')) {
             return $this->redirectToRoute('default');
@@ -55,16 +62,25 @@ class ReviewController extends AbstractController
             $this->addFlash('error', 'Tous les champs sont obligatoires.');
         }
 
-        return $this->redirectToRoute('product_detail', ['id' => $product->getId(), 'category' => $categoryId]);
+        return $this->redirect($referer);
     }
 
-    #[Route('/product/{id}/{categoryId}/{reviewId}/delete-review', name: 'delete_review', methods: ['POST'])]
-    public function deleteReview(Request $request, Product $product, int $reviewId, int $categoryId, EntityManagerInterface $em): Response
+    #[Route('/product/{id}/{reviewId}/delete-review', name: 'delete_review', methods: ['POST'])]
+    public function deleteReview(Request $request, Product $product, int $reviewId, EntityManagerInterface $em): Response
     {
+        //Récupere la page par laquelle il est venue
+        $referer = $request->headers->get('referer');
+
+        if (!$referer) {
+            $referer = $this->generateUrl('home_page');
+        }
+
+        // Vérifie si l'utilisateur est banni
         if ($this->isGranted('ROLE_BANNED')) {
             return $this->redirectToRoute('default');
         }
 
+        //Verifie si connecté
         $user = $this->getUser();
         if (!$user) {
             $this->addFlash('error', 'Vous devez être connecté pour supprimer un avis.');
@@ -86,7 +102,7 @@ class ReviewController extends AbstractController
 
         $this->addFlash('success', 'Votre avis a été supprimé avec succès.');
 
-        return $this->redirectToRoute('product_detail', ['id' => $product->getId(), 'category' => $categoryId]);
+        return $this->redirect($referer);
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\CartService;
 use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ReviewRepository;
@@ -13,11 +14,22 @@ use App\Entity\DigitalProduct;
 
 class ProductController extends AbstractController
 {
+    private CartService $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     #[Route('/product', name: 'product_page')]
     public function index(Request $request, ProductRepository $productRepository, CategoryRepository $categoryRepository): Response {
         if ($this->isGranted('ROLE_BANNED')) {
             return $this->redirectToRoute('default');
         }
+
+        //Récupere le panier
+        $cartItems = $this->cartService->getCartItems();
+        $cartTotal = $this->cartService->getCartTotal();
 
         // Récupération des paramètres de requête
         $searchTerm = $request->query->get('search');
@@ -57,6 +69,8 @@ class ProductController extends AbstractController
             'products' => $products,
             'categories' => $categories,
             'selectedCategoryId' => $categoryId,
+            'cartItems' => $cartItems,
+            'cartTotal' => $cartTotal,
         ]);
     }
 
@@ -68,6 +82,10 @@ class ProductController extends AbstractController
         if ($this->isGranted('ROLE_BANNED')) {
             return $this->redirectToRoute('default');
         }
+
+        //Récupere le panier
+        $cartItems = $this->cartService->getCartItems();
+        $cartTotal = $this->cartService->getCartTotal();
 
         // Récupérer le produit par ID
         $product = $productRepository->find($id);
@@ -101,6 +119,8 @@ class ProductController extends AbstractController
             'categoryId' => $categoryId,
             'categoryName' => $categoryName,
             'tags' => $tags,
+            'cartItems' => $cartItems,
+            'cartTotal' => $cartTotal,
         ]);
     }
 }

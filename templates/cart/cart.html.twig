@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    <h1 class="text-2xl font-bold mb-4">Mon Panier</h1>
+    <p class="text-gray-700 mb-6">Voici les produits que vous avez ajoutés à votre panier :</p>
+
+    {% if cartItems is empty %}
+        <p class="text-gray-600">Votre panier est vide.</p>
+        <a href="{{ path('product_page') }}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Explorer les produits
+        </a>
+    {% else %}
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <thead>
+            <tr class="bg-gray-200 text-gray-600 uppercase text-sm">
+                <th class="px-6 py-3 text-left">Produit</th>
+                <th class="px-6 py-3 text-left">Type de Produit</th>
+                <th class="px-6 py-3 text-left">Quantité</th>
+                <th class="px-6 py-3 text-left">Prix Unitaire</th>
+                <th class="px-6 py-3 text-left">Total</th>
+                <th class="px-6 py-3 text-left">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for cartItem in cartItems %}
+                <tr class="hover:bg-gray-100 cursor-pointer" onclick="handleRowClick(event, '{{ path('product_detail', {'id': cartItem.item.product.id, 'category': cartItem.item.product.defaultCategory.id}) }}')">
+                    <td class="px-6 py-4 flex items-center">
+                        {% if cartItem.item.product.image %}
+                            <img src="{{ asset(cartItem.item.product.image) }}" alt="{{ cartItem.item.product.name }}" class="w-16 h-16 mr-4 object-cover">
+                        {% endif %}
+                        {{ cartItem.item.product.name }}
+                    </td>
+                    <td class="px-6 py-4">{{ cartItem.productType }}</td>
+                    <td class="px-6 py-4">
+                        <form action="{{ path('update_cart_item', {'id': cartItem.item.id}) }}" method="POST" class="inline">
+                            <input type="number" name="quantity" value="{{ cartItem.item.quantity }}" min="1" class="w-16 text-center border rounded" onclick="event.stopPropagation();">
+                            <button type="submit" class="ml-2 inline-block bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="event.stopPropagation();">Modifier</button>
+                        </form>
+                    </td>
+                    <td class="px-6 py-4">{{ cartItem.item.product.price | number_format(2, ',', ' ') }} €</td>
+                    <td class="px-6 py-4">{{ (cartItem.item.product.price * cartItem.item.quantity) | number_format(2, ',', ' ') }} €</td>
+                    <td class="px-6 py-4">
+                        <form action="{{ path('remove_cart_item', {'id': cartItem.item.id}) }}" method="POST" class="inline">
+                            <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="event.stopPropagation();">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <h2 class="text-xl font-bold">Total du panier : {{ cartTotal | number_format(2, ',', ' ') }} €</h2>
+
+        <a href="{{ path('login') }}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Procéder au paiement
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function handleRowClick(event, url) {
+            // Vérifie si l'événement a été déclenché par un clic sur un input ou un bouton
+            if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'BUTTON') {
+                // Redirige vers l'URL du produit
+                location.href = url;
+            }
+        }
+    </script>
+{% endblock %}

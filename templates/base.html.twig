@@ -5,33 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}E-commerce{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Ajout de Font Awesome -->
     {% block stylesheets %}{% endblock %}
+    <style>
+        /* CSS pour cacher le dropdown par défaut */
+        .cart-dropdown {
+            display: none;
+        }
+        /* CSS pour afficher le dropdown lors du survol */
+        .cart-icon:hover .cart-dropdown {
+            display: block;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
 <header class="bg-white shadow">
     <nav class="max-w-7xl mx-auto px-4 py-4">
-        <ul class="flex space-x-4">
-            {% if app.user %}
-                {% if not is_granted('ROLE_BANNED') %}
-                    <li><a href="{{ path('home_page') }}" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
-                    <li><a href="{{ path('product_page') }}" class="text-blue-500 hover:text-blue-700">Produits</a></li>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <li><a href="{{ path('app_admin_index') }}" class="text-blue-500 hover:text-blue-700">Admin</a></li>
-                    {% endif %}
-                    <li><a href="{{ path('profile') }}" class="text-blue-500 hover:text-blue-700">Mon profile</a></li>
-                    <li><a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700">Déconnexion</a></li>
-                {% else %}
-                    <li class="text-red-500">Vous êtes banni et ne pouvez pas accéder au site.</li>
-                    <li><a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700">Déconnexion</a></li>
-                {% endif %}
-            {% else %}
+        <div class="flex justify-between items-center">
+            <ul class="flex space-x-4">
                 <li><a href="{{ path('home_page') }}" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
                 <li><a href="{{ path('product_page') }}" class="text-blue-500 hover:text-blue-700">Produits</a></li>
-                <li><a href="{{ path('login') }}" class="text-blue-500 hover:text-blue-700">Connexion</a></li>
-                <li><a href="{{ path('register') }}" class="text-blue-500 hover:text-blue-700">Inscription</a></li>
-            {% endif %}
-        </ul>
+                {% if not app.user %}
+                    <li><a href="{{ path('login') }}" class="text-blue-500 hover:text-blue-700">Connexion</a></li>
+                    <li><a href="{{ path('register') }}" class="text-blue-500 hover:text-blue-700">Inscription</a></li>
+                {% endif %}
+            </ul>
+
+            <ul class="flex space-x-4">
+                {% if app.user %}
+                    {% if not is_granted('ROLE_BANNED') %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('app_admin_index') }}" class="text-blue-500 hover:text-blue-700">Admin</a></li>
+                        {% endif %}
+                        <li><a href="{{ path('profile') }}" class="text-blue-500 hover:text-blue-700">Mon profil</a></li>
+                        <li><a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700">Déconnexion</a></li>
+
+                        <!-- Icône du panier avec menu déroulant -->
+                        <li class="relative cart-icon">
+                            <a href="#" class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-shopping-cart fa-lg"></i>
+                            </a>
+                            <div class="absolute right-0 w-48 bg-white border rounded-lg shadow-lg mt-2 z-10 cart-dropdown">
+                                <div class="p-4">
+                                    <h3 class="font-bold">Mon Panier</h3>
+                                    {% if cartItems is not empty %}
+                                        <ul>
+                                        {% if (app.request.uri == url('cart_page'))%}
+                                            {% for cartItem in cartItems %}
+                                                <li class="flex items-center justify-between py-2">
+                                                    <img src="{{ asset(cartItem.item.product.image) }}" alt="{{ cartItem.item.product.name }}" class="w-12 h-12 object-cover mr-2">
+                                                    <div class="flex-1">
+                                                        <p>{{ cartItem.item.product.name }}</p>
+                                                        <p>Quantité: {{ cartItem.item.quantity }}</p>
+                                                        <p>{{ cartItem.item.product.price | number_format(2, ',', ' ') }} €</p>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for cartItem in cartItems %}
+                                                <li class="flex items-center justify-between py-2">
+                                                    {% if cartItem.product.image %}
+                                                        <img src="{{ asset(app.request.uri == url('cart_page') ? cartItem.product.item.image : cartItem.product.image) }}" alt="{{ app.request.uri == url('cart_page') ? cartItem.product.item.name : cartItem.product.name }}" class="w-12 h-12 object-cover mr-2">
+                                                    {% endif %}
+                                                    <div class="flex-1">
+                                                        <p>{{ app.request.uri == url('cart_page') ? cartItem.product.item.name : cartItem.product.name }}</p>
+                                                        <p>Quantité: {{ cartItem.quantity }}</p>
+                                                        <p>
+                                                            {{ app.request.uri == url('cart_page') ? cartItem.product.item.price | number_format(2, ',', ' ') : cartItem.product.price | number_format(2, ',', ' ') }} €
+                                                        </p>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </ul>
+                                        <hr class="my-2">
+                                        <p class="font-bold">Total: {{ cartTotal | number_format(2, ',', ' ') }} €</p>
+                                        <a href="{{ path('cart_page') }}" class="block text-center text-blue-500 hover:text-blue-700 mt-2">Voir le panier</a>
+                                    {% else %}
+                                        <p>Votre panier est vide.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="text-red-500">Vous êtes banni et ne pouvez pas accéder au site.</li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
     </nav>
 </header>
 
@@ -50,6 +112,22 @@
     </div>
 </footer>
 
-{% block javascripts %}{% endblock %}
+{% block javascripts %}
+    <script>
+        // JavaScript pour gérer le survol et afficher le menu déroulant
+        document.addEventListener('DOMContentLoaded', function () {
+            const cartIcon = document.querySelector('.cart-icon');
+            const dropdown = document.querySelector('.cart-dropdown');
+
+            cartIcon.addEventListener('mouseenter', () => {
+                dropdown.style.display = 'block';
+            });
+
+            cartIcon.addEventListener('mouseleave', () => {
+                dropdown.style.display = 'none';
+            });
+        });
+    </script>
+{% endblock %}
 </body>
 </html>

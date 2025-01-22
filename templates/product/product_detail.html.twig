@@ -105,8 +105,8 @@
 
             {# Quantité et bouton ajouter au panier #}
             <div class="flex items-center mb-4">
-                <input type="number" id="quantity" name="quantity" min="1" value="1" class="border rounded-lg p-2 w-16 mr-2">
-                <form action="{{ path('login', {'id': product.id}) }}" method="post">
+                <form action="{{ path('add_to_cart', {'id': product.id}) }}" method="post">
+                    <input type="number" id="quantity" name="quantity" min="1" value="1" class="border rounded-lg p-2 w-16 mr-2">
                     <button type="submit" class="bg-green-500 text-white rounded-lg px-4 py-2 hover:bg-green-600">
                         Ajouter au panier
                     </button>
@@ -115,16 +115,16 @@
         </div>
     </div>
 
+    {% if productType == 'Produit physique' %}
     <div class="max-w-6xl mx-auto p-6 mt-10 bg-white shadow-md rounded-lg">
         <h2 class="text-xl font-semibold pb-3">Caractéristiques du produit</h2>
-        {% if productType == 'Produit physique' %}
             <ul class="list-disc list-inside">
                 {% for key, value in product.getCharacteristics() %}
                     <li>{{ key|replace({'_': ' '})|capitalize }} : {{ value }}</li>
                 {% endfor %}
             </ul>
-        {% endif %}
     </div>
+    {% endif %}
 
     <div class="max-w-6xl mx-auto p-6 mt-10 bg-white shadow-md rounded-lg">
         <div class="mb-4">
@@ -168,7 +168,7 @@
                             </div>
                             <p class="text-gray-500 text-sm mt-2">Publié par <strong>{{ a.user.name }}</strong> le {{ a.datePublication|date('d/m/Y H:i') }}</p>
                             {% if app.user and app.user == a.user %}
-                                <form action="{{ path('delete_review', {'id': product.id, 'reviewId': a.id, 'categoryId': categoryId}) }}" method="post" class="mt-2">
+                                <form action="{{ path('delete_review', {'id': product.id, 'reviewId': a.id}) }}" method="post" class="mt-2">
                                     <button type="submit" class="text-red-500 hover:underline">Supprimer mon avis</button>
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ a.id) }}">
                                 </form>
@@ -189,7 +189,7 @@
         {% if app.user %}
             <div class="mt-6">
                 <h3 class="text-lg font-semibold mb-4">Ajouter un avis</h3>
-                <form action="{{ path('add_review', {'id': product.id, 'categoryId': categoryId}) }}" method="post" class="space-y-4">
+                <form action="{{ path('add_review', {'id': product.id}) }}" method="post" class="space-y-4">
                     <textarea name="content" rows="4" class="w-full p-3 border rounded-lg focus:ring focus:ring-blue-300" placeholder="Écrivez votre avis ici..."></textarea>
                     <div class="flex items-center space-x-4">
                         <label for="rating" class="block text-gray-700">Note :</label>
