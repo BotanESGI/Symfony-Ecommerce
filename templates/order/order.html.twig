@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sélectionnez une adresse{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto mt-8">
+        <h1 class="text-2xl font-bold mb-6 text-center">Sélectionnez une adresse pour la livraison</h1>
+
+        <form action="{{ path('process_order') }}" method="POST" class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+            {% for address in addresses %}
+                <div class="border rounded-lg p-4 mb-4 hover:bg-gray-50 transition-colors">
+                    <label for="address_{{ address.id }}" class="flex items-center space-x-4">
+                        <input type="radio" id="address_{{ address.id }}" name="address" value="{{ address.id }}" required class="form-radio h-5 w-5 text-blue-600">
+                        <div>
+                            <p class="text-lg font-medium">{{ address.street }}</p>
+                            <p class="text-sm text-gray-600">{{ address.city }}, {{ address.postalCode }}</p>
+                        </div>
+                    </label>
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                Continuer
+            </button>
+        </form>
+
+        <!-- Section pour le mode de paiement -->
+        <div class="border rounded-lg p-4 mt-4 bg-white shadow-md">
+            <h2 class="text-lg font-medium mb-2">Mode de paiement</h2>
+            <label for="payment_method" class="flex items-center space-x-4">
+                <input type="checkbox" id="payment_method" name="payment_method" value="stripe" checked disabled class="form-checkbox h-5 w-5 text-blue-600">
+                <div>
+                    <p class="text-lg font-medium">Stripe</p>
+                    <p class="text-sm text-gray-600">Coché par défaut et non décochable</p>
+                </div>
+            </label>
+        </div>
+    </div>
+{% endblock %}

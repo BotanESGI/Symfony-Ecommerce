@@ -44,7 +44,7 @@
             <li class="bg-white shadow rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
                 <a href="{{ path('product_detail', { id: product.id, category: app.request.get('category') is not null ? app.request.get('category') : product.defaultCategory.id }) }}"
                    class="block hover:shadow-lg"
-                   title="Cliquer ici pour en savoir plus sur l'article">
+                   title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                     <img src="{{ product.image }}"
                          alt="Image de {{ product.name }}"
                          class="w-full h-48 object-cover">

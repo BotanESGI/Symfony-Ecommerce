@@ -31,8 +31,18 @@ class AuthController extends AbstractController
     }
 
     #[Route(path: '/login', name: 'login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
+        // Vérifier si l'utilisateur est déjà connecté
+        if ($this->getUser()) {
+            $referer = $request->headers->get('referer');
+
+            if (!$referer) {
+                $referer = $this->generateUrl('home_page');
+            }
+            return $this->redirect($referer);
+        }
+
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
@@ -51,6 +61,16 @@ class AuthController extends AbstractController
     #[Route('/forgot-password', name: 'app_forgot_password')]
     public function forgotPassword(Request $request, UserRepository $userRepository, MailerInterface $mailer): Response
     {
+        // Vérifier si l'utilisateur est déjà connecté
+        if ($this->getUser()) {
+            $referer = $request->headers->get('referer');
+
+            if (!$referer) {
+                $referer = $this->generateUrl('home_page');
+            }
+            return $this->redirect($referer);
+        }
+
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
             $user = $userRepository->findOneBy(['email' => $email]);
@@ -103,6 +123,16 @@ class AuthController extends AbstractController
     #[Route('/reset-password/{token}', name: 'reset_password_token')]
     public function reset(Request $request, string $token, UserRepository $userRepository): Response
     {
+        // Vérifier si l'utilisateur est déjà connecté
+        if ($this->getUser()) {
+            $referer = $request->headers->get('referer');
+
+            if (!$referer) {
+                $referer = $this->generateUrl('home_page');
+            }
+            return $this->redirect($referer);
+        }
+
         $user = $userRepository->findOneBy(['resetToken' => $token]);
 
         if (!$user) {
@@ -134,6 +164,15 @@ class AuthController extends AbstractController
     #[Route('/register', name: 'register')]
     public function register(Request $request, UserRepository $userRepository, MailerInterface $mailer): Response
     {
+        if ($this->getUser()) {
+            $referer = $request->headers->get('referer');
+
+            if (!$referer) {
+                $referer = $this->generateUrl('home_page');
+            }
+            return $this->redirect($referer);
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
 
@@ -174,8 +213,18 @@ class AuthController extends AbstractController
     }
 
     #[Route('/confirm/{token}', name: 'confirm_account')]
-    public function confirmAccount(string $token, UserRepository $userRepository): Response
+    public function confirmAccount(Request $request, string $token, UserRepository $userRepository): Response
     {
+        // Vérifier si l'utilisateur est déjà connecté
+        if ($this->getUser()) {
+            $referer = $request->headers->get('referer');
+
+            if (!$referer) {
+                $referer = $this->generateUrl('home_page');
+            }
+            return $this->redirect($referer);
+        }
+
         $user = $userRepository->findOneBy(['confirmationToken' => $token]);
 
         if (!$user) {
