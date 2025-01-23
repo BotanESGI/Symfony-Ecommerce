@@ -3,10 +3,59 @@
 {% block title %}Confirmation de la commande{% endblock %}
 
 {% block body %}
-    <div class="container mx-auto mt-8">
-        <h1 class="text-2xl font-bold mb-6 text-center">Merci pour votre commande!</h1>
-        <div class="mt-6 text-center">
-            <a href="{{ path('home_page') }}" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+    <div class="container mx-auto mt-8 max-w-4xl">
+        <h1 class="text-3xl font-bold mb-6 text-center text-green-600">Merci pour votre commande !</h1>
+
+        <div class="text-center">
+            <p class="text-lg text-gray-700">Votre commande a été enregistrée avec succès.</p>
+            <p class="text-lg text-gray-700">Voici un récapitulatif de votre commande :</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6 mt-6">
+            <p class="text-lg font-semibold">Numéro de commande : <span class="font-normal">{{ order.id }}</span></p>
+            <p class="text-lg font-semibold">Montant total : <span class="font-normal">{{ order.total | number_format(2, ',', ' ') }} €</span></p>
+            <p class="text-lg font-semibold">Date : <span class="font-normal">{{ order.date | date('d/m/Y H:i') }}</span></p>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Détails de la commande :</h2>
+            {% if orderItems is empty %}
+                <p class="text-gray-600">Aucun article trouvé dans cette commande.</p>
+            {% else %}
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-6">
+                    <thead>
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm">
+                        <th class="px-6 py-3 text-left">Produit</th>
+                        <th class="px-6 py-3 text-left">Type de Produit</th>
+                        <th class="px-6 py-3 text-left">Quantité</th>
+                        <th class="px-6 py-3 text-left">Prix Unitaire</th>
+                        <th class="px-6 py-3 text-left">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for orderItem in orderItems %}
+                        <tr>
+                            <td class="px-6 py-4 flex items-center">
+                                {% if orderItem.product.image %}
+                                    <img src="{{ asset(orderItem.product.image) }}" alt="{{ orderItem.product.name }}" class="w-16 h-16 mr-4 object-cover">
+                                {% endif %}
+                                <a href="{{ path('product_detail', {'id': orderItem.product.id, 'category': orderItem.product.defaultCategory.id}) }}" class="text-blue-600 hover:underline">
+                                    {{ orderItem.product.name }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">{{ orderItem.product.getProductType() }}</td>
+                            <td class="px-6 py-4">{{ orderItem.quantity }}</td>
+                            <td class="px-6 py-4">{{ orderItem.price | number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">{{ (orderItem.price * orderItem.quantity) | number_format(2, ',', ' ') }} €</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ path('home_page') }}" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
                 Retour à l'accueil
             </a>
         </div>

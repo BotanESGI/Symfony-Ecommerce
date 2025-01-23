@@ -30,9 +30,6 @@ abstract class Product
     #[ORM\Column(nullable: true)]
     private ?string $image = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $fileSize = null;
-
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Review::class)]
     private Collection $reviews;
 
@@ -99,17 +96,6 @@ abstract class Product
     public function setImage(?string $image): static
     {
         $this->image = $image;
-        return $this;
-    }
-
-    public function getFileSize(): ?int
-    {
-        return $this->fileSize;
-    }
-
-    public function setFileSize(?int $fileSize): static
-    {
-        $this->fileSize = $fileSize;
         return $this;
     }
 
@@ -204,4 +190,16 @@ abstract class Product
         $this->defaultCategory = $defaultCategory;
         return $this;
     }
+
+    public function getProductType(): string
+    {
+        if ($this instanceof PhysicalProduct) {
+            return 'Produit physique';
+        } elseif ($this instanceof DigitalProduct) {
+            return 'Produit digital';
+        }
+
+        return 'Type de produit inconnu';
+    }
+
 }

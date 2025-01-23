@@ -110,11 +110,9 @@ class ProductController extends AbstractController
         }
 
         $tags = $product->getTags();
-        $productType = $product instanceof DigitalProduct ? 'Produit digital' : 'Produit physique';
 
         return $this->render('product/product_detail.html.twig', [
             'product' => $product,
-            'productType' => $productType,
             'review' => $review,
             'categoryId' => $categoryId,
             'categoryName' => $categoryName,

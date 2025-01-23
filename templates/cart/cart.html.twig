@@ -32,7 +32,7 @@
                         {% endif %}
                         {{ cartItem.item.product.name }}
                     </td>
-                    <td class="px-6 py-4">{{ cartItem.productType }}</td>
+                    <td class="px-6 py-4">{{ cartItem.item.product.getProductType() }}</td>
                     <td class="px-6 py-4">
                         <form action="{{ path('update_cart_item', {'id': cartItem.item.id}) }}" method="POST" class="inline">
                             <input type="number" name="quantity" value="{{ cartItem.item.quantity }}" min="1" class="w-16 text-center border rounded" onclick="event.stopPropagation();">

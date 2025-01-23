@@ -384,7 +384,8 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 10,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://marketplace.canva.com/EADzX1V0eZo/1/0/1003w/canva-rouge-et-blanc-livre-de-cuisine-livre-couverture--84IPJPPzYE.jpg',
+                    'fileType' => ".PDF",
+                    'downloadLink' => 'https://ebook.com/ebook_cuisine.pdf',
                     'image' => 'https://marketplace.canva.com/EADzX1V0eZo/1/0/1003w/canva-rouge-et-blanc-livre-de-cuisine-livre-couverture--84IPJPPzYE.jpg',
                     'category' => 'Livres',
                 ],
@@ -394,7 +395,8 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 40,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/jeu_aventure.zip',
+                    'fileType' => ".EXE",
+                    'downloadLink' => 'https://jeu.com/downloads/jeu_video.exe',
                     'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Vg_history_icon_alt.svg/1280px-Vg_history_icon_alt.svg.png',
                     'category' => 'Jeux',
                 ],
@@ -404,7 +406,8 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 60,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/montage_video.exe',
+                    'fileType' => ".ZIP",
+                    'downloadLink' => 'https://logiciel.com/downloads/logiciel-montage-vidéo.zip',
                     'image' => 'https://static-cse.canva.com/blob/1145314/Montagevideo.jpg',
                     'category' => 'Électronique',
                 ],
@@ -414,7 +417,8 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 15,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/album_musique.zip',
+                    'fileType' => ".MP3",
+                    'downloadLink' => 'https://album.com/downloads/album-musique.mp3',
                     'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Audio_a.svg/2560px-Audio_a.svg.png',
                     'category' => 'Musique',
                 ],
@@ -424,7 +428,8 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 50,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/cours_programmation.zip',
+                    'fileType' => ".PDF",
+                    'downloadLink' => 'https://cours.com/downloads/cours-programmation.pdf',
                     'image' => 'https://upload.wikimedia.org/wikipedia/commons/a/a4/JavaScript_code.png',
                     'category' => 'Éducation',
                 ],
@@ -434,7 +439,8 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 25,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/application_meditation.zip',
+                    'fileType' => ".APK",
+                    'downloadLink' => 'https://application.com/downloads/application_meditation.apk',
                     'image' => 'https://www.conseil-d-assureur.fr/wp-content/uploads/2022/02/app-meditation-petit-bambou.jpg',
                     'category' => 'Bien-être',
                 ],
@@ -444,17 +450,19 @@ class AppFixtures extends Fixture
                     'type' => 'DIGITAL',
                     'price' => 30,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/template_site_web.zip',
+                    'fileType' => ".HTML",
+                    'downloadLink' => 'https://template.com/downloads/template_site.html',
                     'image' => 'https://marketplace.canva.com/EAE6WTyrSQ0/2/0/1600w/canva-light-beige-sleek-and-simple-blogger-personal-website--7Q4-7tyJj4.jpg',
                     'category' => 'Électronique',
                 ],
                 [
-                    'name' => 'Formation en marketing digital',
+                    'name' => 'Video formation en marketing digital',
                     'description' => 'Apprenez les stratégies de marketing digital.',
                     'type' => 'DIGITAL',
                     'price' => 75,
                     'fileSize' => rand(1, 5),
-                    'downloadLink' => 'https://example.com/downloads/formation_marketing_digital.zip',
+                    'fileType' => ".MP4",
+                    'downloadLink' => 'https://formation.com/downloads/video_formation_marketing_digital.mp4',
                     'image' => 'https://media.licdn.com/dms/image/v2/C4D12AQFwOmSy4XaXbg/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1621165601697?e=2147483647&v=beta&t=3EdRZZOvjZ3vAoEkEZPl9vwjXHPU88lQD8LEVrbX2mY',
                     'category' => 'Éducation',
                 ],
@@ -469,7 +477,8 @@ class AppFixtures extends Fixture
                 $product->setCharacteristics($data['characteristics']); // Utilisation des caractéristiques
             } else {
                 $product = new DigitalProduct($categories[array_search($data['category'], $categoryNames)]);
-                $product->setFileSize($data['fileSize']);
+                $product->setFilesize($data['fileSize']);
+                $product->setFiletype($data['fileType']);
                 $product->setDownloadLink($data['downloadLink']);
             }
 
@@ -543,6 +552,13 @@ class AppFixtures extends Fixture
             $invoice = new Invoice();
             $invoice->setTotalAmount($order->getTotal());
             $invoice->setUser($user);
+            $invoice->setOrder($order);
+            $manager->persist($invoice);
+            $manager->flush();
+
+            $pdfPath = '/path/to/invoices/invoice_' . $invoice->getId() . '.pdf';
+            $invoice->setPdfPath($pdfPath);
+            $order->setInvoice($invoice);
             $manager->persist($invoice);
         }
 

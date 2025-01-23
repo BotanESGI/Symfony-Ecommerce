@@ -19,6 +19,14 @@ class Invoice
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\OneToOne(targetEntity: Orders::class, inversedBy: 'invoice', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Orders $order = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $pdfPath = null;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -43,6 +51,28 @@ class Invoice
     public function setUser(?User $user): static
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function getOrder(): ?Orders
+    {
+        return $this->order;
+    }
+
+    public function setOrder(?Orders $order): static
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    public function getPdfPath(): ?string
+    {
+        return $this->pdfPath;
+    }
+
+    public function setPdfPath(?string $pdfPath): static
+    {
+        $this->pdfPath = $pdfPath;
         return $this;
     }
 }

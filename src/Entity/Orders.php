@@ -27,6 +27,10 @@ class Orders
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $date = null;
 
+    #[ORM\OneToOne(targetEntity: Invoice::class, inversedBy: 'order', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Invoice $invoice = null;
+
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
@@ -97,4 +101,16 @@ class Orders
         $this->date = $date;
         return $this;
     }
+
+    public function getInvoice(): ?Invoice
+    {
+        return $this->invoice;
+    }
+
+    public function setInvoice(?Invoice $invoice): static
+    {
+        $this->invoice = $invoice;
+        return $this;
+    }
+
 }

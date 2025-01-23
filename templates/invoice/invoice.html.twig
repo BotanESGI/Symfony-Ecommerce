@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .header, .footer {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+        .info {
+            margin: 20px 0;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f4f4f4;
+        }
+        .total {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .total strong {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Facture N°: {{ invoice.id }}</h1>
+</div>
+
+<div class="info">
+    <h2>Informations du client :</h2>
+    <p><strong>Nom :</strong> {{ invoice.user.name }} {{ invoice.user.lastname }}</p>
+    <p><strong>Email :</strong> {{ invoice.user.email }}</p>
+</div>
+
+<div class="info">
+    <h2>Détails de la commande :</h2>
+    <p><strong>Numéro de commande :</strong> {{ invoice.order.id }}</p>
+    <p><strong>Numéro de la facture :</strong> {{ invoice.id }}</p>
+    <p><strong>Date et heure de la commande :</strong> {{ invoice.order.date|date("d/m/Y H:i") }}</p>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Produit</th>
+        <th>Description</th>
+        <th>Quantité</th>
+        <th>Prix unitaire</th>
+        <th>Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for orderItem in orderItems %}
+        <tr>
+            <td class="px-6 py-4 flex items-center">
+                {% if orderItem.product.image %}
+                    <img src="{{ asset(orderItem.product.image) }}" alt="{{ orderItem.product.name }}" class="w-16 h-16 mr-4 object-cover">
+                {% endif %}
+                <a href="{{ path('product_detail', {'id': orderItem.product.id, 'category': orderItem.product.defaultCategory.id}) }}" class="text-blue-600 hover:underline">
+                    {{ orderItem.product.name }}
+                </a>
+            </td>
+            <td class="px-6 py-4">{{ orderItem.product.getProductType() }}</td>
+            <td class="px-6 py-4">{{ orderItem.quantity }}</td>
+            <td class="px-6 py-4">{{ orderItem.price | number_format(2, ',', ' ') }} €</td>
+            <td class="px-6 py-4">{{ (orderItem.price * orderItem.quantity) | number_format(2, ',', ' ') }} €</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="total">
+    <p><strong>Total général :</strong> {{ invoice.order.total|number_format(2, ',', ' ') }} €</p>
+</div>
+
+<div class="footer">
+    <p>Merci pour votre commande !</p>
+    <p>E-commerce | Adresse : 242 Rue du Faubourg Saint-Antoine, 75012 Paris</p>
+    <p>Email : e-commerce@entreprise.com | Téléphone : 01 02 03 04 05</p>
+</div>
+</body>
+</html>

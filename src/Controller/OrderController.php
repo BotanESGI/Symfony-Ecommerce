@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Cart;
+use App\Entity\Invoice;
 use App\Entity\OrderItem;
 use App\Entity\Orders;
 use App\Service\CartService;
@@ -23,18 +24,26 @@ class OrderController extends AbstractController
         $this->cartService = $cartService;
     }
 
-    private function isAccessedFromCartOrTunnel(Request $request): bool
+    private function isAccessedFromRoutes(Request $request, array $routeNames): bool
     {
         $referer = $request->headers->get('referer');
-        $cartUrl = $this->generateUrl('cart_page');
-        $tunnelOrderUrl = $this->generateUrl('process_order');
 
-        return $referer && (str_contains($referer, $cartUrl) || str_contains($referer, $tunnelOrderUrl));
+        if (!$referer) {
+            return false;
+        }
+
+        foreach ($routeNames as $routeName) {
+            $routeUrl = $this->generateUrl($routeName);
+            if (str_contains($referer, $routeUrl)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-
-    #[Route('/order/tunnel-order', name: 'process_order', methods: ['GET', 'POST'])]
-    public function processOrder(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/order/confirmation/{id}', name: 'order_confirmation', methods: ['GET'])]
+    public function orderConfirmation(Request $request, int $id, EntityManagerInterface $entityManager): Response
     {
         // Vérifie si l'utilisateur est banni
         if ($this->isGranted('ROLE_BANNED')) {
@@ -48,8 +57,51 @@ class OrderController extends AbstractController
             return $this->redirect($referer);
         }
 
-        // Vérifiez si la page personne viens depuis le panier
-        if (!$this->isAccessedFromCartOrTunnel($request)) {
+        // Vérifiez si la page personne viens depuis le tunnel
+        if (!$this->isAccessedFromRoutes($request, ['process_order'])) {
+            return $this->redirect($referer);
+        }
+
+        $order = $entityManager->getRepository(Orders::class)->find($id);
+
+        // Vérifier si la commande existe
+        if (!$order) {
+            throw $this->createNotFoundException('Commande non trouvée.');
+        }
+
+        // Vérifier que l'utilisateur connecté est bien le propriétaire de la commande
+        if ($order->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à accéder à cette commande.');
+        }
+
+        $orderItems = $entityManager->getRepository(OrderItem::class)->findBy(['order' => $order]);
+
+        return $this->render('order/confirmation.html.twig', [
+            'order' => $order,
+            'orderItems' => $orderItems,
+            'message' => 'Votre commande a été enregistrée avec succès. Merci pour votre achat !',
+            'cartItems' => [],
+            'cartTotal' => 0,
+        ]);
+    }
+
+    #[Route('/order/tunnel-order', name: 'process_order', methods: ['GET', 'POST'])]
+    public function processOrder(Request $request, EntityManagerInterface $entityManager,  InvoiceController $invoiceController): Response
+    {
+        // Vérifie si l'utilisateur est banni
+        if ($this->isGranted('ROLE_BANNED')) {
+            return $this->redirectToRoute('default');
+        }
+
+        $referer = $request->headers->get('referer') ?: $this->generateUrl('home_page');
+
+        // Vérifier si l'utilisateur n'est connecté
+        if (!$this->getUser()) {
+            return $this->redirect($referer);
+        }
+
+        // Vérifiez si la page personne viens depuis le panier / ou la page du tunnel pour le POST
+        if (!$this->isAccessedFromRoutes($request, ['cart_page', 'process_order'])) {
             return $this->redirect($referer);
         }
 
@@ -96,6 +148,7 @@ class OrderController extends AbstractController
                             ->setOrder($order)
                             ->setPrice($cartItem->getProduct()->getPrice());
                         $entityManager->persist($orderItem);
+                        $orderItems[] = $orderItem;
                     }
 
                     // Supprimez le panier
@@ -107,9 +160,30 @@ class OrderController extends AbstractController
                         $entityManager->remove($cart);
                     }
 
+                    // Créer la facture
+                    $invoice = new Invoice();
+                    $invoice->setTotalAmount($cartTotal);
+                    $invoice->setUser($user);
+                    $invoice->setOrder($order);
+
+                    $order->setInvoice($invoice);
+
+                    $entityManager->persist($invoice);
+                    $entityManager->persist($order);
                     $entityManager->flush();
 
-                    return $this->redirectToRoute('order_confirmation');
+                    // Appel pour générer le PDF
+                    $pdfResponse = $invoiceController->generateInvoicePdf($invoice, $orderItems);
+
+                    if ($pdfResponse->getStatusCode() === 200) {
+                        $pdfData = json_decode($pdfResponse->getContent(), true);
+                        $invoice->setPdfPath($pdfData['path']);
+                    }
+
+                    $entityManager->persist($invoice);
+                    $entityManager->flush();
+
+                    return $this->redirectToRoute('order_confirmation', ['id' => $order->getId()]);
                 } catch (\Exception $e) {
                     $this->addFlash('error', 'Error creating payment intent: ' . $e->getMessage());
                 }
