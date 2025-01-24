@@ -25,5 +25,36 @@ class ProductRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+/**
+     * Trouver les produits les mieux notés.
+     */
+    public function findByBestRated(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.reviews', 'r')
+            ->leftJoin('p.defaultCategory', 'c') // Joindre la catégorie par défaut
+            ->addSelect('c') // Inclure la catégorie par défaut dans les résultats
+            ->select('p.id, p.name, p.description, p.image, AVG(r.rating) as avgRating, c.id as categoryId') // Ajouter l'ID de la catégorie
+            ->groupBy('p.id, c.id') // Grouper par produit et catégorie
+            ->orderBy('avgRating', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
 
+    /**
+     * Trouver les produits moins cher.
+     */
+    public function findByDiscounted(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.description, p.image, p.price') // Inclure "image"
+            ->where('p.price < :threshold')
+            ->setParameter('threshold', 50)
+            ->orderBy('p.price', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+   
 }
