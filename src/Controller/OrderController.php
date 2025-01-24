@@ -185,7 +185,7 @@ class OrderController extends AbstractController
 
                     return $this->redirectToRoute('order_confirmation', ['id' => $order->getId()]);
                 } catch (\Exception $e) {
-                    $this->addFlash('error', 'Error creating payment intent: ' . $e->getMessage());
+                    $this->addFlash('error', 'Error lors du payement Stripe : ' . $e->getMessage());
                 }
             } else {
                 $this->addFlash('error', 'Adresse sélectionnée invalide.');

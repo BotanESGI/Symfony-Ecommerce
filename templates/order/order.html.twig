@@ -1,39 +1,88 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sélectionnez une adresse{% endblock %}
+{% block title %}Procéder au paiement{% endblock %}
 
 {% block body %}
     <div class="container mx-auto mt-8">
-        <h1 class="text-2xl font-bold mb-6 text-center">Sélectionnez une adresse pour la livraison</h1>
+        <h1 id="step-title" class="text-2xl font-bold mb-6 text-center">
+            Étape 1 : Sélectionnez une adresse pour la livraison
+        </h1>
 
-        <form action="{{ path('process_order') }}" method="POST" class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
-            {% for address in addresses %}
-                <div class="border rounded-lg p-4 mb-4 hover:bg-gray-50 transition-colors">
-                    <label for="address_{{ address.id }}" class="flex items-center space-x-4">
-                        <input type="radio" id="address_{{ address.id }}" name="address" value="{{ address.id }}" required class="form-radio h-5 w-5 text-blue-600">
-                        <div>
-                            <p class="text-lg font-medium">{{ address.street }}</p>
-                            <p class="text-sm text-gray-600">{{ address.city }}, {{ address.postalCode }}</p>
-                        </div>
-                    </label>
-                </div>
-            {% endfor %}
-
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
-                Continuer
-            </button>
-        </form>
-
-        <!-- Section pour le mode de paiement -->
-        <div class="border rounded-lg p-4 mt-4 bg-white shadow-md">
-            <h2 class="text-lg font-medium mb-2">Mode de paiement</h2>
-            <label for="payment_method" class="flex items-center space-x-4">
-                <input type="checkbox" id="payment_method" name="payment_method" value="stripe" checked disabled class="form-checkbox h-5 w-5 text-blue-600">
-                <div>
-                    <p class="text-lg font-medium">Stripe</p>
-                    <p class="text-sm text-gray-600">Coché par défaut et non décochable</p>
-                </div>
-            </label>
+        <div class="max-w-lg mx-auto pb-3">
+            <a href="#" id="back-link" class="text-blue-600 mt-4 text-left hover:underline hidden">
+                Revenir à l'étape de l'adresse
+            </a>
         </div>
+
+        <!-- Section pour les adresses -->
+        <form id="payment-form" action="{{ path('process_order') }}" method="POST" class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+            <p id="address-error" class="text-red-500 text-sm mt-2 mb-5 hidden font-bold">Veuillez sélectionner une adresse.</p>
+
+            <div id="address-section">
+                <!-- Liste des adresses -->
+                {% for address in addresses %}
+                    <div class="border rounded-lg p-4 mb-4 hover:bg-gray-50 transition-colors">
+                        <label for="address_{{ address.id }}" class="flex items-center space-x-4">
+                            <input type="radio" id="address_{{ address.id }}" name="address" value="{{ address.id }}" required class="form-radio h-5 w-5 text-blue-600">
+                            <div>
+                                <p class="text-lg font-medium">{{ address.street }}</p>
+                                <p class="text-sm text-gray-600">{{ address.city }}, {{ address.postalCode }}</p>
+                            </div>
+                        </label>
+                    </div>
+                {% endfor %}
+                <button type="button" id="proceed-button" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                    Continuer
+                </button>
+            </div>
+
+            <!-- Section pour le mode de paiement -->
+            <div id="payment-section" class="hidden">
+                <h2 class="text-lg font-medium mb-2">Mode de paiement : Stripe</h2>
+                <div id="card-element" class="my-4"></div>
+                <div id="card-errors" role="alert" class="text-red-500"></div>
+                <button type="submit" id="submit-button" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors mt-4">
+                    Payer avec Stripe
+                </button>
+            </div>
+        </form>
     </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('pk_test_51PX6nWRv1OMvXsRI1VbdcKh5DeMOtqWP3vP7T2KHGJD1SQkNvv1ZxroKuVQyBJWBshm0PxgZfzaDxkWOToiRQo3B00K1w4H7Si');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        const paymentSection = document.getElementById('payment-section');
+        const proceedButton = document.getElementById('proceed-button');
+        const backLink = document.getElementById('back-link');
+        const addressError = document.getElementById('address-error');
+        const stepTitle = document.getElementById('step-title');
+        const addressSection = document.getElementById('address-section');
+
+        proceedButton.addEventListener('click', () => {
+            const selectedAddress = document.querySelector('input[name="address"]:checked');
+            if (selectedAddress) {
+                // Passer à l'étape 2
+                stepTitle.textContent = 'Étape 2 : Indiquer vos informations de paiement';
+                addressSection.classList.add('hidden'); // Masquer la section des adresses
+                paymentSection.classList.remove('hidden'); // Afficher la section de paiement
+                addressError.classList.add('hidden'); // Masquer le message d'erreur
+                backLink.classList.remove('hidden'); // Afficher le lien de retour
+            } else {
+                addressError.classList.remove('hidden'); // Afficher le message d'erreur
+            }
+        });
+
+        backLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Revenir à l'étape 1
+            stepTitle.textContent = 'Étape 1 : Sélectionnez une adresse pour la livraison';
+            addressSection.classList.remove('hidden'); // Afficher la section des adresses
+            paymentSection.classList.add('hidden'); // Masquer la section de paiement
+            backLink.classList.add('hidden'); // Masquer le lien pour revenir
+        });
+    </script>
 {% endblock %}

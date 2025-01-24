@@ -10,7 +10,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class InvoiceController extends AbstractController
 {
-    #[Route('/invoice/generate/{invoiceId}', name: 'generate_invoice_pdf')]
     public function generateInvoicePdf(Invoice $invoice, array $orderItems): Response
     {
         $order = $invoice->getOrder();
