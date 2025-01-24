@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Product;
 
-use App\Entity\Review;
+use App\Controller\AccessDeniedException;
 use App\Entity\Product;
+use App\Entity\Review;
+use App\Enum\ReviewStatusEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Enum\ReviewStatusEnum;
 
 class ReviewController extends AbstractController
 {

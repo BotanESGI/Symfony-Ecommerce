@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Product;
 
-use App\Service\CartService;
-use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use App\Repository\ReviewRepository;
+use App\Service\CartService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\DigitalProduct;
 
 class ProductController extends AbstractController
 {

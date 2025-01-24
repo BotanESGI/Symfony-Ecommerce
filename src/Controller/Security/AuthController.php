@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Security;
 
 use App\Entity\User;
-use App\Form\ResetPasswordType;
 use App\Form\RegistrationType;
+use App\Form\ResetPasswordType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthController extends AbstractController
 {
@@ -46,7 +45,7 @@ class AuthController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('auth/login.html.twig', [
+        return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
@@ -84,7 +83,7 @@ class AuthController extends AbstractController
                     ->from(new Address('noreply@example.com', 'App Mail Bot'))
                     ->to($user->getEmail())
                     ->subject('Réinitialisation de votre mot de passe')
-                    ->htmlTemplate('auth/email/reset.html.twig')
+                    ->htmlTemplate('security/reset_password_confirmation.html.twig')
                     ->context([
                         'resetToken' => $resetToken,
                         'resetUrl' => $this->generateUrl('reset_password_token', ['token' => $resetToken], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -98,7 +97,7 @@ class AuthController extends AbstractController
             }
         }
 
-        return $this->render('auth/forgot_password.html.twig');
+        return $this->render('security/forgot_password.html.twig');
     }
 
     #[Route('/post-login-check', name: 'post_login_check')]
@@ -153,10 +152,10 @@ class AuthController extends AbstractController
 
             $this->addFlash('success', 'Votre mot de passe a été changé avec succès.');
 
-            return $this->redirectToRoute('default');
+            return $this->redirectToRoute('login');
         }
 
-        return $this->render('auth/reset_password.html.twig', [
+        return $this->render('security/reset_password.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -195,7 +194,7 @@ class AuthController extends AbstractController
                 ->from(new Address('noreply@example.com', 'App Mail Bot'))
                 ->to($user->getEmail())
                 ->subject('Confirm Your Account')
-                ->htmlTemplate('auth/email/confirmation.html.twig')
+                ->htmlTemplate('security/account_confirmation.html.twig')
                 ->context([
                     'confirmationToken' => $confirmationToken,
                     'confirmationUrl' => $this->generateUrl('confirm_account', ['token' => $confirmationToken], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -207,7 +206,7 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('login');
         }
 
-        return $this->render('auth/register.html.twig', [
+        return $this->render('security/register.html.twig', [
             'form' => $form->createView(),
         ]);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Checkout;
 
 use App\Entity\Cart;
 use App\Entity\Invoice;
@@ -8,12 +8,13 @@ use App\Entity\OrderItem;
 use App\Entity\Orders;
 use App\Service\CartService;
 use Doctrine\ORM\EntityManagerInterface;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
 
 class OrderController extends AbstractController
 {
@@ -76,7 +77,7 @@ class OrderController extends AbstractController
 
         $orderItems = $entityManager->getRepository(OrderItem::class)->findBy(['order' => $order]);
 
-        return $this->render('order/confirmation.html.twig', [
+        return $this->render('checkout/order/order_confirmation.html.twig', [
             'order' => $order,
             'orderItems' => $orderItems,
             'message' => 'Votre commande a été enregistrée avec succès. Merci pour votre achat !',
@@ -86,7 +87,7 @@ class OrderController extends AbstractController
     }
 
     #[Route('/order/tunnel-order', name: 'process_order', methods: ['GET', 'POST'])]
-    public function processOrder(Request $request, EntityManagerInterface $entityManager,  InvoiceController $invoiceController): Response
+    public function processOrder(Request $request, EntityManagerInterface $entityManager,  InvoiceController $invoiceController, SessionInterface $session): Response
     {
         // Vérifie si l'utilisateur est banni
         if ($this->isGranted('ROLE_BANNED')) {
@@ -100,8 +101,10 @@ class OrderController extends AbstractController
             return $this->redirect($referer);
         }
 
-        // Vérifiez si la page personne viens depuis le panier / ou la page du tunnel pour le POST
-        if (!$this->isAccessedFromRoutes($request, ['cart_page', 'process_order'])) {
+        $refererMessage = $session->getFlashBag()->get('referer_from_process_adress');
+        // Vérifiez si la page personne viens depuis le panier / ou la page du tunnel pour le POST ou la page d'ajout d'adresse mais à partir de process_order quand l'user a pas d'address
+        if (empty($refererMessage) && !$this->isAccessedFromRoutes($request, ['cart_page', 'process_order']))
+        {
             return $this->redirect($referer);
         }
 
@@ -114,6 +117,7 @@ class OrderController extends AbstractController
         $addresses = $user->getAddresses();
         if ($addresses->isEmpty()) {
             $this->addFlash('error', 'Ajoutez une adresse avant de continuer.');
+            $session->getFlashBag()->add('referer_from_process_order', 'yes');
             return $this->redirectToRoute('create_address');
         }
 
@@ -192,7 +196,7 @@ class OrderController extends AbstractController
             }
         }
 
-        return $this->render('order/order.html.twig', [
+        return $this->render('checkout/order/order.html.twig', [
             'addresses' => $addresses,
             'cartItems' => $cartItems,
             'cartTotal' => $cartTotal,
