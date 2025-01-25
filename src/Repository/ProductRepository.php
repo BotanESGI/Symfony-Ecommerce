@@ -48,13 +48,14 @@ class ProductRepository extends ServiceEntityRepository
     public function findByDiscounted(): array
     {
         return $this->createQueryBuilder('p')
-            ->select('p.id, p.name, p.description, p.image, p.price') // Inclure "image"
+            ->leftJoin('p.defaultCategory', 'c') // Jointure avec la catégorie
+            ->select('p.id, p.name, p.description, p.image, p.price, c.id as categoryId') // Inclure l'ID de la catégorie
             ->where('p.price < :threshold')
-            ->setParameter('threshold', 50)
+            ->setParameter('threshold', 100)
             ->orderBy('p.price', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
-   
+    
 }

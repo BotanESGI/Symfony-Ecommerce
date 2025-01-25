@@ -41,7 +41,7 @@
             gap: 20px;
             overflow-x: auto;
             padding: 10px 0;
-            scrollbar-width: thin; /* Navigateurs compatibles */
+            scrollbar-width: thin;
             scrollbar-color: #6c757d #f8f9fa;
         }
         .products-scroll::-webkit-scrollbar {
@@ -102,7 +102,11 @@
         <h2 class="section-title">Produits les mieux notés</h2>
         <div class="products-scroll">
             {% for product in bestRatedProducts %}
-                <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
+                {% if product.categoryId is defined %}
+                    <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="product-card">
+                {% else %}
+                    <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
+                {% endif %}
                     {% if product.image %}
                         <img src="{{ product.image }}" alt="{{ product.name }}">
                     {% else %}
@@ -123,7 +127,11 @@
         <h2 class="section-title">Produits pas chers</h2>
         <div class="products-scroll">
             {% for product in discountedProducts %}
-                <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
+                {% if product.categoryId is defined %}
+                    <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="product-card">
+                {% else %}
+                    <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
+                {% endif %}
                     {% if product.image %}
                         <img src="{{ product.image }}" alt="{{ product.name }}">
                     {% else %}
@@ -138,7 +146,4 @@
             {% endfor %}
         </div>
     </div>
-
-   
-
 {% endblock %}
