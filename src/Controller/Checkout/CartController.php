@@ -1,18 +1,16 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Checkout;
 
-use App\Service\CartService;
 use App\Entity\Cart;
-use App\Entity\DigitalProduct;
-use App\Repository\ProductRepository;
-use App\Repository\CartRepository;
 use App\Entity\CartItem;
+use App\Repository\CartRepository;
+use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
 
 class CartController extends AbstractController
 {
@@ -45,7 +43,7 @@ class CartController extends AbstractController
             ];
         }
 
-        return $this->render('cart/cart.html.twig', [
+        return $this->render('checkout/cart/cart.html.twig', [
             'cartItems' => $cartItemsWithType,
             'cartTotal' => array_reduce($cartItems, function ($total, $item) {
                 return $total + ($item->getProduct()->getPrice() * $item->getQuantity());

@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Commande #{{ order.id }}{% endblock %}
+
+{% block body %}
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+        <h1 class="text-3xl font-bold mb-6">Détails de la Commande #{{ order.id }}</h1>
+        <p>Date de la commande : {{ order.date|date('d/m/Y H:i') }}</p>
+        <p>Total de la commande : {{ order.total|number_format(2, ',', ' ') }} €</p>
+
+        {% set totalQuantity = 0 %}
+        {% for item in order.orderItems %}
+            {% set totalQuantity = totalQuantity + item.quantity %}
+        {% endfor %}
+
+        <p>Nombre total de produits dans la commande : {{ totalQuantity }}</p>
+
+        <h2 class="text-2xl font-semibold mt-4">Produits de la commande</h2>
+        <div class="mt-4">
+            {% if order.orderItems is not empty %}
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-6">
+                    <thead>
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm">
+                        <th class="px-6 py-3 text-left">Produit</th>
+                        <th class="px-6 py-3 text-left">Type de Produit</th>
+                        <th class="px-6 py-3 text-left">Quantité</th>
+                        <th class="px-6 py-3 text-left">Prix Unitaire</th>
+                        <th class="px-6 py-3 text-left">Total</th>
+                        <th class="px-6 py-3 text-left">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in order.orderItems %}
+                        <tr>
+                            <td class="px-6 py-4 flex items-center">
+                                {% if item.product.image %}
+                                    <img src="{{ asset(item.product.image) }}" alt="{{ item.product.name }}" class="w-16 h-16 mr-4 object-cover">
+                                {% endif %}
+                                {{ item.product.name }}
+                            </td>
+                            <td class="px-6 py-4">{{ item.product.getProductType() }}</td>
+                            <td class="px-6 py-4">{{ item.quantity }}</td>
+                            <td class="px-6 py-4">{{ item.price|number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">{{ (item.price * item.quantity)|number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">
+                                <a href="{{ path('product_detail', {'id': item.product.id, 'category': item.product.defaultCategory.id}) }}" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                                    Afficher l'article
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-gray-500">Aucun produit trouvé pour cette commande.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-8">
+            <a href="{{ path('order_history') }}" class="text-blue-600 hover:underline">Retour à l'historique des commandes</a>
+        </div>
+    </div>
+{% endblock %}

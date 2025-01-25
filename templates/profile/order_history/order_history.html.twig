@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des Commandes{% endblock %}
+
+{% block body %}
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+        <h1 class="text-3xl font-bold mb-6">Historique des Commandes</h1>
+        <div class="mt-6">
+            {% for order in orders %}
+                <div class="p-4 bg-gray-100 rounded-lg shadow mb-4 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold">Commande #{{ order.id }}</p>
+                        <p>Date de la commande : {{ order.date|date('d/m/Y') }}</p>
+                        <p>Total de la commande : {{ order.total|number_format(2, ',', ' ') }} €</p>
+                        <p>Nombre de produits dans la commande :
+                            {{ order.orderItems|reduce((carry, item) => carry + item.quantity, 0) }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <a href="{{ path('order_details', {id: order.id}) }}" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 flex items-center justify-center text-center">
+                            Détails de la commande
+                        </a>
+                        <a href="{{ path('show_invoice', {id: order.id}) }}" class="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 flex items-center justify-center text-center">
+                            Afficher la facture
+                        </a>
+                    </div>
+                </div>
+
+            {% else %}
+                <p class="text-gray-500">Vous n'avez pas encore passé de commande.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

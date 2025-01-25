@@ -67,12 +67,12 @@
             if (selectedAddress) {
                 // Passer à l'étape 2
                 stepTitle.textContent = 'Étape 2 : Indiquer vos informations de paiement';
-                addressSection.classList.add('hidden'); // Masquer la section des adresses
-                paymentSection.classList.remove('hidden'); // Afficher la section de paiement
-                addressError.classList.add('hidden'); // Masquer le message d'erreur
-                backLink.classList.remove('hidden'); // Afficher le lien de retour
+                addressSection.classList.add('hidden'); 
+                paymentSection.classList.remove('hidden');
+                addressError.classList.add('hidden');
+                backLink.classList.remove('hidden');
             } else {
-                addressError.classList.remove('hidden'); // Afficher le message d'erreur
+                addressError.classList.remove('hidden');
             }
         });
 
@@ -80,9 +80,9 @@
             e.preventDefault();
             // Revenir à l'étape 1
             stepTitle.textContent = 'Étape 1 : Sélectionnez une adresse pour la livraison';
-            addressSection.classList.remove('hidden'); // Afficher la section des adresses
-            paymentSection.classList.add('hidden'); // Masquer la section de paiement
-            backLink.classList.add('hidden'); // Masquer le lien pour revenir
+            addressSection.classList.remove('hidden');
+            paymentSection.classList.add('hidden');
+            backLink.classList.add('hidden');
         });
     </script>
 {% endblock %}

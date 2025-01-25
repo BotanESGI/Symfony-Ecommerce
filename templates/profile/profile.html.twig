@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block body %}
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+        <h1 class="text-3xl font-bold mb-6">Mon Profil</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Bloc Mon Compte -->
+            <a href="{{ path('account') }}" class="block p-6 bg-blue-100 rounded-lg shadow hover:shadow-lg transition">
+                <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A11.95 11.95 0 0112 15c2.96 0 5.674 1.07 7.879 2.804m-7.879-9.2a4 4 0 110-8 4 4 0 010 8z" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-blue-800">Mon Compte</h2>
+                    <p class="text-gray-600 mt-2">Gérez vos informations personnelles et vos paramètres.</p>
+                </div>
+            </a>
+
+            <!-- Bloc Mon Adresse -->
+            <a href="{{ path('address') }}" class="block p-6 bg-green-100 rounded-lg shadow hover:shadow-lg transition">
+                <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2c3.866 0 7 3.134 7 7 0 5.25-7 13-7 13s-7-7.75-7-13c0-3.866 3.134-7 7-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 11a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-green-800">Mes Adresse</h2>
+                    <p class="text-gray-600 mt-2">Gérez vos adresses de livraison et de facturation.</p>
+                </div>
+            </a>
+
+            <!-- Bloc Historique de Commande -->
+            <a href="{{ path('order_history') }}" class="block p-6 bg-yellow-100 rounded-lg shadow hover:shadow-lg transition">
+                <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-yellow-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-yellow-800">Historique de Commande</h2>
+                    <p class="text-gray-600 mt-2">Consultez vos commandes passées et leur statut.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}
