@@ -18,6 +18,13 @@
     <nav class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
             <ul class="flex space-x-4">
+                {% if app.user %}
+                    {% if not is_granted('ROLE_BANNED') %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('admin_index') }}" class="text-blue-500 hover:text-blue-700">Admin</a></li>
+                         {% endif %}
+                    {% endif %}
+                {% endif %}
                 <li><a href="{{ path('home_page') }}" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
                 <li><a href="{{ path('product_page') }}" class="text-blue-500 hover:text-blue-700">Produits</a></li>
                 {% if not app.user %}
@@ -29,9 +36,6 @@
             <ul class="flex space-x-4">
                 {% if app.user %}
                     {% if not is_granted('ROLE_BANNED') %}
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <li><a href="{{ path('app_admin_index') }}" class="text-blue-500 hover:text-blue-700">Admin</a></li>
-                        {% endif %}
                         <li><a href="{{ path('profile') }}" class="text-blue-500 hover:text-blue-700">Mon compte</a></li>
                         <li><a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700">Déconnexion</a></li>
 
