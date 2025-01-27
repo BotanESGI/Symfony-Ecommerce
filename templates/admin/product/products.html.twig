@@ -1,27 +1,102 @@
 {% extends 'admin/admin.html.twig' %}
 
+{% block title %}Admin - Backoffice (CRUD Produit){% endblock %}
+
 {% block body %}
-    <h1 class="text-2xl font-bold mb-6">Liste des produits</h1>
+    <h1 class="text-2xl font-bold mb-6">CRUD des produits</h1>
     <a href="{{ path('login') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-600 transition">Ajouter un produit</a>
     <div class="overflow-x-auto">
         <table class="table-auto w-full border-collapse border border-gray-200 shadow-sm">
             <thead>
             <tr class="bg-gray-100 text-left text-sm font-medium">
                 <th class="border border-gray-300 px-4 py-2">ID</th>
+                <th class="border border-gray-300 px-4 py-2">Image</th>
                 <th class="border border-gray-300 px-4 py-2">Nom</th>
                 <th class="border border-gray-300 px-4 py-2">Description</th>
                 <th class="border border-gray-300 px-4 py-2">Prix</th>
+                <th class="border border-gray-300 px-4 py-2">Type</th>
+                <th class="border border-gray-300 px-4 py-2">Catégories associées</th>
+                <th class="border border-gray-300 px-4 py-2">Catégorie par défaut</th>
+                <th class="border border-gray-300 px-4 py-2">Lien de téléchargement (Digital)</th>
+                <th class="border border-gray-300 px-4 py-2">Taille du fichier (Digital)</th>
+                <th class="border border-gray-300 px-4 py-2">Type de fichier (Digital)</th>
+                <th class="border border-gray-300 px-4 py-2">Caractéristiques (Physique)</th>
                 <th class="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
             </thead>
             <tbody class="text-sm">
             {% for product in products %}
                 <tr class="hover:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2">{{ product.id }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ product.name }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ product.description }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ product.price }}</td>
-                    <td class="border border-gray-300 px-4 py-2 flex space-x-2">
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ product.id }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% if product.image %}
+                            <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-20 h-20 object-cover">
+                        {% else %}
+                            <span class="text-gray-500 italic">Aucune image</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ product.name }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ product.description }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ product.price }} €</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ product.getProductType() }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% if product.categories|length > 0 %}
+                            {% for category in product.categories %}
+                                <span class="bg-gray-200 text-xs px-2 py-1 rounded">{{ category.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-gray-500 italic">Aucune</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap"> <span class="bg-gray-200 text-xs px-2 py-1 rounded">{{ product.defaultCategory.name }}</span></td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% if product.getProductType() == 'Produit digital' %}
+                            {% if product.getDownloadLink() is not empty %}
+                        <span class="bg-gray-200 text-xs px-2 py-1 rounded">{{ product.getDownloadLink() }}</span> - <a href="{{ product.getDownloadLink() }}" class="text-blue-500 hover:underline">Télécharger</a>
+                            {% else %}
+                                <span class="text-gray-500 italic">Aucun lien</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-500 italic">Aucun lien</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% if product.getProductType() == 'Produit digital' %}
+                            {% if product.getFilesize() is not null %}
+                                {{ product.getFilesize() }} Mo
+                            {% else %}
+                                <span class="text-gray-500 italic">Aucune taille</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-500 italic">Aucune taille</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% if product.getProductType() == 'Produit digital' %}
+                            {% if product.getFiletype() is not empty %}
+                                {{ product.getFiletype() }}
+                            {% else %}
+                                <span class="text-gray-500 italic">Aucun type</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-500 italic">Aucun type</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% if product.getProductType() == 'Produit physique' %}
+                            {% if product.getCharacteristics() is not empty %}
+                                {% for key, value in product.getCharacteristics() %}
+                                    <li>{{ key|replace({'_': ' '})|capitalize }} : {{ value }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-gray-500 italic">Aucune caractéristique</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-500 italic">Aucune caractéristique</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        <a href="{{ path('admin_products_create', {id: product.id}) }}" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition">Afficher</a>
                         <a href="{{ path('admin_products_edit', {id: product.id}) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition">Modifier</a>
                         <form method="post" action="{{ path('admin_products_delete', {id: product.id}) }}" style="display: inline-block;">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">

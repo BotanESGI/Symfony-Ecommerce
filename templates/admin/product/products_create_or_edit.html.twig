@@ -6,4 +6,28 @@
     {{ form_widget(form) }}
     <button class="btn btn-success">{{ product is defined ? 'Modifier' : 'Créer' }}</button>
     {{ form_end(form) }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeField = document.getElementById('product_type');
+            const digitalFields = ['downloadLink', 'filesize', 'filetype'];
+            const physicalFields = ['characteristics'];
+
+            function toggleFields() {
+                const selectedType = typeField.value;
+                digitalFields.forEach(field => {
+                    const fieldElement = document.getElementById(`product_${field}`);
+                    fieldElement.closest('.form-group').style.display = selectedType === 'digital' ? 'block' : 'none';
+                });
+
+                physicalFields.forEach(field => {
+                    const fieldElement = document.getElementById(`product_${field}`);
+                    fieldElement.closest('.form-group').style.display = selectedType === 'physique' ? 'block' : 'none';
+                });
+            }
+
+            typeField.addEventListener('change', toggleFields);
+            toggleFields(); // Initial call to set visibility
+        });
+    </script>
 {% endblock %}
