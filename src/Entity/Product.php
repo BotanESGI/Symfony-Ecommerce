@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+// Ajout pour les groupes de normalisation/dénormalisation
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product')]
@@ -16,18 +18,28 @@ abstract class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    // Ajout de `#[Groups]` pour permettre l'exposition dans l'API
+    #[Groups(['product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    // Ajout de `#[Groups]` pour exposer le nom dans l'API
+    #[Groups(['product:read', 'product:write'])]
     private ?string $name = null;
 
     #[ORM\Column(type: 'text')]
+    // Ajout de `#[Groups]` pour exposer la description dans l'API
+    #[Groups(['product:read', 'product:write'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    // Ajout de `#[Groups]` pour exposer le prix dans l'API
+    #[Groups(['product:read', 'product:write'])]
     private ?float $price = null;
 
     #[ORM\Column(nullable: true)]
+    // Ajout de `#[Groups]` pour exposer l'image dans l'API
+    #[Groups(['product:read', 'product:write'])]
     private ?string $image = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Review::class)]
@@ -41,7 +53,10 @@ abstract class Product
 
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: false)]
+    // Ajout de `#[Groups]` pour exposer la catégorie par défaut dans l'API
+    #[Groups(['product:read', 'product:write'])]
     private Category $defaultCategory;
+
     public function __construct(Category $defaultCategory)
     {
         $this->defaultCategory = $defaultCategory;
@@ -201,5 +216,4 @@ abstract class Product
 
         return 'Type de produit inconnu';
     }
-
 }
