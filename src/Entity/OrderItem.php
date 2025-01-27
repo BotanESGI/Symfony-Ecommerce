@@ -16,9 +16,11 @@ class OrderItem
     #[ORM\JoinColumn(nullable: false)]
     private ?Orders $order = null;
 
+
     #[ORM\ManyToOne(targetEntity: Product::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Product $product = null;
+
 
     #[ORM\Column]
     private ?int $quantity = null;

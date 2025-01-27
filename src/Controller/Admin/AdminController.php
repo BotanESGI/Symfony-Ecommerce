@@ -3,10 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Controller\IsGranted;
+use App\Entity\DigitalProduct;
+use App\Entity\PhysicalProduct;
 use App\Entity\Product;
 use App\Form\ProductType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -41,6 +44,48 @@ final class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/products/create', name: 'admin_products_create', methods: ['GET', 'POST'])]
+    public function create(Request $request): Response
+    {
+        $productType = $request->request->get('product_type');
+
+        if ($productType === 'digital') {
+            $product = new DigitalProduct();
+        } else {
+            $product = new PhysicalProduct();
+        }
+
+        $form = $this->createForm(ProductType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile|null $file */
+            $file = $form->get('image')->getData();
+
+            if ($file) {
+                $filename = uniqid() . '.' . $file->guessExtension();
+                $file->move($this->getParameter('images_directory'), $filename);
+                $product->setImage($filename);
+            }
+
+            if ($product instanceof DigitalProduct) {
+                $product->setDownloadLink($form->get('downloadLink')->getData());
+                $product->setFilesize($form->get('filesize')->getData());
+                $product->setFiletype($form->get('filetype')->getData());
+            }
+
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Produit créé avec succès.');
+            return $this->redirectToRoute('admin_products');
+        }
+
+        return $this->render('admin/products/products_create_or_edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
     #[Route('/admin/products/edit/{id}', name: 'admin_products_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, int $id): Response
     {
@@ -55,8 +100,25 @@ final class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $file = $form->get('file')->getData();
+
+            if ($file) {
+                $filename = uniqid() . '.' . $file->guessExtension();
+                $file->move($this->getParameter('images_directory'), $filename);
+                $product->setImage($filename);
+            }
+
+            if ($product instanceof DigitalProduct) {
+                $product->setDownloadLink($form->get('downloadLink')->getData());
+                $product->setFilesize($form->get('filesize')->getData());
+                $product->setFiletype($form->get('filetype')->getData());
+            }
+
+            $this->entityManager->persist($product);
             $this->entityManager->flush();
-            $this->addFlash('success', 'Produit modifié avec succès.');
+
+            $this->addFlash('success', 'Produit créé avec succès.');
             return $this->redirectToRoute('admin_products');
         }
 
@@ -65,6 +127,7 @@ final class AdminController extends AbstractController
             'product' => $product,
         ]);
     }
+
 
 
     #[Route('/admin/products/delete/{id}', name: 'admin_products_delete', methods: ['POST'])]
