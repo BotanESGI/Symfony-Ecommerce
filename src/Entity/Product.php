@@ -90,7 +90,15 @@ abstract class Product
 
     public function getImage(): ?string
     {
-        return $this->image;
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        if ($this->image) {
+            return 'images/' . $this->image;
+        }
+
+        return null;
     }
 
     public function setImage(?string $image): static

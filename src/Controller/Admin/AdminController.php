@@ -3,10 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Controller\IsGranted;
+use App\Entity\Category;
 use App\Entity\DigitalProduct;
 use App\Entity\PhysicalProduct;
 use App\Entity\Product;
-use App\Form\ProductType;
+use App\Entity\Review;
+use App\Form\ProductCreateType;
+use App\Form\ProductEditType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -33,8 +36,7 @@ final class AdminController extends AbstractController
 
     ////////////////////////////////////////////////
     ///////////////////Produits/////////////////////
-    ///////////////////////////////////////////////
-    ///
+    ////////////////////////////////////////////////
     #[Route('/admin/products', name: 'admin_products', methods: ['GET'])]
     public function CRUDAdminProducts(): Response
     {
@@ -47,21 +49,25 @@ final class AdminController extends AbstractController
     #[Route('/admin/products/create', name: 'admin_products_create', methods: ['GET', 'POST'])]
     public function create(Request $request): Response
     {
-        $productType = $request->request->get('product_type');
+        $productType = $request->query->get('type');
+        $defaultCategoryId = 1;
+        $defaultCategory = $this->entityManager->getRepository(Category::class)->find($defaultCategoryId);
 
-        if ($productType === 'digital') {
-            $product = new DigitalProduct();
-        } else {
-            $product = new PhysicalProduct();
+        if (!$defaultCategory) {
+            throw $this->createNotFoundException('Category on trouvée');
         }
 
-        $form = $this->createForm(ProductType::class, $product);
+        if ($productType === 'digital') {
+            $product = new DigitalProduct($defaultCategory);
+        } else {
+            $product = new PhysicalProduct($defaultCategory);
+        }
+
+        $form = $this->createForm(ProductCreateType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile|null $file */
             $file = $form->get('image')->getData();
-
             if ($file) {
                 $filename = uniqid() . '.' . $file->guessExtension();
                 $file->move($this->getParameter('images_directory'), $filename);
@@ -72,6 +78,13 @@ final class AdminController extends AbstractController
                 $product->setDownloadLink($form->get('downloadLink')->getData());
                 $product->setFilesize($form->get('filesize')->getData());
                 $product->setFiletype($form->get('filetype')->getData());
+            } elseif ($product instanceof PhysicalProduct) {
+                $characteristicsJson = $form->get('characteristics')->getData();
+                if ($characteristicsJson) {
+                    $product->setCharacteristics(json_decode($characteristicsJson, true));
+                } else {
+                    $product->setCharacteristics([]);
+                }
             }
 
             $this->entityManager->persist($product);
@@ -81,8 +94,9 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('admin_products');
         }
 
-        return $this->render('admin/products/products_create_or_edit.html.twig', [
+        return $this->render('admin/product/products_create.html.twig', [
             'form' => $form->createView(),
+            'productType' => $productType,
         ]);
     }
 
@@ -96,38 +110,49 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('admin_products');
         }
 
-        $form = $this->createForm(ProductType::class, $product);
+        $form = $this->createForm(ProductEditType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
-            $file = $form->get('file')->getData();
-
+            $file = $form->get('image')->getData();
             if ($file) {
                 $filename = uniqid() . '.' . $file->guessExtension();
                 $file->move($this->getParameter('images_directory'), $filename);
                 $product->setImage($filename);
             }
 
+            $product->setDefaultCategory($form->get('defaultCategory')->getData());
+
+            $categories = $form->get('categories')->getData();
+            foreach ($categories as $category) {
+                $product->addCategory($category);
+            }
+
             if ($product instanceof DigitalProduct) {
                 $product->setDownloadLink($form->get('downloadLink')->getData());
                 $product->setFilesize($form->get('filesize')->getData());
                 $product->setFiletype($form->get('filetype')->getData());
+            } elseif ($product instanceof PhysicalProduct) {
+                $characteristicsJson = $form->get('characteristics')->getData();
+                if ($characteristicsJson) {
+                    $product->setCharacteristics(json_decode($characteristicsJson, true));
+                } else {
+                    $product->setCharacteristics([]);
+                }
             }
 
             $this->entityManager->persist($product);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Produit créé avec succès.');
+            $this->addFlash('success', 'Produit modifié avec succès.');
             return $this->redirectToRoute('admin_products');
         }
 
-        return $this->render('admin/products/products_create_or_edit.html.twig', [
+        return $this->render('admin/product/products_edit.html.twig', [
             'form' => $form->createView(),
             'product' => $product,
         ]);
     }
-
 
 
     #[Route('/admin/products/delete/{id}', name: 'admin_products_delete', methods: ['POST'])]
@@ -147,5 +172,17 @@ final class AdminController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_products');
+    }
+
+    ////////////////////////////////////////////////
+    ///////////////////Avis/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/reviews', name: 'admin_reviews', methods: ['GET'])]
+    public function CRUDAdminReviews(): Response
+    {
+        $reviews = $this->entityManager->getRepository(Review::class)->findAll();
+        return $this->render('admin/review/reviews.html.twig', [
+            'reviews' => $reviews,
+        ]);
     }
 }

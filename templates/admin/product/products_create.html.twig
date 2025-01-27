@@ -1,0 +1,84 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Créer un produit {{ productType }} {% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">Créer un produit {{ productType }}</h1>
+
+    {{ form_start(form) }}
+
+    <div>
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+    </div>
+
+    <div>
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description) }}
+    </div>
+
+    <div>
+        {{ form_label(form.price) }}
+        {{ form_widget(form.price) }}
+    </div>
+
+    <div>
+        {{ form_label(form.image) }}
+        <div class="flex items-center space-x-4">
+            <div class="mt-2">
+                <img id="imagePreview" src="#" alt="Aperçu de l'image"
+                     class="w-32 h-32 object-cover border rounded hidden">
+            </div>
+            <div class="flex-1">
+                {{ form_widget(form.image, {'attr': {'onchange': 'previewImage(event)'}}) }}
+            </div>
+        </div>
+    </div>
+
+    {% if productType == 'Produit digital' %}
+        <div>
+            {{ form_label(form.downloadLink) }}
+            {{ form_widget(form.downloadLink) }}
+        </div>
+        <div>
+            {{ form_label(form.filesize) }}
+            {{ form_widget(form.filesize) }}
+        </div>
+        <div>
+            {{ form_label(form.filetype) }}
+            {{ form_widget(form.filetype) }}
+        </div>
+    {% elseif productType == 'Produit physique' %}
+        <div>
+            {{ form_label(form.characteristics) }}
+            {{ form_widget(form.characteristics) }}
+        </div>
+    {% endif %}
+
+    {{ form_end(form) }}
+
+    <a href="{{ path('admin_products') }}" class="text-blue-500 hover:underline">Retourner à la liste des produits</a>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '#';
+                preview.classList.add('hidden');
+            }
+        }
+    </script>
+{% endblock %}

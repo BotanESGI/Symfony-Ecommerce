@@ -1,0 +1,87 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice (Modification de produit) {% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">Modifier le produit</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+    </div>
+    <div>
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description) }}
+    </div>
+    <div>
+        {{ form_label(form.price) }}
+        {{ form_widget(form.price) }}
+    </div>
+    <div>
+        {{ form_label(form.image) }}
+        <div class="flex items-center space-x-4">
+            <div class="mt-2">
+                <img id="imagePreview" src="{{ product.image ? asset(product.image) : '' }}"
+                     alt="{{ product.name }}"
+                     class="w-32 h-32 object-cover border rounded {{ product.image ? '' : 'hidden' }}">
+            </div>
+            <div class="flex-1">
+                {{ form_widget(form.image, {'attr': {'onchange': 'previewImage(event)'}}) }}
+            </div>
+        </div>
+    </div>
+    <div>
+        {{ form_label(form.defaultCategory) }}
+        {{ form_widget(form.defaultCategory) }}
+    </div>
+    <div>
+        {{ form_label(form.categories) }}
+        {{ form_widget(form.categories) }}
+    </div>
+
+    {% if product.getProductType() == 'Produit digital' %}
+        <div>
+            {{ form_label(form.downloadLink) }}
+            {{ form_widget(form.downloadLink) }}
+        </div>
+        <div>
+            {{ form_label(form.filesize) }}
+            {{ form_widget(form.filesize) }}
+        </div>
+        <div>
+            {{ form_label(form.filetype) }}
+            {{ form_widget(form.filetype) }}
+        </div>
+    {% elseif product.getProductType() == 'Produit physique' %}
+        <div>
+            {{ form_label(form.characteristics) }}
+            {{ form_widget(form.characteristics) }}
+        </div>
+    {% endif %}
+
+    <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300 shadow-lg">
+        Sauvegarder
+    </button>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+{% endblock %}

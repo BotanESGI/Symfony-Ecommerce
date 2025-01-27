@@ -35,6 +35,7 @@ class AppFixtures extends Fixture
 
         foreach ($categoryNames as $index => $categoryName) {
             $category = new Category();
+            $category = new Category();
             $category->setName($categoryName);
             $category->setColor($colors[$index % count($colors)]); // Assigner une couleur
             $manager->persist($category);

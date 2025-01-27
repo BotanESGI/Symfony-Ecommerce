@@ -15,10 +15,21 @@ class PhysicalProduct extends Product
         return $this->characteristics;
     }
 
-    public function setCharacteristics(array $characteristics): static
+    public function setCharacteristics($characteristics): static
     {
-        $this->characteristics = $characteristics;
+        if (is_string($characteristics)) {
+            $decoded = json_decode($characteristics, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $this->characteristics = $decoded;
+            } else {
+                $this->characteristics = [];
+            }
+        } elseif (is_array($characteristics)) {
+            $this->characteristics = $characteristics;
+        } else {
+            $this->characteristics = [];
+        }
+
         return $this;
     }
-
 }
