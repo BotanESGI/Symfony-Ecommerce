@@ -4,7 +4,7 @@ namespace App\Controller\Profile;
 
 use App\Entity\Address;
 use App\Entity\Orders;
-use App\Form\AddressType;
+use App\Form\AddressFrontType;
 use App\Service\CartService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

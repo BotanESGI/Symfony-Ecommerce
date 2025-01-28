@@ -3,7 +3,7 @@
 namespace App\Controller\Profile;
 
 use App\Entity\Address;
-use App\Form\AddressType;
+use App\Form\AddressFrontType;
 use App\Service\CartService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -75,7 +75,7 @@ class AddressController extends AbstractController
         $cartTotal = $this->cartService->getCartTotal();
 
         $address = new Address();
-        $form = $this->createForm(AddressType::class, $address);
+        $form = $this->createForm(AddressFrontType::class, $address);
 
         $form->handleRequest($request);
 
@@ -130,7 +130,7 @@ class AddressController extends AbstractController
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
-        $form = $this->createForm(AddressType::class, $address);
+        $form = $this->createForm(AddressFrontType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

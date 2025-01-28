@@ -3,15 +3,19 @@
 namespace App\Controller\Admin;
 
 use App\Controller\IsGranted;
+use App\Entity\Address;
 use App\Entity\Category;
 use App\Entity\DigitalProduct;
 use App\Entity\PhysicalProduct;
 use App\Entity\Product;
 use App\Entity\Review;
+use App\Entity\Tag;
+use App\Form\AddressBackType;
 use App\Form\CategoryType;
 use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
 use App\Form\ReviewType;
+use App\Form\TagType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -350,5 +354,161 @@ final class AdminController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_categories');
+    }
+
+    ////////////////////////////////////////////////
+    ///////////////////Tags/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/tags', name: 'admin_tags', methods: ['GET'])]
+    public function CRUDAdminTags(): Response
+    {
+        $tags = $this->entityManager->getRepository(Tag::class)->findAll();
+        return $this->render('admin/tag/tags.html.twig', [
+            'tags' => $tags,
+        ]);
+    }
+
+    #[Route('/admin/tags/create', name: 'admin_tags_create', methods: ['GET', 'POST'])]
+    public function createTag(Request $request): Response
+    {
+        $tag = new Tag();
+        $form = $this->createForm(TagType::class, $tag);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($tag);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Tag créé avec succès.');
+            return $this->redirectToRoute('admin_tags');
+        }
+
+        return $this->render('admin/tag/tags_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'tag' => null,
+        ]);
+    }
+
+    #[Route('/admin/tags/edit/{id}', name: 'admin_tags_edit', methods: ['GET', 'POST'])]
+    public function editTag(Request $request, int $id): Response
+    {
+        $tag = $this->entityManager->getRepository(Tag::class)->find($id);
+
+        if (!$tag) {
+            $this->addFlash('error', 'Le tag demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_tags');
+        }
+
+        $form = $this->createForm(TagType::class, $tag);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Tag modifié avec succès.');
+            return $this->redirectToRoute('admin_tags');
+        }
+
+        return $this->render('admin/tag/tags_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'tag' => $tag,
+        ]);
+    }
+
+    #[Route('/admin/tags/delete/{id}', name: 'admin_tags_delete', methods: ['POST'])]
+    public function deleteTag(Request $request, int $id): Response
+    {
+        $tag = $this->entityManager->getRepository(Tag::class)->find($id);
+
+        if (!$tag) {
+            $this->addFlash('error', 'Le tag demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_tags');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $tag->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($tag);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Tag supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_tags');
+    }
+
+    ////////////////////////////////////////////////
+    ///////////////////Addresses/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/addresses', name: 'admin_addresses', methods: ['GET'])]
+    public function CRUDAddresses(): Response
+    {
+        $addresses = $this->entityManager->getRepository(Address::class)->findAll();
+        return $this->render('admin/address/address.html.twig', [
+            'addresses' => $addresses,
+        ]);
+    }
+
+    #[Route('/admin/addresses/create', name: 'admin_addresses_create', methods: ['GET', 'POST'])]
+    public function createAddresses(Request $request): Response
+    {
+        $address = new Address();
+        $form = $this->createForm(AddressBackType::class, $address);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($address);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Adresse créée avec succès.');
+            return $this->redirectToRoute('admin_addresses');
+        }
+
+        return $this->render('admin/address/address_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'address' => null,
+        ]);
+    }
+
+    #[Route('/admin/addresses/edit/{id}', name: 'admin_addresses_edit', methods: ['GET', 'POST'])]
+    public function editAddresses(Request $request, int $id): Response
+    {
+        $address = $this->entityManager->getRepository(Address::class)->find($id);
+
+        if (!$address) {
+            $this->addFlash('error', 'L\'adresse demandée n\'existe pas.');
+            return $this->redirectToRoute('admin_addresses');
+        }
+
+        $form = $this->createForm(AddressBackType::class, $address);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Adresse mise à jour avec succès.');
+            return $this->redirectToRoute('admin_addresses');
+        }
+
+        return $this->render('admin/address/address_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'address' => $address,
+        ]);
+    }
+
+    #[Route('/admin/addresses/delete/{id}', name: 'admin_addresses_delete', methods: ['POST'])]
+    public function deleteAddresses(Request $request, int $id): Response
+    {
+        $address = $this->entityManager->getRepository(Address::class)->find($id);
+
+        if (!$address) {
+            $this->addFlash('error', 'L\'adresse demandée n\'existe pas.');
+            return $this->redirectToRoute('admin_addresses');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $address->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($address);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Adresse supprimée avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_addresses');
     }
 }

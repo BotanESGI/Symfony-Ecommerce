@@ -8,13 +8,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AddressType extends AbstractType
+class AddressFrontType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('street', TextType::class, [
                 'label' => 'Rue',
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control border rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-300',
                     'placeholder' => 'Entrez votre rue',
@@ -22,6 +23,7 @@ class AddressType extends AbstractType
             ])
             ->add('city', TextType::class, [
                 'label' => 'Ville',
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control border rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-300',
                     'placeholder' => 'Entrez votre ville',
@@ -29,6 +31,7 @@ class AddressType extends AbstractType
             ])
             ->add('postalCode', TextType::class, [
                 'label' => 'Code postal',
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control border rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-300',
                     'placeholder' => 'Entrez votre code postal',
