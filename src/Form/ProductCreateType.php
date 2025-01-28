@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\DigitalProduct;
 use App\Entity\PhysicalProduct;
 use App\Entity\Product;
+use App\Entity\Tag;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -74,7 +75,19 @@ class ProductCreateType extends AbstractType
                 'choice_label' => 'name',
                 'multiple' => true,
                 'expanded' => true,
+                'required' => false,
                 'label' => 'Catégories',
+                'attr' => [
+                    'class' => 'w-full p-2 border border-gray-300 rounded-lg',
+                ],
+            ])
+            ->add('tags', EntityType::class, [
+                'class' => Tag::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => true,
+                'required' => false,
+                'label' => 'Tags',
                 'attr' => [
                     'class' => 'w-full p-2 border border-gray-300 rounded-lg',
                 ],
@@ -92,7 +105,7 @@ class ProductCreateType extends AbstractType
                         'class' => 'w-full p-2 border border-gray-300 rounded-lg',
                     ]
                 ]);
-                $form->add('filesize', TextType::class, [
+                $form->add('filesize', NumberType::class, [
                     'required' => false,
                     'label' => 'Taille du fichier (en Mo)',
                     'attr' => [

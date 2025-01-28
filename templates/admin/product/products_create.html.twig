@@ -3,6 +3,14 @@
 {% block title %}Admin - Créer un produit {{ productType }} {% endblock %}
 
 {% block body %}
+    <style>
+        .error {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+
     <h1 class="text-2xl font-bold mb-6">Créer un produit {{ productType }}</h1>
 
     {{ form_start(form) }}
@@ -10,16 +18,19 @@
     <div>
         {{ form_label(form.name) }}
         {{ form_widget(form.name) }}
+        <div class="error">{{ form_errors(form.name) }}</div>
     </div>
 
     <div>
         {{ form_label(form.description) }}
         {{ form_widget(form.description) }}
+        <div class="error">{{ form_errors(form.description) }}</div>
     </div>
 
     <div>
         {{ form_label(form.price) }}
         {{ form_widget(form.price) }}
+        <div class="error">{{ form_errors(form.price) }}</div>
     </div>
 
     <div>
@@ -31,6 +42,7 @@
             </div>
             <div class="flex-1">
                 {{ form_widget(form.image, {'attr': {'onchange': 'previewImage(event)'}}) }}
+                <div class="error">{{ form_errors(form.image) }}</div>
             </div>
         </div>
     </div>
@@ -39,19 +51,23 @@
         <div>
             {{ form_label(form.downloadLink) }}
             {{ form_widget(form.downloadLink) }}
+            <div class="error">{{ form_errors(form.downloadLink) }}</div>
         </div>
         <div>
             {{ form_label(form.filesize) }}
             {{ form_widget(form.filesize) }}
+            <div class="error">{{ form_errors(form.filesize) }}</div>
         </div>
         <div>
             {{ form_label(form.filetype) }}
             {{ form_widget(form.filetype) }}
+            <div class="error">{{ form_errors(form.filetype) }}</div>
         </div>
     {% elseif productType == 'Produit physique' %}
         <div>
             {{ form_label(form.characteristics) }}
             {{ form_widget(form.characteristics) }}
+            <div class="error">{{ form_errors(form.characteristics) }}</div>
         </div>
     {% endif %}
 

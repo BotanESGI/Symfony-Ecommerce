@@ -9,14 +9,23 @@
     <div>
         {{ form_label(form.name) }}
         {{ form_widget(form.name) }}
+        {% if form.name.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.name) }}</div>
+        {% endif %}
     </div>
     <div>
         {{ form_label(form.description) }}
         {{ form_widget(form.description) }}
+        {% if form.description.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.description) }}</div>
+        {% endif %}
     </div>
     <div>
         {{ form_label(form.price) }}
         {{ form_widget(form.price) }}
+        {% if form.price.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.price) }}</div>
+        {% endif %}
     </div>
     <div>
         {{ form_label(form.image) }}
@@ -28,35 +37,63 @@
             </div>
             <div class="flex-1">
                 {{ form_widget(form.image, {'attr': {'onchange': 'previewImage(event)'}}) }}
+                {% if form.image.vars.errors|length > 0 %}
+                    <div class="text-red-500">{{ form_errors(form.image) }}</div>
+                {% endif %}
             </div>
         </div>
     </div>
     <div>
         {{ form_label(form.defaultCategory) }}
         {{ form_widget(form.defaultCategory) }}
+        {% if form.defaultCategory.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.defaultCategory) }}</div>
+        {% endif %}
     </div>
     <div>
         {{ form_label(form.categories) }}
         {{ form_widget(form.categories) }}
+        {% if form.categories.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.categories) }}</div>
+        {% endif %}
+    </div>
+    <div>
+        {{ form_label(form.tags) }}
+        {{ form_widget(form.tags) }}
+        {% if form.tags.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.tags) }}</div>
+        {% endif %}
     </div>
 
     {% if product.getProductType() == 'Produit digital' %}
         <div>
             {{ form_label(form.downloadLink) }}
             {{ form_widget(form.downloadLink) }}
+            {% if form.downloadLink.vars.errors|length > 0 %}
+                <div class="text-red-500">{{ form_errors(form.downloadLink) }}</div>
+            {% endif %}
         </div>
         <div>
             {{ form_label(form.filesize) }}
             {{ form_widget(form.filesize) }}
+            {% if form.filesize.vars.errors|length > 0 %}
+                <div class="text-red-500">{{ form_errors(form.filesize) }}</div>
+            {% endif %}
         </div>
         <div>
             {{ form_label(form.filetype) }}
             {{ form_widget(form.filetype) }}
+            {% if form.filetype.vars.errors|length > 0 %}
+                <div class="text-red-500">{{ form_errors(form.filetype) }}</div>
+            {% endif %}
         </div>
     {% elseif product.getProductType() == 'Produit physique' %}
         <div>
             {{ form_label(form.characteristics) }}
             {{ form_widget(form.characteristics) }}
+            {% if form.characteristics.vars.errors|length > 0 %}
+                <div class="text-red-500">{{ form_errors(form.characteristics) }}</div>
+            {% endif %}
         </div>
     {% endif %}
 
