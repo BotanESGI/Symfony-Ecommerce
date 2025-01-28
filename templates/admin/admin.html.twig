@@ -10,12 +10,12 @@
 </head>
 <body class="bg-gray-100 text-gray-900">
 <div class="flex min-h-screen">
-    <aside class="w-64 bg-white shadow-lg">
+    <aside class="w-64 bg-white shadow-lg p-4">
         <div class="p-4">
             <h2 class="text-xl font-bold text-blue-500">Admin Panel</h2>
         </div>
         <nav class="mt-4">
-            <ul class="space-y-4">
+            <ul class="space-y-6 px-4">
                 <li>
                     <a href="{{ path('login') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
                         <i class="fas fa-tachometer-alt mr-3"></i> Tableau de bord
@@ -69,6 +69,7 @@
         {% endblock %}
     </main>
 </div>
+
 
 {% block javascripts %}{% endblock %}
 </body>

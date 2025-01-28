@@ -27,8 +27,8 @@ class Review
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Product $product = null;
 
-    #[ORM\Column]
-    private ?string $status = null;
+    #[ORM\Column(enumType: ReviewStatusEnum::class)]
+    private ?ReviewStatusEnum $status = null;
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $datePublication = null;
@@ -82,14 +82,19 @@ class Review
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?ReviewStatusEnum
     {
         return $this->status;
     }
 
+    public function getStatusString(): string
+    {
+        return $this->status->value;
+    }
+
     public function setStatus(ReviewStatusEnum $status): static
     {
-        $this->status = $status->value;
+        $this->status = $status;
         return $this;
     }
 

@@ -5,7 +5,7 @@
 {% block body %}
     <h1 class="text-2xl font-bold mb-6">CRUD des avis</h1>
 
-    <a href="{{ path('login') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-600 transition">Créer un avis</a>
+    <a href="{{ path('admin_reviews_create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-600 transition">Créer un avis</a>
 
     <div class="overflow-x-auto">
         <table class="table-auto w-full border-collapse border border-gray-200 shadow-sm">
@@ -29,11 +29,17 @@
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ review.rating }}</td>
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ review.user.name }}</td>
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ review.product.name }}</td>
-                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ review.status }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ review.status.getLabel() }}</td>
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ review.datePublication|date('Y-m-d H:i') }}</td>
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
-                        <a href="{{ path('login', {id: review.id}) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition">Modifier</a>
-                        <form method="post" action="{{ path('login', {id: review.id}) }}" style="display: inline-block;">
+                        <button
+                            data-status="{{ review.status.getLabel() }}"
+                            data-url="{{ path('product_detail', {id: review.product.id, review: review.id, category: review.product.defaultCategory.id}) }}"
+                            class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition btn-view-review">
+                            Afficher
+                        </button>
+                        <a href="{{ path('admin_reviews_edit', {id: review.id}) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition">Modifier</a>
+                        <form method="post" action="{{ path('admin_reviews_delete', {id: review.id}) }}" style="display: inline-block;">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ review.id) }}">
                             <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?');">Supprimer</button>
                         </form>
@@ -43,4 +49,22 @@
             </tbody>
         </table>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const viewButtons = document.querySelectorAll('.btn-view-review');
+
+            viewButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const status = button.getAttribute('data-status');
+                    const url = button.getAttribute('data-url');
+
+                    if (status !== 'VALIDATED') {
+                        alert("Cet avis n'est pas visible car il n'a pas encore été validé.");
+                    } else {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

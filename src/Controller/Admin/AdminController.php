@@ -10,6 +10,7 @@ use App\Entity\Product;
 use App\Entity\Review;
 use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
+use App\Form\ReviewType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -185,4 +186,71 @@ final class AdminController extends AbstractController
             'reviews' => $reviews,
         ]);
     }
+
+    #[Route('/admin/reviews/create', name: 'admin_reviews_create', methods: ['GET', 'POST'])]
+    public function createReview(Request $request, EntityManagerInterface $em): Response
+    {
+        $review = new Review();
+        $form = $this->createForm(ReviewType::class, $review);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($review);
+            $em->flush();
+
+            $this->addFlash('success', 'L\'avis a été créé avec succès.');
+            return $this->redirectToRoute('admin_reviews');
+        }
+
+        return $this->render('admin/review/reviews_create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+
+    #[Route('/admin/reviews/edit/{id}', name: 'admin_reviews_edit', methods: ['GET', 'POST'])]
+    public function editReview(Request $request, Review $review, EntityManagerInterface $em, int $id): Response
+    {
+        $review = $this->entityManager->getRepository(Review::class)->find($id);
+
+        if (!$review) {
+            $this->addFlash('error', 'L\'avis demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_reviews');
+        }
+
+        $form = $this->createForm(ReviewType::class, $review);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            $this->addFlash('success', 'L\'avis a été modifié avec succès.');
+            return $this->redirectToRoute('admin_reviews');
+        }
+
+        return $this->render('admin/review/reviews_edit.html.twig', [
+            'form' => $form->createView(),
+            'review' => $review,
+        ]);
+    }
+
+    #[Route('/admin/reviews/delete/{id}', name: 'admin_reviews_delete', methods: ['POST'])]
+    public function deleteReview(Request $request, int $id): Response
+    {
+        $review = $this->entityManager->getRepository(Review::class)->find($id);
+
+        if (!$review) {
+            $this->addFlash('error', 'L\'avis demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_reviews');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $review->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($review);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Avis supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_reviews');
+    }
+
 }
