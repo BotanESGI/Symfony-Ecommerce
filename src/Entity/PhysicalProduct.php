@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity]
 class PhysicalProduct extends Product
 {
     #[ORM\Column(type: "json", nullable: true)]
+    #[Groups(['product:read', 'product:write'])] // Ajout de la sérialisation pour l'API
     private ?array $characteristics = null;
 
     public function getCharacteristics(): ?array
@@ -31,5 +33,16 @@ class PhysicalProduct extends Product
         }
 
         return $this;
+    }
+
+    // Ajout de compatibilité avec "features" pour résoudre l'erreur
+    public function getFeatures(): ?array
+    {
+        return $this->getCharacteristics();
+    }
+
+    public function setFeatures(?array $features): static
+    {
+        return $this->setCharacteristics($features);
     }
 }

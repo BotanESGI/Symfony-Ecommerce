@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\DigitalProduct;
+use App\Entity\PhysicalProduct;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,62 +23,52 @@ class ApiController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/products', name: 'api_products', methods: ['GET'])]
-    public function getProducts(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
+    public function getProducts(ProductRepository $productRepository): JsonResponse
     {
         try {
             // Récupération des produits
             $products = $productRepository->findAll();
 
-            // Normalisation des produits pour obtenir une structure lisible
-            $data = array_map(function (Product $product) use ($serializer) {
-                return $serializer->normalize($product, null, [
-                    'groups' => ['product:read'],
-                ]);
+            // Transformation et normalisation
+            $data = array_map(function (Product $product) {
+                // Structure JSON uniforme
+                $productData = [
+                    'id' => $product->getId(),
+                    'name' => $product->getName(),
+                    'description' => $product->getDescription(),
+                    'price' => $product->getPrice(),
+                    'image' => $product->getImage(),
+                    'defaultCategory' => $product->getDefaultCategory()->getName(),
+                    'type' => $product->getProductType(),
+                    'categories' => array_map(fn($category) => $category->getName(), $product->getCategories()->toArray()),
+                ];
+
+                // Ajout des caractéristiques spécifiques pour PhysicalProduct
+                if ($product instanceof PhysicalProduct) {
+                    $productData['features'] = $product->getCharacteristics();
+                    $productData['characteristics'] = $product->getCharacteristics();
+                }
+
+                // Ajout des informations spécifiques pour DigitalProduct
+                if ($product instanceof DigitalProduct) {
+                    $productData['downloadLink'] = $product->getDownloadLink();
+                    $productData['filesize'] = $product->getFilesize();
+                    $productData['filetype'] = $product->getFiletype();
+                }
+
+                // Ajout des actions disponibles
+                $productData['actions'] = [
+                    'view' => "/products/{$product->getId()}",
+                    'edit' => "/products/{$product->getId()}/edit",
+                    'delete' => "/products/{$product->getId()}/delete",
+                ];
+
+                return $productData;
             }, $products);
 
             return $this->jsonResponse('success', 'Liste des produits récupérée avec succès', $data, JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
             return $this->jsonResponse('error', 'Erreur lors de la récupération des produits', [], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * Crée un nouveau produit
-     * 
-     * @param Request $request
-     * @param SerializerInterface $serializer
-     * @param EntityManagerInterface $entityManager
-     * @return JsonResponse
-     */
-    #[Route('/api/products', name: 'api_product_create', methods: ['POST'])]
-    public function createProduct(
-        Request $request,
-        SerializerInterface $serializer,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
-        try {
-            $data = $request->getContent();
-
-            // Désérialisation pour transformer le JSON en objet Product
-            $product = $serializer->deserialize($data, Product::class, 'json', [
-                'groups' => ['product:write'],
-            ]);
-
-            // Validation simple
-            if (empty($product->getName()) || $product->getPrice() <= 0) {
-                return $this->jsonResponse('error', 'Données invalides. Vérifiez le nom ou le prix.', [], JsonResponse::HTTP_BAD_REQUEST);
-            }
-
-            // Sauvegarde dans la base de données
-            $entityManager->persist($product);
-            $entityManager->flush();
-
-            return $this->jsonResponse('success', 'Produit créé avec succès', [
-                'id' => $product->getId(),
-                'name' => $product->getName(),
-            ], JsonResponse::HTTP_CREATED);
-        } catch (\Exception $e) {
-            return $this->jsonResponse('error', $e->getMessage(), [], JsonResponse::HTTP_BAD_REQUEST);
         }
     }
 
