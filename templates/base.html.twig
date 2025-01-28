@@ -27,6 +27,7 @@
                 {% endif %}
                 <li><a href="{{ path('home_page') }}" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
                 <li><a href="{{ path('product_page') }}" class="text-blue-500 hover:text-blue-700">Produits</a></li>
+                <li><a href="{{ path('api_page') }}" class="text-blue-500 hover:text-blue-700">API</a></li>
                 {% if not app.user %}
                     <li><a href="{{ path('login') }}" class="text-blue-500 hover:text-blue-700">Connexion</a></li>
                     <li><a href="{{ path('register') }}" class="text-blue-500 hover:text-blue-700">Inscription</a></li>

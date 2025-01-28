@@ -32,7 +32,7 @@
 - Avoir 3 rôles différents pour les permissions ✅
 
 ### API :
-- Avoir au moins un controller dédie pour une API (JSON, normalizer, denormalizer)
+- Avoir au moins un controller dédie pour une API (JSON, normalizer, denormalizer) ✅
 - Avoir un envoi de mail (local pour l'instant) ✅
 - Accéder à une API externe (IA ? SMS ? Autre ?) (Stripe) ✅
 

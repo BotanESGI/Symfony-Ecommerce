@@ -34,15 +34,4 @@ class PhysicalProduct extends Product
 
         return $this;
     }
-
-    // Ajout de compatibilité avec "features" pour résoudre l'erreur
-    public function getFeatures(): ?array
-    {
-        return $this->getCharacteristics();
-    }
-
-    public function setFeatures(?array $features): static
-    {
-        return $this->setCharacteristics($features);
-    }
 }
