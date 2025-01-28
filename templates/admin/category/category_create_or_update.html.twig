@@ -1,0 +1,21 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice ({{ category is defined ? 'Modifier' : 'Créer' }} une catégorie){% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">{{ category is defined ? 'Modifier' : 'Créer' }} une catégorie</h1>
+
+    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {{ form_start(form) }}
+        <div class="mb-4">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="mb-4">
+            {{ form_row(form.color) }}
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Enregistrer</button>
+        {{ form_end(form) }}
+    </form>
+
+    <a href="{{ path('admin_categories') }}" class="text-blue-600 mt-4 inline-block">Retourner à la liste des catégories</a>
+{% endblock %}

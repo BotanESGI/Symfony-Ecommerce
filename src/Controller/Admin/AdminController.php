@@ -8,9 +8,12 @@ use App\Entity\DigitalProduct;
 use App\Entity\PhysicalProduct;
 use App\Entity\Product;
 use App\Entity\Review;
+use App\Form\CategoryType;
 use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
 use App\Form\ReviewType;
+use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -253,4 +256,99 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('admin_reviews');
     }
 
+    ////////////////////////////////////////////////
+    ///////////////////categorie/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/categories', name: 'admin_categories', methods: ['GET'])]
+    public function CRUDAdminCategories(): Response
+    {
+        $categories = $this->entityManager->getRepository(Category::class)->findAll();
+        return $this->render('admin/category/categories.html.twig', [
+            'categories' => $categories,
+            'all_products'=> $this->entityManager->getRepository(Product::class)->findAll()
+        ]);
+    }
+
+    #[Route('/admin/categories/create', name: 'admin_categories_create', methods: ['GET', 'POST'])]
+    public function createCategory(Request $request): Response
+    {
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($category);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Catégorie créée avec succès.');
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        return $this->render('admin/category/category_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'category' => null,
+        ]);
+    }
+
+    #[Route('/admin/categories/edit/{id}', name: 'admin_categories_edit', methods: ['GET', 'POST'])]
+    public function updateCategory(Request $request, int $id): Response
+    {
+        $category = $this->entityManager->getRepository(Category::class)->find($id);
+
+        if (!$category) {
+            $this->addFlash('error', 'La catégorie demandée n\'existe pas.');
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Catégorie mise à jour avec succès.');
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        return $this->render('admin/category/category_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'category' => $category,
+        ]);
+    }
+
+
+    #[Route('/admin/categories/delete/{id}', name: 'admin_categories_delete', methods: ['POST'])]
+    public function deleteCategory(Request $request, int $id, ProductRepository $productRepository): Response
+    {
+        $category = $this->entityManager->getRepository(Category::class)->find($id);
+
+        if (!$category) {
+            $this->addFlash('error', 'La catégorie demandée n\'existe pas.');
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
+
+            $products_in_category = $category->getProducts();
+            $products_with_default_category = $productRepository->findBy(['defaultCategory' => $id]);
+
+            // Dissocier les produits de la catégorie
+            foreach ($products_in_category as $product) {
+                $product->removeCategory($category);
+            }
+
+            // Supprimer les produits ayant comme catégorie par défaut la catégorie à supprimer
+            foreach ($products_with_default_category as $product) {
+                $this->entityManager->remove($product);
+                $this->entityManager->flush();
+            }
+
+
+            $this->entityManager->remove($category);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Catégorie supprimée avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_categories');
+    }
 }

@@ -1,0 +1,66 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice (CRUD Category){% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">CRUD des Catégories</h1>
+
+    <a href="{{ path('admin_categories_create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-600 transition">Créer une catégorie</a>
+
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-200 shadow-sm">
+            <thead>
+            <tr class="bg-gray-100 text-left text-sm font-medium">
+                <th class="border border-gray-300 px-4 py-2">ID</th>
+                <th class="border border-gray-300 px-4 py-2">Nom</th>
+                <th class="border border-gray-300 px-4 py-2">Couleur</th>
+                <th class="border border-gray-300 px-4 py-2">Produits associés</th>
+                <th class="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="text-sm">
+            {% for category in categories %}
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ category.id }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">{{ category.name }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap" style="background-color: {{ category.color }};">{{ category.color }}</td>
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        {% set displayedProducts = [] %}
+
+                        {# Affichage des produits associés à la catégorie #}
+                        {% if category.products|length > 0 %}
+                            {% for product in category.products %}
+                                {% if product.name not in displayedProducts %}
+                                    <span class="bg-gray-200 text-xs px-2 py-1 rounded">{{ product.name }}</span>
+                                    {% set displayedProducts = displayedProducts | merge([product.name]) %} {# Ajouter le produit au tableau affiché #}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {# Affichage des produits ayant la même defaultCategory que la catégorie actuelle #}
+                        {% for product in all_products %}
+                            {% if product.defaultCategory.id == category.id and product.name not in displayedProducts %}
+                                <span class="bg-gray-200 text-xs px-2 py-1 rounded">{{ product.name }} (Produit par défaut)</span>
+                                {% set displayedProducts = displayedProducts | merge([product.name]) %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Vérifier si aucun produit n'est affiché #}
+                        {% if displayedProducts|length == 0 %}
+                            <span class="text-red-500 italic">Aucun produit</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                        <a href="{{ path('admin_categories_edit', {id: category.id}) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition">Modifier</a>
+                        <form method="post" action="{{ path('admin_categories_delete', {id: category.id}) }}" style="display: inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
