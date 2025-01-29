@@ -41,9 +41,8 @@
     <!-- Liste des produits -->
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for product in products %}
-            <li class="bg-white shadow rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
+            <li class="relative bg-white shadow rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
                 <a href="{{ path('product_detail', { id: product.id, category: app.request.get('category') is not null ? app.request.get('category') : product.defaultCategory.id }) }}"
-                   class="block hover:shadow-lg"
                    title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                     <img src="{{ product.image }}"
                          alt="Image de {{ product.name }}"
@@ -54,6 +53,17 @@
                         <p class="text-gray-800 font-bold mt-2">Prix: {{ product.price | number_format(2, ',', ' ') }} €</p>
                     </div>
                 </a>
+
+                <!-- voter personnalisé -->
+                <div class="absolute bottom-2 right-2">
+                    {% if is_granted('EDIT', product) %}
+                        <a href="{{ path('admin_products_edit', { id: product.id }) }}"
+                           class="text-black hover:text-gray-700"
+                           title="Modifier le produit">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                    {% endif %}
+                </div>
             </li>
         {% endfor %}
     </ul>

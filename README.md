@@ -28,7 +28,7 @@
 
 ### Sécurité :
 - Une authentification sécurisée ✅
-- Au moins 1 voter personnalisé
+- Au moins 1 voter personnalisé ✅
 - Avoir 3 rôles différents pour les permissions ✅
 
 ### API :
@@ -40,8 +40,8 @@
 - Avoir un minimum 1 test unitaire et 1 test fonctionnel
 - Avoir des requêtes personnalisées avec des query builder dans des repositories ✅
 - Utiliser des forms dynamiques ✅
-- Avoir un espace admin (En cous)
-- Minimum 10 pages différentes (A compter) ✅
+- Avoir un espace admin ✅
+- Minimum 10 pages différentes ✅
 
 ### CI/CD :
 - Projet déployé

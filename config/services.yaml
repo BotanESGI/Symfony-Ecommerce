@@ -9,6 +9,8 @@ parameters:
 
 services:
     App\Service\CartService: ~
+    App\Security\Voter\ProductVoter:
+        tags: [ 'security.voter' ]
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
