@@ -24,7 +24,9 @@ class ReviewType extends AbstractType
             ->add('user', EntityType::class, [
                 'required' => true,
                 'class' => User::class,
-                'choice_label' => 'name',
+                'choice_label' => function (User $user) {
+                    return $user->getName() . ' ' . $user->getLastname();
+                },
                 'label' => 'Utilisateur',
                 'placeholder' => 'Sélectionnez un utilisateur',
                 'attr' => [

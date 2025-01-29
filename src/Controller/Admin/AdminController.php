@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Controller\IsGranted;
 use App\Entity\Address;
+use App\Entity\Cart;
 use App\Entity\Category;
 use App\Entity\DigitalProduct;
 use App\Entity\PhysicalProduct;
@@ -11,13 +12,16 @@ use App\Entity\Product;
 use App\Entity\Review;
 use App\Entity\Tag;
 use App\Form\AddressBackType;
+use App\Form\CartType;
 use App\Form\CategoryType;
 use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
 use App\Form\ReviewType;
 use App\Form\TagType;
+use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -511,4 +515,154 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('admin_addresses');
     }
+
+    ////////////////////////////////////////////////
+    ///////////////////Panier/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/cart', name: 'admin_cart', methods: ['GET'])]
+    public function CRUDCarts(CartRepository $cartRepository): Response
+    {
+        $carts = $cartRepository->findAll();
+        $cartData = [];
+
+        foreach ($carts as $cart) {
+            $cartItems = [];
+            $cartTotal = 0;
+
+            foreach ($cart->getCartItems() as $cartItem) {
+                $cartItems[] = [
+                    'product_name' => $cartItem->getProduct()->getName(),
+                    'product_image' => $cartItem->getProduct()->getImage(),
+                    'product_price' => $cartItem->getProduct()->getPrice(),
+                    'quantity' => $cartItem->getQuantity(),
+                    'total_price' => $cartItem->getQuantity() * $cartItem->getProduct()->getPrice(),
+                ];
+                $cartTotal += $cartItem->getQuantity() * $cartItem->getProduct()->getPrice();
+            }
+
+            $cartData[] = [
+                'cart_id' => $cart->getId(),
+                'user' => [
+                    'name' => $cart->getUser()->getName(),
+                    'lastname' => $cart->getUser()->getLastname(),
+                ],
+                'cart_items' => $cartItems,
+                'cart_total' => $cartTotal,
+            ];
+        }
+
+        return $this->render('admin/cart/carts.html.twig', [
+            'cartData' => $cartData,
+        ]);
+    }
+
+
+    #[Route('/admin/cart/create', name: 'admin_cart_create', methods: ['GET', 'POST'])]
+    public function createCart(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $cart = new Cart();
+        $form = $this->createForm(CartType::class, $cart);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = $cart->getUser();
+
+            // Récupérer tous les paniers existants de l'utilisateur
+            $existingCarts = $entityManager->getRepository(Cart::class)->findBy(['user' => $user]);
+
+            if ($existingCarts) {
+                foreach ($existingCarts as $existingCart) {
+                    $entityManager->remove($existingCart);
+                }
+                $entityManager->flush();
+            }
+
+            foreach ($cart->getCartItems() as $cartItem) {
+                $cartItem->setCart($cart);
+            }
+
+            $entityManager->persist($cart);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Panier créé avec succès.');
+            return $this->redirectToRoute('admin_cart');
+        }
+
+        return $this->render('admin/cart/carts_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'cart' => null,
+        ]);
+    }
+
+
+    #[Route('/admin/cart/edit/{id}', name: 'admin_cart_update', methods: ['GET', 'POST'])]
+    public function updateCart(Request $request, Cart $cart, EntityManagerInterface $entityManager): Response
+    {
+        $originalItems = new ArrayCollection();
+
+        foreach ($cart->getCartItems() as $cartItem) {
+            $originalItems->add($cartItem);
+        }
+
+        $form = $this->createForm(CartType::class, $cart);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $newUser = $form->get('user')->getData();
+
+            // Récupérer tous les paniers existants de l'utilisateur
+            $existingCarts = $entityManager->getRepository(Cart::class)->findBy(['user' => $newUser]);
+
+            if ($existingCarts) {
+                foreach ($existingCarts as $existingCart) {
+                    $entityManager->remove($existingCart);
+                }
+                $entityManager->flush();
+            }
+
+            foreach ($cart->getCartItems() as $cartItem) {
+                $cartItem->setCart($cart);
+            }
+
+            foreach ($originalItems as $cartItem) {
+                if (!$cart->getCartItems()->contains($cartItem)) {
+                    $entityManager->remove($cartItem);
+                }
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Panier mis à jour avec succès.');
+            return $this->redirectToRoute('admin_cart');
+        }
+
+        return $this->render('admin/cart/carts_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'cart' => $cart,
+        ]);
+    }
+
+
+    #[Route('/admin/cart/delete/{id}', name: 'admin_cart_delete', methods: ['POST'])]
+    public function deleteCart(Request $request, int $id, EntityManagerInterface $entityManager, CartRepository $cartRepository): Response
+    {
+        $cart = $cartRepository->find($id);
+
+        if (!$cart) {
+            $this->addFlash('error', 'Le panier demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_cart');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $cart->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($cart);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Panier supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_cart');
+    }
+
 }

@@ -1,0 +1,72 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice (CRUD Paniers){% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">CRUD des paniers</h1>
+
+    <div class="mb-4">
+        <a href="{{ path('admin_cart_create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+            Créer un Panier
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-300 shadow-sm">
+            <thead>
+            <tr class="bg-gray-100 text-left text-sm font-medium">
+                <th class="border border-gray-300 px-4 py-2 w-1/5">Utilisateur</th>
+                <th class="border border-gray-300 px-4 py-2 w-2/5">Contenu du Panier</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5 text-center">Total du Panier</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5 text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="text-sm">
+            {% for cart in cartData %}
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-4">
+                        <p class="font-semibold">{{ cart.user.name }} {{ cart.user.lastname }}</p>
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4">
+                        {% if cart.cart_items is not empty %}
+                            <ul class="space-y-2">
+                                {% for cartItem in cart.cart_items %}
+                                    <li class="flex items-center gap-4 border-b pb-2">
+                                        <img src="{{ asset(cartItem.product_image) }}" alt="{{ cartItem.product_name }}" class="w-10 h-10 object-cover rounded">
+                                        <div>
+                                            <p class="font-semibold">{{ cartItem.product_name }}</p>
+                                            <p class="text-gray-500 text-xs">
+                                                Prix : {{ cartItem.product_price }} € | Quantité : {{ cartItem.quantity }} | Total : {{ cartItem.total_price }} €
+                                            </p>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-gray-500 italic">Panier vide</p>
+                        {% endif %}
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4 text-center font-semibold text-lg">
+                        {{ cart.cart_total }} €
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4 text-center">
+                        <a href="{{ path('admin_cart_update', {'id': cart.cart_id}) }}"
+                           class="mr-2 bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition">
+                            Modifier
+                        </a>
+                        <form method="post" action="{{ path('admin_cart_delete', {'id': cart.cart_id}) }}" style="display: inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cart.cart_id) }}">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce panier ?');">
+                                Supprimer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
