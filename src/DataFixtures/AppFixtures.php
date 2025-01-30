@@ -546,7 +546,6 @@ class AppFixtures extends Fixture
                 $orderItem->setProduct($products[$index]);
                 $orderItem->setQuantity(rand(1, 3));
                 $orderItem->setOrder($order);
-                $orderItem->setPrice($products[$index]->getPrice());
                 $manager->persist($orderItem);
             }
 

@@ -1,0 +1,91 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice (CRUD commandes){% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">CRUD des commandes</h1>
+
+    <div class="mb-4">
+        <a href="{{ path('admin_order_create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+            Créer une Commande
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-300 shadow-sm">
+            <thead>
+            <tr class="bg-gray-100 text-left text-sm font-medium">
+                <th class="border border-gray-300 px-4 py-2 w-1/5">ID</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5">Utilisateur</th>
+                <th class="border border-gray-300 px-4 py-2 w-2/5">Contenu de la Commande</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5 text-center">Total</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5 text-center">Facture</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5 text-center">Date</th>
+                <th class="border border-gray-300 px-4 py-2 w-1/5 text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="text-sm">
+            {% for order in orderData %}
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-4 font-semibold text-center">
+                        {{ order.order_id }}
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4">
+                        <p class="font-semibold">{{ order.user.name }} {{ order.user.lastname }}</p>
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4">
+                        {% if order.order_items is not empty %}
+                            <ul class="space-y-2">
+                                {% for orderItem in order.order_items %}
+                                    <li class="flex items-center gap-4 border-b pb-2">
+                                        <img src="{{ asset(orderItem.product_image) }}" alt="{{ orderItem.product_name }}" class="w-10 h-10 object-cover rounded">
+                                        <p class="font-semibold">{{ orderItem.product_name }}</p>
+                                        <p class="text-gray-500 text-xs">
+                                            Prix : {{ orderItem.product_price }} € | Quantité : {{ orderItem.quantity }} | Total : {{ orderItem.total_price }} €
+                                        </p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-gray-500 italic">Aucun produit</p>
+                        {% endif %}
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4 text-center font-semibold text-lg">
+                        {{ order.total }} €
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4 text-center">
+                        {% if order.invoice_pdf %}
+                            <a href="{{ asset(order.invoice_pdf) }}" target="_blank" class="text-blue-500 hover:underline">
+                                Voir la facture
+                            </a>
+                        {% else %}
+                            <p class="text-gray-500 italic">Aucune facture</p>
+                        {% endif %}
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4 text-center">
+                        {{ order.date|date('d/m/Y H:i') }}
+                    </td>
+
+                    <td class="border border-gray-300 px-4 py-4 text-center">
+                        <a href="{{ path('admin_order_update', {'id': order.order_id}) }}"
+                           class="mr-2 bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition">
+                            Modifier
+                        </a>
+                        <form method="post" action="{{ path('admin_order_delete', {'id': order.order_id}) }}" style="display: inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.order_id) }}">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
+                                Supprimer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

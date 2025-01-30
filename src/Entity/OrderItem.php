@@ -12,9 +12,10 @@ class OrderItem
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Orders::class, inversedBy: 'orderItems')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Orders::class, inversedBy: 'orderItems', cascade: ['remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Orders $order = null;
+
 
 
     #[ORM\ManyToOne(targetEntity: Product::class)]
@@ -24,9 +25,6 @@ class OrderItem
 
     #[ORM\Column]
     private ?int $quantity = null;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private ?float $price = null;
 
     public function getId(): ?int
     {
@@ -63,19 +61,6 @@ class OrderItem
     public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
-        return $this;
-    }
-
-
-    public function getPrice(): ?float
-    {
-        return $this->price;
-    }
-
-
-    public function setPrice(float $price): static
-    {
-        $this->price = $price;
         return $this;
     }
 }

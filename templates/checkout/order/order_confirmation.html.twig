@@ -45,8 +45,8 @@
                             </td>
                             <td class="px-6 py-4">{{ orderItem.product.getProductType() }}</td>
                             <td class="px-6 py-4">{{ orderItem.quantity }}</td>
-                            <td class="px-6 py-4">{{ orderItem.price | number_format(2, ',', ' ') }} €</td>
-                            <td class="px-6 py-4">{{ (orderItem.price * orderItem.quantity) | number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">{{ orderItem.product.price | number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">{{ (orderItem.product.price * orderItem.quantity) | number_format(2, ',', ' ') }} €</td>
                         </tr>
                     {% endfor %}
                     </tbody>

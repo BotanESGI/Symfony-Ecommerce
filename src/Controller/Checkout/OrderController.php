@@ -149,8 +149,7 @@ class OrderController extends AbstractController
                         $orderItem = new OrderItem();
                         $orderItem->setProduct($cartItem->getProduct())
                             ->setQuantity($cartItem->getQuantity())
-                            ->setOrder($order)
-                            ->setPrice($cartItem->getProduct()->getPrice());
+                            ->setOrder($order);
                         $entityManager->persist($orderItem);
                         $orderItems[] = $orderItem;
                     }

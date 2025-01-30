@@ -20,7 +20,7 @@ class Invoice
     private ?User $user = null;
 
     #[ORM\OneToOne(targetEntity: Orders::class, inversedBy: 'invoice', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Orders $order = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

@@ -7,6 +7,7 @@ use App\Entity\Address;
 use App\Entity\Cart;
 use App\Entity\Category;
 use App\Entity\DigitalProduct;
+use App\Entity\Orders;
 use App\Entity\PhysicalProduct;
 use App\Entity\Product;
 use App\Entity\Review;
@@ -14,12 +15,14 @@ use App\Entity\Tag;
 use App\Form\AddressBackType;
 use App\Form\CartType;
 use App\Form\CategoryType;
+use App\Form\OrderType;
 use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
 use App\Form\ReviewType;
 use App\Form\TagType;
 use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\OrdersRepository;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -609,8 +612,14 @@ final class AdminController extends AbstractController
 
 
     #[Route('/admin/cart/edit/{id}', name: 'admin_cart_update', methods: ['GET', 'POST'])]
-    public function updateCart(Request $request, Cart $cart, EntityManagerInterface $entityManager): Response
+    public function updateCart(Request $request, int $id, EntityManagerInterface $entityManager): Response
     {
+        $cart = $entityManager->getRepository(Cart::class)->find($id);
+
+        if (!$cart) {
+            $this->addFlash('error', 'Le panier demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_cart');
+        }
         $originalItems = new ArrayCollection();
 
         foreach ($cart->getCartItems() as $cartItem) {
@@ -658,9 +667,14 @@ final class AdminController extends AbstractController
 
 
     #[Route('/admin/cart/delete/{id}', name: 'admin_cart_delete', methods: ['POST'])]
-    public function deleteCart(Request $request, int $id, EntityManagerInterface $entityManager, CartRepository $cartRepository): Response
+    public function deleteCart(Request $request, int $id, EntityManagerInterface $entityManager): Response
     {
-        $cart = $cartRepository->find($id);
+        $cart = $entityManager->getRepository(Cart::class)->find($id);
+
+        if (!$cart) {
+            $this->addFlash('error', 'Le panier demandé n\'existe pas.');
+            return $this->redirectToRoute('admin_cart');
+        }
 
         if (!$cart) {
             $this->addFlash('error', 'Le panier demandé n\'existe pas.');
@@ -677,4 +691,167 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('admin_cart');
     }
 
+    ////////////////////////////////////////////////
+    ///////////////////Commandes/////////////////////
+    ////////////////////////////////////////////////
+
+    #[Route('/admin/orders', name: 'admin_orders', methods: ['GET'])]
+    public function CRUDOrders(OrdersRepository $orderRepository): Response
+    {
+        $orders = $orderRepository->findAll();
+        $orderData = [];
+
+        foreach ($orders as $order) {
+            $orderItems = [];
+            foreach ($order->getOrderItems() as $orderItem) {
+                $orderItems[] = [
+                    'product_name' => $orderItem->getProduct()->getName(),
+                    'product_image' => $orderItem->getProduct()->getImage(),
+                    'product_price' => $orderItem->getProduct()->getPrice(),
+                    'quantity' => $orderItem->getQuantity(),
+                    'total_price' => $orderItem->getQuantity() * $orderItem->getProduct()->getPrice(),
+                ];
+            }
+
+            $invoice = $order->getInvoice();
+            if ($invoice === null || $invoice->getPdfPath() === null) {
+                $invoice_pdf = null;
+            }
+            else
+            {
+                $pdfDir = $this->getParameter('kernel.project_dir') . '/public';
+                $pdfPath = $pdfDir . $invoice->getPdfPath();
+                if (!file_exists($pdfPath)) {
+                    $invoice_pdf = null;
+                }
+                else
+                {
+                    $invoice_pdf = $invoice->getPdfPath();
+                }
+            }
+
+            $orderData[] = [
+                'order_id' => $order->getId(),
+                'user' => [
+                    'name' => $order->getUser()->getName(),
+                    'lastname' => $order->getUser()->getLastname(),
+                ],
+                'order_items' => $orderItems,
+                'invoice_pdf' => $invoice_pdf,
+                'total' => $order->getTotal(),
+                'date' => $order->getDate()->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        return $this->render('admin/order/orders.html.twig', [
+            'orderData' => $orderData,
+        ]);
+    }
+
+    #[Route('/admin/orders/create', name: 'admin_order_create', methods: ['GET', 'POST'])]
+    public function createOrder(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $order = new Orders();
+        $form = $this->createForm(OrderType::class, $order);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $order->setTotal(array_reduce($order->getOrderItems()->toArray(), function ($sum, $item) {
+                return $sum + ($item->getQuantity() * $item->getProduct()->getPrice());
+            }, 0));
+
+            $entityManager->persist($order);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commande créée avec succès.');
+            return $this->redirectToRoute('admin_orders');
+        }
+
+        return $this->render('admin/order/orders_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'order' => null,
+        ]);
+    }
+
+    #[Route('/admin/orders/edit/{id}', name: 'admin_order_update', methods: ['GET', 'POST'])]
+    public function updateOrder(Request $request, int $id, EntityManagerInterface $entityManager, OrdersRepository $orderRepository): Response
+    {
+        $order = $orderRepository->find($id);
+
+        if (!$order) {
+            $this->addFlash('error', 'La commande demandée n\'existe pas.');
+            return $this->redirectToRoute('admin_orders');
+        }
+        $form = $this->createForm(OrderType::class, $order);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $order->setTotal(array_reduce($order->getOrderItems()->toArray(), function ($sum, $item) {
+                return $sum + ($item->getQuantity() * $item->getProduct()->getPrice());
+            }, 0));
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commande mise à jour avec succès.');
+            return $this->redirectToRoute('admin_orders');
+        }
+
+        return $this->render('admin/order/orders_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'order' => $order,
+        ]);
+    }
+
+    #[Route('/admin/orders/delete/{id}', name: 'admin_order_delete', methods: ['POST', 'GET'])]
+    public function deleteOrder(Request $request, int $id, EntityManagerInterface $entityManager, OrdersRepository $orderRepository): Response
+    {
+        $order = $orderRepository->find($id);
+
+        if (!$order) {
+            $this->addFlash('error', 'La commande demandée n\'existe pas.');
+            return $this->redirectToRoute('admin_orders');
+        }
+
+        $orderId = $order->getId();
+
+        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->request->get('_token'))) {
+            $invoice = $order->getInvoice();
+            if ($invoice) {
+                $invoiceId = $invoice->getId();
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "invoice" SET "order_id" = NULL WHERE "id" = :id',
+                    ['id' => $invoiceId]
+                );
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "orders" SET "invoice_id" = NULL WHERE "id" = :id',
+                    ['id' => $orderId]
+                );
+
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "orders" WHERE "id" = :id',
+                    ['id' => $orderId]
+                );
+
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "invoice" WHERE "id" = :id',
+                    ['id' => $invoiceId]
+                );
+            }
+            else
+            {
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "orders" SET "invoice_id" = NULL WHERE "id" = :id',
+                    ['id' => $orderId]
+                );
+
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "orders" WHERE "id" = :id',
+                    ['id' => $orderId]
+                );
+            }
+            $this->addFlash('success', 'Commande supprimées avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_orders');
+    }
 }
