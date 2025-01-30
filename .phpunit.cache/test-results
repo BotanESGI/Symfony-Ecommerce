@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"App\\Tests\\UserTest::testFullNameGeneration":0,"App\\Tests\\UserTest::testDefaultRoleIsUser":0.008}}

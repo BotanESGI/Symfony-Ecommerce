@@ -65,8 +65,20 @@ final class AdminController extends AbstractController
         $defaultCategoryId = 1;
         $defaultCategory = $this->entityManager->getRepository(Category::class)->find($defaultCategoryId);
 
+        // Je cree une categorie par defaut si la category 1 (categorie par defaut) est supprimer exemple, on le change apres dans le ProductCreateType, c'est jutse pour initialiser car c'est obigatoire dans le constructeur, pour pas avoir d'erreur exemple si on supprime une category
+       //Requete préparé pour forcer id 1 car il existe pas et je peux pas le set via l'orm
         if (!$defaultCategory) {
-            throw $this->createNotFoundException('Category on trouvée');
+            $categoryName = 'catégorie par défaut';
+            $defaultColor = '#FFFFFF';
+            $connection = $this->entityManager->getConnection();
+            $sql = 'INSERT INTO category (id, name, color) VALUES (:id, :name, :color)';
+            $stmt = $connection->prepare($sql);
+            $stmt->execute([
+                'id' => $defaultCategoryId,
+                'name' => $categoryName,
+                'color' => $defaultColor,
+            ]);
+            $defaultCategory = $this->entityManager->getRepository(Category::class)->find($defaultCategoryId);
         }
 
         if ($productType === 'digital') {
