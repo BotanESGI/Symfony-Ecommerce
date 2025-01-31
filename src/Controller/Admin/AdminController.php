@@ -49,9 +49,20 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/admin', name: 'admin_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(OrdersRepository $orderRepository): Response
     {
+        $orders = $orderRepository->findAll();
+        $data = [];
+        foreach ($orders as $order) {
+            $data[] = [
+                'date' => $order->getDate()->format('Y-m-d'),
+                'amount' => $order->getTotal(),
+            ];
+        }
+
         return $this->render('admin/admin.html.twig', [
+            'orders' => json_encode($data),
+            'active_page' => 'admin_index'
         ]);
     }
 
@@ -64,6 +75,7 @@ final class AdminController extends AbstractController
         $products = $this->entityManager->getRepository(Product::class)->findAll();
         return $this->render('admin/product/products.html.twig', [
             'products' => $products,
+            'active_page' => 'admin_products'
         ]);
     }
 
@@ -130,6 +142,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/product/products_create.html.twig', [
             'form' => $form->createView(),
             'productType' => $productType,
+            'active_page' => 'admin_products'
         ]);
     }
 
@@ -184,6 +197,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/product/products_edit.html.twig', [
             'form' => $form->createView(),
             'product' => $product,
+            'active_page' => 'admin_products'
         ]);
     }
 
@@ -216,6 +230,7 @@ final class AdminController extends AbstractController
         $reviews = $this->entityManager->getRepository(Review::class)->findAll();
         return $this->render('admin/review/reviews.html.twig', [
             'reviews' => $reviews,
+            'active_page' => 'admin_reviews'
         ]);
     }
 
@@ -236,6 +251,7 @@ final class AdminController extends AbstractController
 
         return $this->render('admin/review/reviews_create.html.twig', [
             'form' => $form->createView(),
+            'active_page' => 'admin_reviews'
         ]);
     }
 
@@ -263,6 +279,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/review/reviews_edit.html.twig', [
             'form' => $form->createView(),
             'review' => $review,
+            'active_page' => 'admin_reviews'
         ]);
     }
 
@@ -294,6 +311,7 @@ final class AdminController extends AbstractController
         $categories = $this->entityManager->getRepository(Category::class)->findAll();
         return $this->render('admin/category/categories.html.twig', [
             'categories' => $categories,
+            'active_page' => 'admin_categories',
             'all_products'=> $this->entityManager->getRepository(Product::class)->findAll()
         ]);
     }
@@ -315,6 +333,7 @@ final class AdminController extends AbstractController
 
         return $this->render('admin/category/category_create_or_update.html.twig', [
             'form' => $form->createView(),
+            'active_page' => 'admin_categories',
             'category' => null,
         ]);
     }
@@ -341,6 +360,7 @@ final class AdminController extends AbstractController
 
         return $this->render('admin/category/category_create_or_update.html.twig', [
             'form' => $form->createView(),
+            'active_page' => 'admin_categories',
             'category' => $category,
         ]);
     }
@@ -390,6 +410,7 @@ final class AdminController extends AbstractController
         $tags = $this->entityManager->getRepository(Tag::class)->findAll();
         return $this->render('admin/tag/tags.html.twig', [
             'tags' => $tags,
+            'active_page' => 'admin_tags',
         ]);
     }
 
@@ -411,6 +432,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/tag/tags_create_or_update.html.twig', [
             'form' => $form->createView(),
             'tag' => null,
+            'active_page' => 'admin_tags',
         ]);
     }
 
@@ -437,6 +459,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/tag/tags_create_or_update.html.twig', [
             'form' => $form->createView(),
             'tag' => $tag,
+            'active_page' => 'admin_tags',
         ]);
     }
 
@@ -468,6 +491,7 @@ final class AdminController extends AbstractController
         $addresses = $this->entityManager->getRepository(Address::class)->findAll();
         return $this->render('admin/address/address.html.twig', [
             'addresses' => $addresses,
+            'active_page' => 'admin_addresses',
         ]);
     }
 
@@ -489,6 +513,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/address/address_create_or_update.html.twig', [
             'form' => $form->createView(),
             'address' => null,
+            'active_page' => 'admin_addresses',
         ]);
     }
 
@@ -515,6 +540,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/address/address_create_or_update.html.twig', [
             'form' => $form->createView(),
             'address' => $address,
+            'active_page' => 'admin_addresses',
         ]);
     }
 
@@ -574,6 +600,7 @@ final class AdminController extends AbstractController
 
         return $this->render('admin/cart/carts.html.twig', [
             'cartData' => $cartData,
+            'active_page' => 'admin_cart',
         ]);
     }
 
@@ -613,6 +640,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/cart/carts_create_or_update.html.twig', [
             'form' => $form->createView(),
             'cart' => null,
+            'active_page' => 'admin_cart',
         ]);
     }
 
@@ -668,6 +696,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/cart/carts_create_or_update.html.twig', [
             'form' => $form->createView(),
             'cart' => $cart,
+            'active_page' => 'admin_cart',
         ]);
     }
 
@@ -706,6 +735,7 @@ final class AdminController extends AbstractController
         $invoices = $this->entityManager->getRepository(Invoice::class)->findAll();
         return $this->render('admin/invoice/invoices.html.twig', [
             'invoices' => $invoices,
+            'active_page' => 'admin_invoices',
         ]);
     }
 
@@ -735,6 +765,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/invoice/invoices_create_or_update.html.twig', [
             'form' => $form->createView(),
             'invoice' => null,
+            'active_page' => 'admin_invoices',
         ]);
     }
 
@@ -770,6 +801,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/invoice/invoices_create_or_update.html.twig', [
             'form' => $form->createView(),
             'invoice' => $invoice,
+            'active_page' => 'admin_invoices',
         ]);
     }
 
@@ -871,6 +903,7 @@ final class AdminController extends AbstractController
 
         return $this->render('admin/order/orders.html.twig', [
             'orderData' => $orderData,
+            'active_page' => 'admin_orders',
         ]);
     }
 
@@ -896,6 +929,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/order/orders_create_or_update.html.twig', [
             'form' => $form->createView(),
             'order' => null,
+            'active_page' => 'admin_orders',
         ]);
     }
 
@@ -925,6 +959,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/order/orders_create_or_update.html.twig', [
             'form' => $form->createView(),
             'order' => $order,
+            'active_page' => 'admin_orders',
         ]);
     }
 
@@ -990,6 +1025,7 @@ final class AdminController extends AbstractController
         $users = $this->entityManager->getRepository(User::class)->findAll();
         return $this->render('admin/user/users.html.twig', [
             'users' => $users,
+            'active_page' => 'admin_users',
         ]);
     }
 
@@ -1018,6 +1054,7 @@ final class AdminController extends AbstractController
             'user' => $user,
             'form' => $form,
             'is_edit' => false,
+            'active_page' => 'admin_users',
         ]);
     }
 
@@ -1051,6 +1088,7 @@ final class AdminController extends AbstractController
             'user' => $user,
             'form' => $form,
             'is_edit' => true,
+            'active_page' => 'admin_users',
         ]);
     }
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin - Backoffice{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     {% block stylesheets %}{% endblock %}
@@ -17,53 +18,52 @@
         <nav class="mt-4">
             <ul class="space-y-6 px-4">
                 <li>
-                    <a href="{{ path('login') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_index') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_index' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-tachometer-alt mr-3"></i> Tableau de bord
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_products') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_products') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_products' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-box mr-3"></i> Produits
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_orders') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_orders') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_orders' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-shopping-cart mr-3"></i> Commandes
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_invoices') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_invoices') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_invoices' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-file-invoice mr-3"></i> Factures
                     </a>
                 </li>
-
                 <li>
-                    <a href="{{ path('admin_cart') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_cart') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_cart' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-shopping-basket mr-3"></i> Panier
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_users') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_users') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_users' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-users mr-3"></i> Utilisateurs
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_addresses') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_addresses') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_addresses' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-map-marker-alt mr-3"></i> Adresses
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_categories') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_categories') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_categories' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-th-list mr-3"></i> Catégories
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_reviews') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_reviews') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_reviews' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-star mr-3"></i> Avis
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('admin_tags') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700">
+                    <a href="{{ path('admin_tags') }}" class="flex items-center px-4 py-2 {{ active_page == 'admin_tags' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700' }}">
                         <i class="fas fa-tag mr-3"></i> Tags
                     </a>
                 </li>
@@ -92,11 +92,42 @@
         {% block body %}
             <h1 class="text-2xl font-bold text-gray-700">Bienvenue sur le panneau d'administration</h1>
             <p class="mt-2 text-gray-600">Utilisez le menu à gauche pour naviguer entre les différentes sections.</p>
+            <canvas id="ordersChart" width="400" height="200"></canvas>
         {% endblock %}
     </main>
 </div>
+{% block javascripts %}
+    {% if active_page == 'admin_index' %}
+        <script>
+            const orders = {{ orders|raw }};
 
+            const labels = orders.map(order => order.date);
+            const data = orders.map(order => order.amount);
 
-{% block javascripts %}{% endblock %}
+            const ctx = document.getElementById('ordersChart').getContext('2d');
+            const ordersChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Montant des Commandes',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+{% endblock %}
 </body>
 </html>
