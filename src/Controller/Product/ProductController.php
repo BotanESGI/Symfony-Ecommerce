@@ -110,6 +110,7 @@ class ProductController extends AbstractController
             'name' => $product->getName(),
             'image' => $product->getImage(),
             'price' => $product->getPrice(),
+
         ]);
 
         return $this->render('product/product_detail.html.twig', [

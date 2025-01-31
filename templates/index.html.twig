@@ -7,8 +7,8 @@
         /* Style pour le message de bienvenue */
         .welcome-section {
             text-align: center;
-            background-color: #f8f9fa; /* Gris clair */
-            color: #333; /* Texte sombre */
+            background-color: #f8f9fa;
+            color: #333;
             padding: 30px 20px;
             border-radius: 8px;
             margin-bottom: 30px;
@@ -25,17 +25,61 @@
         }
         .welcome-section p span {
             font-weight: bold;
-            color: #6c757d; /* Gris foncé pour le nom */
+            color: #6c757d;
         }
-        /* Style général des titres */
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: bold;
+
+        /* Style spécifique pour Reprendre mes achats */
+        .resume-shopping {
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+        .resume-shopping h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
             color: #333;
-            text-align: center;
-            margin-bottom: 20px;
         }
-        /* Conteneur défilable pour les produits */
+        .last-viewed {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .last-viewed img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .last-viewed-details {
+            flex-grow: 1;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .resume-shopping .btn {
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .resume-shopping .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .resume-shopping .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .empty-message {
+            text-align: center;
+            font-size: 1rem;
+            color: #555;
+            margin-top: 15px;
+        }
+
+        /* Styles pour les produits (inchangés) */
         .products-scroll {
             display: flex;
             gap: 20px;
@@ -54,7 +98,6 @@
         .products-scroll::-webkit-scrollbar-track {
             background-color: #f8f9fa;
         }
-        /* Cartes produits */
         .product-card {
             flex: 0 0 auto;
             width: 200px;
@@ -96,67 +139,35 @@
             <p>Créer un compte et rejoignez-nous !</p>
         {% endif %}
     </div>
-<!-- Section Reprendre mes achats -->
-{% if lastViewedProduct or cartItems is not empty %}
+
+ <!-- Section "Reprendre mes achats" -->
+{% if app.user %}
     <div class="resume-shopping">
         <h2 class="section-title">Reprendre mes achats</h2>
 
-        {% if lastViewedProduct %}
-            <div class="last-viewed">
-                <img src="{{ lastViewedProduct.image }}" alt="{{ lastViewedProduct.name }}" class="product-image">
-                <p>Vous avez consulté : <strong>{{ lastViewedProduct.name }}</strong></p>
-                <p>Prix : <strong>{{ lastViewedProduct.price }} €</strong></p>
-                <a href="{{ path('product_detail', { id: lastViewedProduct.id }) }}" class="btn btn-primary">Voir le produit</a>
-            </div>
+        <!-- Vérification si le panier contient des articles -->
+        {% if cartItems is not empty %}
+            <a href="{{ path('cart_page') }}" class="btn btn-success">Panier ({{ cartItems|length }} articles)</a>
+        {% else %}
+            <p class="empty-message">Votre panier est vide.</p>
         {% endif %}
 
-        {% if cartItems is not empty %}
-<a href="{{ path('cart_page') }}" class="btn btn-success">Accéder à mon panier ({{ cartItems|length }} articles)</a>
+        <!-- Affichage du dernier produit consulté uniquement si le panier n'est pas vide -->
+        {% if lastViewedProduct and cartItems is not empty %}
+            <div class="last-viewed">
+                <img src="{{ lastViewedProduct.image }}" alt="{{ lastViewedProduct.name }}">
+                <div class="last-viewed-details">
+                    <p><strong>{{ lastViewedProduct.name }}</strong></p>
+                    <p>Prix : {{ lastViewedProduct.price }} €</p>
+                </div>
+
+                <!-- Bouton "Voir" redirige maintenant vers la page des produits -->
+                <a href="{{ path('product_page') }}" class="btn btn-primary">Voir tous les produits</a>
+            </div>
         {% endif %}
     </div>
 {% endif %}
 
-<style>
-    .resume-shopping {
-        text-align: center;
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 30px 0;
-    }
-    .resume-shopping h2 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-    }
-    .last-viewed {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .product-image {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-    .btn {
-        padding: 10px 15px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 1rem;
-        margin-top: 10px;
-    }
-    .btn-primary {
-        background-color: #007bff;
-        color: white;
-    }
-    .btn-success {
-        background-color: #28a745;
-        color: white;
-    }
-</style>
 
     <!-- Section des produits les mieux notés -->
     <div>
@@ -164,13 +175,15 @@
         <div class="products-scroll">
             {% for product in bestRatedProducts %}
                 {% if product.categoryId is defined %}
-                    <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="product-card">
-                {% else %}
-                    <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
+
+                <a href="{{ path('product_detail', { id: product.id,category: product.categoryId }) }}" class="product-card">
+                   
+ {% else %}
+                <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
                 {% endif %}
-                    {% if product.image %}
-                        <img src="{{ product.image }}" alt="{{ product.name }}">
-                    {% else %}
+                    {% if product.image %} 
+<img src="{{ product.image }}" alt="{{ product.name }}">
+ {% else %}
                         <img src="/path/to/default-image.jpg" alt="Image par défaut">
                     {% endif %}
                     <h3>{{ product.name }}</h3>
@@ -189,13 +202,14 @@
         <div class="products-scroll">
             {% for product in discountedProducts %}
                 {% if product.categoryId is defined %}
-                    <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="product-card">
-                {% else %}
+
+                <a href="{{ path('product_detail', { id: product.id,category: product.categoryId }) }}" class="product-card">
+                   {% else %}
                     <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
                 {% endif %}
                     {% if product.image %}
-                        <img src="{{ product.image }}" alt="{{ product.name }}">
-                    {% else %}
+  <img src="{{ product.image }}" alt="{{ product.name }}">
+{% else %}
                         <img src="/path/to/default-image.jpg" alt="Image par défaut">
                     {% endif %}
                     <h3>{{ product.name }}</h3>
