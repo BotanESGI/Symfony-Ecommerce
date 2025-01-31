@@ -7,6 +7,7 @@ use App\Entity\Address;
 use App\Entity\Cart;
 use App\Entity\Category;
 use App\Entity\DigitalProduct;
+use App\Entity\Invoice;
 use App\Entity\Orders;
 use App\Entity\PhysicalProduct;
 use App\Entity\Product;
@@ -16,6 +17,7 @@ use App\Entity\User;
 use App\Form\AddressBackType;
 use App\Form\CartType;
 use App\Form\CategoryType;
+use App\Form\InvoiceType;
 use App\Form\OrderType;
 use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
@@ -693,6 +695,126 @@ final class AdminController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_cart');
+    }
+
+    ////////////////////////////////////////////////
+    ///////////////////Facture/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/invoices', name: 'admin_invoices', methods: ['GET'])]
+    public function CRUDInvoices(): Response
+    {
+        $invoices = $this->entityManager->getRepository(Invoice::class)->findAll();
+        return $this->render('admin/invoice/invoices.html.twig', [
+            'invoices' => $invoices,
+        ]);
+    }
+
+    #[Route('/admin/invoices/create', name: 'admin_invoices_create', methods: ['GET', 'POST'])]
+    public function createInvoice(Request $request): Response
+    {
+        $invoice = new Invoice();
+        $form = $this->createForm(InvoiceType::class, $invoice);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $order = $form->get('order')->getData();
+
+            // Vérifier si cette commande est déjà associée à une facture
+            $existingInvoice = $this->entityManager->getRepository(Invoice::class)->findOneBy(['order' => $order]);
+
+            if ($existingInvoice) {
+                $this->addFlash('error', 'Cette commande est déjà associée à une facture.');
+            } else {
+                $this->entityManager->persist($invoice);
+                $this->entityManager->flush();
+                $this->addFlash('success', 'Facture créée avec succès.');
+                return $this->redirectToRoute('admin_invoices');
+            }
+        }
+
+        return $this->render('admin/invoice/invoices_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'invoice' => null,
+        ]);
+    }
+
+
+    #[Route('/admin/invoices/edit/{id}', name: 'admin_invoices_edit', methods: ['GET', 'POST'])]
+    public function editInvoice(Request $request, int $id): Response
+    {
+        $invoice = $this->entityManager->getRepository(Invoice::class)->find($id);
+
+        if (!$invoice) {
+            $this->addFlash('error', 'Facture non trouvée.');
+            return $this->redirectToRoute('admin_invoices');
+        }
+
+        $form = $this->createForm(InvoiceType::class, $invoice);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newOrder = $form->get('order')->getData();
+
+            // Vérifier si la nouvelle commande est déjà associée à une autre facture
+            $existingInvoice = $this->entityManager->getRepository(Invoice::class)->findOneBy(['order' => $newOrder]);
+
+            if ($existingInvoice && $existingInvoice->getId() !== $invoice->getId()) {
+                $this->addFlash('error', 'Cette commande est déjà associée à une autre facture.');
+            } else {
+                $this->entityManager->flush();
+                $this->addFlash('success', 'Facture modifiée avec succès.');
+                return $this->redirectToRoute('admin_invoices');
+            }
+        }
+
+        return $this->render('admin/invoice/invoices_create_or_update.html.twig', [
+            'form' => $form->createView(),
+            'invoice' => $invoice,
+        ]);
+    }
+
+    #[Route('/admin/invoices/delete/{id}', name: 'admin_invoices_delete', methods: ['POST', 'GET'])]
+    public function deleteInvoice(Request $request, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $invoice = $this->entityManager->getRepository(Invoice::class)->find($id);
+
+        if (!$invoice) {
+            $this->addFlash('error', 'Facture non trouvée.');
+            return $this->redirectToRoute('admin_invoices');
+        }
+
+        $invoiceId = $invoice->getId();
+        $order = $invoice->getOrder();
+
+        if ($this->isCsrfTokenValid('delete' . $invoice->getId(), $request->request->get('_token'))) {
+            if ($order)
+            {
+                $orderId = $order->getId();
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "invoice" SET "order_id" = NULL WHERE "id" = :id',
+                    ['id' => $invoiceId]
+                );
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "orders" SET "invoice_id" = NULL WHERE "id" = :id',
+                    ['id' => $orderId]
+                );
+
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "invoice" WHERE "id" = :id',
+                    ['id' => $invoiceId]
+                );
+            }
+            else
+            {
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "invoice" WHERE "id" = :id',
+                    ['id' => $invoiceId]
+                );
+            }
+            $this->addFlash('success', 'Facture supprimée avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_invoices');
     }
 
     ////////////////////////////////////////////////

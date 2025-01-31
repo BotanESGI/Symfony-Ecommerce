@@ -15,6 +15,7 @@ class Invoice
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "La montant total ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le montant doit être un nombre positif.")]
     private ?float $totalAmount = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
@@ -28,7 +29,6 @@ class Invoice
     private ?Orders $order = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\NotBlank(message: "Le lien du pdf ne doit pas être vide.")]
     private ?string $pdfPath = null;
 
 
