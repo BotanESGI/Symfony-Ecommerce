@@ -1,0 +1,90 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice ({{ is_edit ? 'modifier' : 'créer' }} un utilisateur){% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">{{ is_edit ? 'Modifier' : 'Créer' }} un utilisateur</h1>
+
+    <div class="mb-4 p-4 border border-gray-300 rounded bg-gray-50">
+        <p class="font-bold">Votre mot de passe doit respecter les règles suivantes :</p>
+        <ul class="list-disc list-inside">
+            <li>Au moins 8 caractères</li>
+            <li>Au moins une lettre majuscule</li>
+            <li>Au moins un chiffre</li>
+            <li>Au moins un caractère spécial</li>
+        </ul>
+    </div>
+
+    {{ form_start(form) }}
+
+    <div class="mb-4">
+        {{ form_label(form.name, 'Nom') }}
+        {{ form_widget(form.name, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.name.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.name) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.lastname, 'Prénom') }}
+        {{ form_widget(form.lastname, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.lastname.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.lastname) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.email, 'Email') }}
+        {{ form_widget(form.email, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.email.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.email) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.password, 'Mot de passe' ~ (is_edit ? ' (laisser vide pour pas changer)' : '')) }}
+        {{ form_widget(form.password, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.password.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.password) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.roles, 'Rôles') }}
+        {{ form_widget(form.roles, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.roles.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.roles) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.resetToken, 'Reset Token') }}
+        {{ form_widget(form.resetToken, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.resetToken.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.resetToken) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.confirmationToken, 'Confirmation Token') }}
+        {{ form_widget(form.confirmationToken, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.confirmationToken.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.confirmationToken) }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.isVerified, 'Compte Verifié') }}
+        {{ form_widget(form.isVerified, { 'attr': {'class': 'border border-gray-300 rounded p-2 w-full'} }) }}
+        {% if form.isVerified.vars.errors|length > 0 %}
+            <div class="text-red-500">{{ form_errors(form.isVerified) }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="{{ is_edit ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-500 hover:bg-blue-600' }} text-white px-4 py-2 rounded transition">
+        {{ is_edit ? 'Modifier' : 'Créer' }}
+    </button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('admin_users') }}" class="mt-4 inline-block text-blue-500 hover:underline">Retour à la liste</a>
+{% endblock %}

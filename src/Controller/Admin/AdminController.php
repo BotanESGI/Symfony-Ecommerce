@@ -12,6 +12,7 @@ use App\Entity\PhysicalProduct;
 use App\Entity\Product;
 use App\Entity\Review;
 use App\Entity\Tag;
+use App\Entity\User;
 use App\Form\AddressBackType;
 use App\Form\CartType;
 use App\Form\CategoryType;
@@ -20,6 +21,7 @@ use App\Form\ProductCreateType;
 use App\Form\ProductEditType;
 use App\Form\ReviewType;
 use App\Form\TagType;
+use App\Form\UserBackType;
 use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\OrdersRepository;
@@ -30,6 +32,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[IsGranted('ROLE_ADMIN')]
@@ -37,9 +40,10 @@ final class AdminController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager = $entityManager;
+        $this->passwordHasher = $passwordHasher;
     }
 
     #[Route('/admin', name: 'admin_index', methods: ['GET'])]
@@ -853,5 +857,97 @@ final class AdminController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_orders');
+    }
+
+    ////////////////////////////////////////////////
+    ///////////////////Utilisateur/////////////////////
+    ////////////////////////////////////////////////
+    #[Route('/admin/users', name: 'admin_users', methods: ['GET'])]
+    public function CRUDUser(): Response
+    {
+        $users = $this->entityManager->getRepository(User::class)->findAll();
+        return $this->render('admin/user/users.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
+    #[Route('/admin/users/create', name: 'admin_user_create', methods: ['GET', 'POST'])]
+    public function createUser(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $form = $this->createForm(UserBackType::class, $user, ['is_create' => true]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $form->get('password')->getData();
+            if (!empty($password)) {
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+                $user->setPassword($hashedPassword);
+            }
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur creé avec succès.');
+
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/user/user_create_or_update.html.twig', [
+            'user' => $user,
+            'form' => $form,
+            'is_edit' => false,
+        ]);
+    }
+
+    #[Route('/admin/users/edit/{id}', name: 'admin_user_edit', methods: ['GET', 'POST'])]
+    public function updateUser(Request $request, int $id, User $user, EntityManagerInterface $entityManager): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            $this->addFlash('error', 'L\'utilisateur n\'existe pas.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        $form = $this->createForm(UserBackType::class, $user, ['is_create' => false]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('password')->getData()) {
+                $plainPassword = $form->get('password')->getData();
+                $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
+                $user->setPassword($hashedPassword);
+            }
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur modifié avec succès.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/user/user_create_or_update.html.twig', [
+            'user' => $user,
+            'form' => $form,
+            'is_edit' => true,
+        ]);
+    }
+
+    #[Route('/admin/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
+    public function deleteUser(Request $request, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            $this->addFlash('error', 'L\'utilisateur n\'existe pas.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($user);
+            $entityManager->flush();
+            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+        }
+        $request->getSession()->invalidate();
+        return $this->redirectToRoute('admin_users');
     }
 }

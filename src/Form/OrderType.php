@@ -51,7 +51,7 @@ class OrderType extends AbstractType
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer',
                 'attr' => [
-                    'class' => 'bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition',
+                    'class' => 'mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition',
                 ],
             ]);
     }

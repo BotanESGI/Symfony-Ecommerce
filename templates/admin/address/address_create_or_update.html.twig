@@ -7,18 +7,43 @@
 
     <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         {{ form_start(form) }}
+
         <div class="mb-4">
             {{ form_row(form.user) }}
+            {% if form.user.vars.errors|length > 0 %}
+                <div class="text-red-500">
+                    {{ form_errors(form.user) }}
+                </div>
+            {% endif %}
         </div>
+
         <div class="mb-4">
             {{ form_row(form.street) }}
+            {% if form.street.vars.errors|length > 0 %}
+                <div class="text-red-500">
+                    {{ form_errors(form.street) }}
+                </div>
+            {% endif %}
         </div>
+
         <div class="mb-4">
             {{ form_row(form.city) }}
+            {% if form.city.vars.errors|length > 0 %}
+                <div class="text-red-500">
+                    {{ form_errors(form.city) }}
+                </div>
+            {% endif %}
         </div>
+
         <div class="mb-4">
             {{ form_row(form.postalCode) }}
+            {% if form.postalCode.vars.errors|length > 0 %}
+                <div class="text-red-500">
+                    {{ form_errors(form.postalCode) }}
+                </div>
+            {% endif %}
         </div>
+
         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Enregistrer</button>
         {{ form_end(form) }}
     </form>

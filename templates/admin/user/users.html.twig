@@ -1,0 +1,50 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Admin - Backoffice (CRUD Utilisateurs){% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-6">CRUD des utilisateurs</h1>
+
+    <a href="{{ path('admin_user_create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-600 transition">Créer un utilisateur</a>
+
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-200 shadow-sm">
+            <thead>
+            <tr class="bg-gray-100 text-left text-sm font-medium">
+                <th class="border border-gray-300 px-4 py-2">ID</th>
+                <th class="border border-gray-300 px-4 py-2">Nom</th>
+                <th class="border border-gray-300 px-4 py-2">Prénom</th>
+                <th class="border border-gray-300 px-4 py-2">Email</th>
+                <th class="border border-gray-300 px-4 py-2">Rôle</th>
+                <th class="border border-gray-300 px-4 py-2">Vérifié</th>
+                <th class="border border-gray-300 px-4 py-2">Reset Token</th>
+                <th class="border border-gray-300 px-4 py-2">Confirmation Token</th>
+                <th class="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="text-sm">
+            {% for user in users %}
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-2">{{ user.id }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ user.name }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ user.lastname }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ user.email }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ user.roles|join(', ') }}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        {% if user.isVerified %} ✅ {% else %} ❌ {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">{{ user.resetToken ?? 'N/A' }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ user.confirmationToken ?? 'N/A' }}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <a href="{{ path('admin_user_edit', {id: user.id}) }}" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition">Modifier</a>
+                        <form method="post" action="{{ path('admin_user_delete', {id: user.id}) }}" style="display: inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

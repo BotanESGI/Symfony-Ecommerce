@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Invoice
@@ -13,17 +14,21 @@ class Invoice
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La montant total ne doit pas être vide.")]
     private ?float $totalAmount = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "L'utilisateur ne doit pas être vide.")]
     private ?User $user = null;
 
     #[ORM\OneToOne(targetEntity: Orders::class, inversedBy: 'invoice', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
+    #[Assert\NotBlank(message: "La commande ne doit pas être vide.")]
     private ?Orders $order = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: "Le lien du pdf ne doit pas être vide.")]
     private ?string $pdfPath = null;
 
 

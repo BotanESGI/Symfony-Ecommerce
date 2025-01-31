@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\ReviewStatusEnum;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Review
@@ -14,23 +15,34 @@ class Review
     private ?int $id = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: "Le contenu ne doit pas être vide.")]
     private ?string $content = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La note ne doit pas être vide.")]
+    #[Assert\Range(
+        min: 1,
+        max: 5,
+        notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }}.'
+    )]
     private ?int $rating = null;
 
     #[ORM\ManyToOne(inversedBy: 'reviews')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "L'utilisateur ne doit pas être vide.")]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'reviews')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotBlank(message: "Le produit ne doit pas être vide.")]
     private ?Product $product = null;
 
     #[ORM\Column(enumType: ReviewStatusEnum::class)]
+    #[Assert\NotBlank(message: "Le status ne doit pas être vide.")]
     private ?ReviewStatusEnum $status = null;
 
     #[ORM\Column(type: 'datetime')]
+    #[Assert\NotBlank(message: "La date de publication ne doit pas être vide.")]
     private ?\DateTimeInterface $datePublication = null;
 
     public function getId(): ?int

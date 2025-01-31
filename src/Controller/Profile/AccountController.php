@@ -4,6 +4,7 @@
 namespace App\Controller\Profile;
 
 use App\Entity\User;
+use App\Form\UserFrontType;
 use App\Service\CartService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,14 +15,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AccountController extends AbstractController
 {
     private CartService $cartService;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(CartService $cartService)
+    public function __construct(CartService $cartService, UserPasswordHasherInterface $passwordHasher)
     {
         $this->cartService = $cartService;
+        $this->passwordHasher = $passwordHasher;
     }
 
     #[Route('profile/account', name: 'account')]
@@ -48,48 +52,13 @@ class AccountController extends AbstractController
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
-        $form = $this->createFormBuilder($user)
-            ->add('name', TextType::class, [
-                'label' => 'Nom',
-                'attr' => ['class' => 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline']
-            ])
-            ->add('lastname', TextType::class, [
-                'label' => 'Prénom',
-                'attr' => ['class' => 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline']
-            ])
-            ->add('password', PasswordType::class, [
-                'label' => 'Nouveau Mot de Passe',
-                'required' => true,
-                'data' => 'BotanESGI',
-                'constraints' => [
-                    new Assert\Length(['min' => 8]),
-                    new Assert\Regex([
-                        'pattern' => '/[A-Z]/',
-                        'message' => 'Le mot de passe doit contenir au moins une lettre majuscule.'
-                    ]),
-                    new Assert\Regex([
-                        'pattern' => '/[0-9]/',
-                        'message' => 'Le mot de passe doit contenir au moins un chiffre.'
-                    ]),
-                    new Assert\Regex([
-                        'pattern' => '/[\W_]/',
-                        'message' => 'Le mot de passe doit contenir au moins un caractère spécial.'
-                    ]),
-                ],
-                'attr' => ['class' => 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline']
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Modifier',
-                'attr' => ['class' => 'mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline']
-            ])
-            ->getForm();
-
+        $form = $this->createForm(UserFrontType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $form->get('password')->getData();
             if (!empty($password)) {
-                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
                 $user->setPassword($hashedPassword);
             }
             $entityManager->persist($user);

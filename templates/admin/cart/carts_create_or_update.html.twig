@@ -6,27 +6,28 @@
     <h1 class="text-2xl font-bold mb-6">{{ cart is not null ? 'Modifier' : 'Créer' }} un panier</h1>
 
     <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <p class="font-semibold mb-2">Panier</p>
         {{ form_start(form) }}
 
         <div class="mb-4">
             {{ form_row(form.user) }}
         </div>
-
+<hr>
         <div class="mb-4" id="cart_items" data-prototype="{{ form_widget(form.cartItems.vars.prototype)|e('html') }}">
-            <h2 class="font-semibold mb-2">Contenu du panier</h2>
+            <p class="font-semibold mb-2">Contenu du panier</p>
 
             {% for cartItem in form.cartItems %}
                 <div class="cart_item">
                     {{ form_widget(cartItem) }}
-                    <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition ml-2 remove_cart_item">Supprimer</button>
+                    <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition mt-2 remove_cart_item">Supprimer</button>
                 </div>
             {% endfor %}
         </div>
 
-        <button type="button" id="add_cart_item" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mb-4">Ajouter un article</button>
+        <button type="button" id="add_cart_item" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mb-4">Ajouter un article</button>
+        <hr>
         {{ form_end(form) }}
     </form>
-
     <a href="{{ path('admin_cart') }}" class="text-blue-600 mt-4 inline-block">Retourner à la liste des paniers</a>
 
     <script>
@@ -41,7 +42,7 @@
                     removeButton = document.createElement('button');
                     removeButton.innerText = 'Supprimer';
                     removeButton.type = 'button';
-                    removeButton.className = 'bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition ml-2 remove_cart_item';
+                    removeButton.className = 'bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition mt-2 remove_cart_item';
 
                     item.appendChild(removeButton);
                 }

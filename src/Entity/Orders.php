@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Orders
@@ -22,9 +23,11 @@ class Orders
     private Collection $orderItems;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\Positive(message: "Le total doit être un nombre positif.")]
     private ?float $total = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Assert\NotBlank(message: "La date ne doit pas être vide.")]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\OneToOne(targetEntity: Invoice::class, inversedBy: 'order', cascade: ['persist', 'remove'])]

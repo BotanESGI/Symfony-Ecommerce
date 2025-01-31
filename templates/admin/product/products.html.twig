@@ -110,7 +110,7 @@
                     </td>
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
                         <a href="{{ path('product_detail', {id: product.id, category: product.defaultCategory.id}) }}" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition">Afficher</a>
-                        <a href="{{ path('admin_products_edit', {id: product.id}) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition">Modifier</a>
+                        <a href="{{ path('admin_products_edit', {id: product.id}) }}" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition">Modifier</a>
                         <form method="post" action="{{ path('admin_products_delete', {id: product.id}) }}" style="display: inline-block;">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
                             <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer le produit ?');">Supprimer</button>

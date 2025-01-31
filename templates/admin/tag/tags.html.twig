@@ -32,7 +32,7 @@
                         </ul>
                     </td>
                     <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
-                        <a href="{{ path('admin_tags_edit', {'id': tag.id}) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition">Modifier</a>
+                        <a href="{{ path('admin_tags_edit', {'id': tag.id}) }}" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition">Modifier</a>
                         <form action="{{ path('admin_tags_delete', {'id': tag.id}) }}" method="post" style="display:inline;">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tag.id) }}">
                             <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce tag ?');">Supprimer</button>

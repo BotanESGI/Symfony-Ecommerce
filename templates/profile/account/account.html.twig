@@ -1,10 +1,18 @@
-{# templates/profile/index.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Mon Compte{% endblock %}
 
 {% block body %}
+    <div class="border border-orange-500 bg-orange-100 text-gray-700 p-3 rounded mb-4 max-w-lg mx-auto mt-10" style="background: #e0e0ff">
+        <p class="font-bold">Votre mot de passe doit respecter les règles suivantes :</p>
+        <ul class="list-disc list-inside">
+            <li>Au moins 8 caractères</li>
+            <li>Au moins une lettre majuscule</li>
+            <li>Au moins un chiffre</li>
+            <li>Au moins un caractère spécial</li>
+        </ul>
+    </div>
+
     <div class="max-w-lg mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
         <h1 class="text-xl font-bold mb-4">Mon Compte</h1>
 
@@ -20,47 +28,45 @@
             {% endfor %}
         </div>
 
-        <p class="text-gray-600 text-sm mb-4">
-            Votre mot de passe doit respecter les règles suivantes :
-        </p>
-        <ul class="list-disc list-inside">
-            <li>Au moins 8 caractères</li>
-            <li>Au moins une lettre majuscule</li>
-            <li>Au moins un chiffre</li>
-            <li>Au moins un caractère spécial</li>
-        </ul>
-
         {{ form_start(form) }}
 
         <div class="mb-4">
             {{ form_label(form.name) }}
             {{ form_widget(form.name) }}
-            {{ form_errors(form.name) }}
+            {% for error in form.name.vars.errors %}
+                <div class="text-red-500">{{ error.message }}</div>
+            {% endfor %}
         </div>
 
         <div class="mb-4">
             {{ form_label(form.lastname) }}
             {{ form_widget(form.lastname) }}
-            {{ form_errors(form.lastname) }}
+            {% for error in form.lastname.vars.errors %}
+                <div class="text-red-500">{{ error.message }}</div>
+            {% endfor %}
         </div>
 
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Email</label>
+            <label class="">Email (non modifiable)</label>
             <p class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight">{{ email }}</p>
         </div>
 
         <div class="mb-4">
             {{ form_label(form.password) }}
             {{ form_widget(form.password) }}
-            {{ form_errors(form.password) }}
+            {% for error in form.password.vars.errors %}
+                <div class="text-red-500">{{ error.message }}</div>
+            {% endfor %}
         </div>
 
         {{ form_end(form) }}
+    </div>
 
-        <h2 class="text-lg font-semibold mt-8">Supprimer mon compte</h2>
+    <div class="bg-white border border-orange-500 bg-orange-100 text-gray-700 p-3 rounded mb-4 max-w-lg mx-auto mt-10">
+        <h2 class="text-xl font-bold">Supprimer mon compte</h2>
         <form action="{{ path('account_delete') }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ app.user.id) }}">
-            <button type="submit" class="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            <button type="submit" class="mt-2 w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 Supprimer mon compte
             </button>
         </form>

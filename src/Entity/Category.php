@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Category
@@ -15,9 +16,19 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom ne doit pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        minMessage: "Le nom doit comporter au moins {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
     #[ORM\Column(length: 7, nullable: true)]
+    #[Assert\NotBlank(message: "Le champ couleur ne doit pas être vide.")]
+    #[Assert\Regex(
+        pattern: '/^#([0-9A-F]{3}){1,2}$/i',
+        message: 'La couleur doit être au format hexadécimal (#RRGGBB ou #RGB).'
+    )]
     private ?string $color = null;
 
     #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'categories')]

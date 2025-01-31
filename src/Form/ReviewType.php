@@ -74,7 +74,7 @@ class ReviewType extends AbstractType
                 ],
             ])
             ->add('datePublication', DateTimeType::class, [
-                'required' => false,
+                'required' => true,
                 'widget' => 'single_text',
                 'label' => 'Date de publication',
                 'attr' => [

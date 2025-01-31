@@ -10,25 +10,41 @@
     <div class="mb-4">
         <label for="user" class="block text-sm font-medium text-gray-700">Utilisateur</label>
         {{ form_widget(form.user, {'attr': {'class': 'form-select mt-1 block w-full rounded border-gray-300'}}) }}
-        {{ form_errors(form.user) }}
+        {% if form.user.vars.errors|length > 0 %}
+            <div class="text-red-500">
+                {{ form_errors(form.user) }}
+            </div>
+        {% endif %}
     </div>
 
     <div class="mb-4">
         <label for="product" class="block text-sm font-medium text-gray-700">Produit</label>
         {{ form_widget(form.product, {'attr': {'class': 'form-select mt-1 block w-full rounded border-gray-300'}}) }}
-        {{ form_errors(form.product) }}
+        {% if form.product.vars.errors|length > 0 %}
+            <div class="text-red-500">
+                {{ form_errors(form.product) }}
+            </div>
+        {% endif %}
     </div>
 
     <div class="mb-4">
         <label for="content" class="block text-sm font-medium text-gray-700">Contenu</label>
         {{ form_widget(form.content, {'attr': {'class': 'form-input mt-1 block w-full rounded border-gray-300'}}) }}
-        {{ form_errors(form.content) }}
+        {% if form.content.vars.errors|length > 0 %}
+            <div class="text-red-500">
+                {{ form_errors(form.content) }}
+            </div>
+        {% endif %}
     </div>
 
     <div class="mb-4">
         <label for="rating" class="block text-sm font-medium text-gray-700">Note</label>
         {{ form_widget(form.rating, {'attr': {'class': 'form-input mt-1 block w-full rounded border-gray-300'}}) }}
-        {{ form_errors(form.rating) }}
+        {% if form.rating.vars.errors|length > 0 %}
+            <div class="text-red-500">
+                {{ form_errors(form.rating) }}
+            </div>
+        {% endif %}
     </div>
 
     <div class="mb-4">
@@ -41,17 +57,25 @@
                 </div>
             {% endfor %}
         </div>
-        {{ form_errors(form.status) }}
+        {% if form.status.vars.errors|length > 0 %}
+            <div class="text-red-500">
+                {{ form_errors(form.status) }}
+            </div>
+        {% endif %}
     </div>
 
     <div class="mb-4">
         <label for="datePublication" class="block text-sm font-medium text-gray-700">Date de publication</label>
         {{ form_widget(form.datePublication, {'attr': {'class': 'form-input mt-1 block w-full rounded border-gray-300'}}) }}
-        {{ form_errors(form.datePublication) }}
+        {% if form.datePublication.vars.errors|length > 0 %}
+            <div class="text-red-500">
+                {{ form_errors(form.datePublication) }}
+            </div>
+        {% endif %}
     </div>
 
     <div class="mb-4">
-        {{ form_widget(form.save) }}
+        {{ form_widget(form.save, {'attr': {'class': 'bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition'}}) }}
     </div>
 
     {{ form_end(form) }}

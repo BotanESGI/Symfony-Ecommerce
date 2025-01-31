@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Address
@@ -13,16 +14,24 @@ class Address
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La rue ne doit pas être vide.")]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La ville ne doit pas être vide.")]
     private ?string $city = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotBlank(message: "Le code postal ne doit pas être vide.")]
+    #[Assert\Regex(
+        pattern: '/^\d{5}(-\d{4})?$/',
+        message: "Le code postal doit être valide (format: 12345 ou 12345-6789)."
+    )]
     private ?string $postalCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'addresses')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "L'utilisateur ne doit pas être vide.")]
     private ?User $user = null;
 
     public function __construct() {

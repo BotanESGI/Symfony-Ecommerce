@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 // Ajout pour les groupes de normalisation/dénormalisation
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product')]
@@ -25,16 +26,28 @@ abstract class Product
     #[ORM\Column(length: 255)]
     // Ajout de `#[Groups]` pour exposer le nom dans l'API
     #[Groups(['product:read', 'product:write'])]
+    #[Assert\NotBlank(message: "Le nom ne doit pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        minMessage: "Le nom doit comporter au moins {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
     #[ORM\Column(type: 'text')]
     // Ajout de `#[Groups]` pour exposer la description dans l'API
     #[Groups(['product:read', 'product:write'])]
+    #[Assert\NotBlank(message: "La description ne doit pas être vide.")]
+    #[Assert\Length(
+        min: 4,
+        minMessage: "La description doit comporter au moins {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     #[ORM\Column]
     // Ajout de `#[Groups]` pour exposer le prix dans l'API
     #[Groups(['product:read', 'product:write'])]
+    #[Assert\NotBlank(message: "Le prix ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le prix doit être un nombre positif.")]
     private ?float $price = null;
 
     #[ORM\Column(nullable: true)]
@@ -55,6 +68,7 @@ abstract class Product
     #[ORM\JoinColumn(nullable: false)]
     // Ajout de `#[Groups]` pour exposer la catégorie par défaut dans l'API
     #[Groups(['product:read', 'product:write'])]
+    #[Assert\NotBlank(message: "La category par defaut ne doit pas être vide.")]
     private Category $defaultCategory;
 
     public function __construct(Category $defaultCategory)

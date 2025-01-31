@@ -6,6 +6,7 @@
     <h1 class="text-2xl font-bold mb-6">{{ order is not null ? 'Modifier' : 'Créer' }} une commande</h1>
 
     <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <p class="font-semibold mb-2">Commande</p>
         {{ form_start(form) }}
 
         <div class="mb-4">
@@ -15,19 +16,19 @@
         <div class="mb-4">
             {{ form_row(form.date) }}
         </div>
-
+<hr>
         <div class="mb-4" id="order_items" data-prototype="{{ form_widget(form.orderItems.vars.prototype)|e('html') }}">
-            <h2 class="font-semibold mb-2">Articles de la commande</h2>
+            <p class="font-semibold mb-2">Articles de la commande</p>
 
             {% for orderItem in form.orderItems %}
                 <div class="order_item">
                     {{ form_widget(orderItem) }}
-                    <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition ml-2 remove_order_item">Supprimer</button>
+                    <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition mt-2 remove_order_item">Supprimer</button>
                 </div>
             {% endfor %}
         </div>
-
-        <button type="button" id="add_order_item" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mb-4">Ajouter un article</button>
+        <hr>
+        <button type="button" id="add_order_item" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mb-4">Ajouter un article</button>
         {{ form_end(form) }}
     </form>
 
@@ -43,7 +44,7 @@
                     removeButton = document.createElement('button');
                     removeButton.innerText = 'Supprimer';
                     removeButton.type = 'button';
-                    removeButton.className = 'bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition ml-2 remove_order_item';
+                    removeButton.className = 'bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition mt-2 remove_order_item';
 
                     item.appendChild(removeButton);
                 }
