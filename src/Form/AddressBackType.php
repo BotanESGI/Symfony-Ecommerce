@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class AddressBackType extends AbstractType
 {
@@ -46,7 +47,11 @@ class AddressBackType extends AbstractType
                 'attr' => [
                     'class' => 'w-full p-2 border border-gray-300 rounded-lg',
                 ],
-                'required' => true,
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => "L'utilisateur ne doit pas être vide.",
+                    ]),
+                ],
             ]);
     }
 

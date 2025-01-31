@@ -78,7 +78,7 @@ class AppFixtures extends Fixture
         $bannedUser->setRoles(['ROLE_BANNED']);
         $bannedUser->setName('Utilisateur');
         $bannedUser->setLastName('Banni');
-        $bannedUser->setIsVerified(false);
+        $bannedUser->setIsVerified(true);
         $manager->persist($bannedUser);
 
         // Produits

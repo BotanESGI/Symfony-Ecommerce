@@ -3,7 +3,7 @@
 1. Lancer `docker compose build --no-cache` pour construire le docker
 2. Lancer `docker compose up --pull always -d --wait` pour lancer le docker
 3. Lancer `docker-compose exec php php bin/console commande_personnalise_setup_projet` pour setup et configurer le projet
-4Lancer `http://localhost:8000/`
+4. Lancer `http://localhost:8000/`
 
 ou bien :
 

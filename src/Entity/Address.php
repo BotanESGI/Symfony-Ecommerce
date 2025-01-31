@@ -31,7 +31,6 @@ class Address
 
     #[ORM\ManyToOne(inversedBy: 'addresses')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank(message: "L'utilisateur ne doit pas être vide.")]
     private ?User $user = null;
 
     public function __construct() {
