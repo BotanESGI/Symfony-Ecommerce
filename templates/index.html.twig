@@ -96,6 +96,67 @@
             <p>Créer un compte et rejoignez-nous !</p>
         {% endif %}
     </div>
+<!-- Section Reprendre mes achats -->
+{% if lastViewedProduct or cartItems is not empty %}
+    <div class="resume-shopping">
+        <h2 class="section-title">Reprendre mes achats</h2>
+
+        {% if lastViewedProduct %}
+            <div class="last-viewed">
+                <img src="{{ lastViewedProduct.image }}" alt="{{ lastViewedProduct.name }}" class="product-image">
+                <p>Vous avez consulté : <strong>{{ lastViewedProduct.name }}</strong></p>
+                <p>Prix : <strong>{{ lastViewedProduct.price }} €</strong></p>
+                <a href="{{ path('product_detail', { id: lastViewedProduct.id }) }}" class="btn btn-primary">Voir le produit</a>
+            </div>
+        {% endif %}
+
+        {% if cartItems is not empty %}
+<a href="{{ path('cart_page') }}" class="btn btn-success">Accéder à mon panier ({{ cartItems|length }} articles)</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+<style>
+    .resume-shopping {
+        text-align: center;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 30px 0;
+    }
+    .resume-shopping h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    .last-viewed {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .product-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    .btn {
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+</style>
 
     <!-- Section des produits les mieux notés -->
     <div>

@@ -10,14 +10,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ProductController extends AbstractController
 {
     private CartService $cartService;
+    private RequestStack $requestStack;
 
-    public function __construct(CartService $cartService)
+    public function __construct(CartService $cartService, RequestStack $requestStack)
     {
         $this->cartService = $cartService;
+        $this->requestStack = $requestStack;
     }
 
     #[Route('/product', name: 'product_page')]
@@ -26,7 +29,7 @@ class ProductController extends AbstractController
             return $this->redirectToRoute('default');
         }
 
-        //Récupere le panier
+        // Récupérer le panier
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
@@ -37,17 +40,13 @@ class ProductController extends AbstractController
         // Récupérer toutes les catégories pour le filtre
         $categories = $categoryRepository->findAll();
 
-        // Récupérer les produits
+        // Récupérer les produits en fonction de la catégorie sélectionnée
         if ($categoryId) {
             $products = $productRepository->findByCategory($categoryId);
             $defaultCategoryProducts = $productRepository->findBy(['defaultCategory' => $categoryId]);
 
-            // Créer un tableau pour stocker les identifiants des produits déjà présents
-            $existingProductIds = array_map(function($product) {
-                return $product->getId();
-            }, $products);
-
-            // Ajouter les produits de la catégorie par défaut uniquement s'ils ne sont pas déjà présents pour eviter les doublons
+            // Éviter les doublons de produits
+            $existingProductIds = array_map(fn($product) => $product->getId(), $products);
             foreach ($defaultCategoryProducts as $defaultProduct) {
                 if (!in_array($defaultProduct->getId(), $existingProductIds)) {
                     $products[] = $defaultProduct;
@@ -59,9 +58,7 @@ class ProductController extends AbstractController
 
         // Filtrer les produits par mot-clé
         if ($searchTerm) {
-            $products = array_filter($products, function ($product) use ($searchTerm) {
-                return stripos($product->getName(), $searchTerm) !== false;
-            });
+            $products = array_filter($products, fn($product) => stripos($product->getName(), $searchTerm) !== false);
         }
 
         return $this->render('product/product.html.twig', [
@@ -73,25 +70,23 @@ class ProductController extends AbstractController
         ]);
     }
 
-
     #[Route('/product/{id}', name: 'product_detail')]
     public function detail(
-        int $id, Request $request, ProductRepository $productRepository, ReviewRepository $reviewRepository, CategoryRepository $categoryRepository): Response {
-
+        int $id, Request $request, ProductRepository $productRepository, 
+        ReviewRepository $reviewRepository, CategoryRepository $categoryRepository): Response 
+    {
         if ($this->isGranted('ROLE_BANNED')) {
             return $this->redirectToRoute('default');
         }
 
-        //Récupere le panier
+        // Récupérer le panier
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
         // Récupérer le produit par ID
         $product = $productRepository->find($id);
-
-        // Vérifier si le produit existe
         if (!$product) {
-            throw $this->createNotFoundException('Produit non trouvée.');
+            throw $this->createNotFoundException('Produit introuvable.');
         }
 
         // Récupérer les avis pour le produit
@@ -100,22 +95,28 @@ class ProductController extends AbstractController
         // Récupérer l'identifiant de la catégorie depuis la requête
         $categoryId = $request->query->get('category', 0);
         $category = $categoryRepository->find($categoryId);
-        $categoryName = $category ? $category->getName() : 'Category nom par defaut';
+        $categoryName = $category ? $category->getName() : 'Catégorie non définie';
 
         // Vérifier que le produit appartient à la catégorie spécifiée
         if (!$product->getCategories()->exists(fn($key, $category) => $category->getId() === (int)$categoryId) &&
             $product->getDefaultCategory()->getId() !== (int)$categoryId) {
-            throw $this->createNotFoundException('Catégorie incorrect.');
+            throw $this->createNotFoundException('Catégorie incorrecte.');
         }
 
-        $tags = $product->getTags();
+        //  Enregistrer le produit consulté dans la session
+        $session = $this->requestStack->getSession();
+        $session->set('last_viewed_product', [
+            'id' => $product->getId(),
+            'name' => $product->getName(),
+            'image' => $product->getImage(),
+            'price' => $product->getPrice(),
+        ]);
 
         return $this->render('product/product_detail.html.twig', [
             'product' => $product,
             'review' => $review,
             'categoryId' => $categoryId,
             'categoryName' => $categoryName,
-            'tags' => $tags,
             'cartItems' => $cartItems,
             'cartTotal' => $cartTotal,
         ]);
