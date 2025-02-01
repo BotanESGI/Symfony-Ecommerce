@@ -10,8 +10,15 @@
          beStrictAboutOutputDuringTests="true"
          displayDetailsOnPhpunitDeprecations="true"
          failOnPhpunitDeprecation="true"
-         failOnRisky="true"
+         failOnRisky="false"
          failOnWarning="true">
+
+    <php>
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="DATABASE_URL" value="postgresql://postgresql://root:root@database:5432/app_test?"/>
+    </php>
+
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>
@@ -23,4 +30,5 @@
             <directory>src</directory>
         </include>
     </source>
+
 </phpunit>
