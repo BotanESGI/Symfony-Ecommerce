@@ -25,20 +25,21 @@ class HomeController extends AbstractController
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
-        // Récupération des meilleurs produits et des promotions
-        $bestRatedProducts = $productRepository->findByBestRated();
-        $discountedProducts = $productRepository->findByDiscounted();
+        $bestRatedProducts = $productRepository->findByBestRated(10);
+        $cheapestProduct = $productRepository->findByPriceASC(10);
+        $mostSoldProducts = $productRepository->findMostSoldProduct(10);
 
-        // Récupérer le dernier produit consulté depuis la session
-        $session = $this->requestStack->getSession();
-        $lastViewedProduct = $session->get('last_viewed_product');
+        $session = $this->requestStack->getCurrentRequest()->getSession();
+        $recentlyViewedIds = $session->get('recently_viewed', []);
+        $recentlyViewedProducts = $productRepository->findBy(['id' => $recentlyViewedIds]);
 
         return $this->render('index.html.twig', [
             'cartItems' => $cartItems,
             'cartTotal' => $cartTotal,
             'bestRatedProducts' => $bestRatedProducts,
-            'discountedProducts' => $discountedProducts,
-            'lastViewedProduct' => $lastViewedProduct, // Ajout du dernier produit consulté
+            'cheapestProduct' => $cheapestProduct,
+            'recentlyViewedProducts' => $recentlyViewedProducts,
+            'mostSoldProducts' => $mostSoldProducts,
         ]);
     }
 }

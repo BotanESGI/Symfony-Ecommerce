@@ -3,192 +3,52 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <style>
-        /* Style pour le message de bienvenue */
-        .welcome-section {
-            text-align: center;
-            background-color: #f8f9fa;
-            color: #333;
-            padding: 30px 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .welcome-section h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 0;
-        }
-        .welcome-section p {
-            font-size: 1.2rem;
-            margin: 10px 0 0 0;
-        }
-        .welcome-section p span {
-            font-weight: bold;
-            color: #6c757d;
-        }
-
-        /* Style spécifique pour Reprendre mes achats */
-        .resume-shopping {
-            text-align: left;
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin: 30px 0;
-        }
-        .resume-shopping h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        .last-viewed {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .last-viewed img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .last-viewed-details {
-            flex-grow: 1;
-            font-size: 0.9rem;
-            color: #555;
-        }
-        .resume-shopping .btn {
-            padding: 8px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .resume-shopping .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .resume-shopping .btn-success {
-            background-color: #28a745;
-            color: white;
-        }
-        .empty-message {
-            text-align: center;
-            font-size: 1rem;
-            color: #555;
-            margin-top: 15px;
-        }
-
-        /* Styles pour les produits (inchangés) */
-        .products-scroll {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 10px 0;
-            scrollbar-width: thin;
-            scrollbar-color: #6c757d #f8f9fa;
-        }
-        .products-scroll::-webkit-scrollbar {
-            height: 8px;
-        }
-        .products-scroll::-webkit-scrollbar-thumb {
-            background-color: #6c757d;
-            border-radius: 8px;
-        }
-        .products-scroll::-webkit-scrollbar-track {
-            background-color: #f8f9fa;
-        }
-        .product-card {
-            flex: 0 0 auto;
-            width: 200px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        .product-card:hover {
-            transform: scale(1.05);
-        }
-        .product-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        .product-card h3 {
-            font-size: 1rem;
-            margin: 10px;
-        }
-        .product-card a {
-            text-decoration: none;
-            color: inherit;
-        }
-        .product-card a:hover {
-            color: #007BFF;
-        }
-    </style>
-
-    <!-- Section de bienvenue -->
-    <div class="welcome-section">
-        <h1>Bienvenue</h1>
+    <div class="bg-white text-center text-gray-800 p-8 rounded-lg mb-8 shadow-md">
+        <h1 class="text-4xl font-bold">Bienvenue</h1>
         {% if app.user %}
-            <p>Bonjour, <span>{{ app.user.name }} {{ app.user.lastname }}</span> !</p>
+            <p class="text-xl mt-2">Bonjour, <span class="font-bold text-gray-600">{{ app.user.name }} {{ app.user.lastname }}</span> !</p>
         {% else %}
-            <p>Créer un compte et rejoignez-nous !</p>
+            <p class="text-xl mt-2">Créer un compte et rejoignez-nous !</p>
         {% endif %}
     </div>
 
- <!-- Section "Reprendre mes achats" -->
-{% if app.user %}
-    <div class="resume-shopping">
-        <h2 class="section-title">Reprendre mes achats</h2>
-
-        <!-- Vérification si le panier contient des articles -->
-        {% if cartItems is not empty %}
-            <a href="{{ path('cart_page') }}" class="btn btn-success">Panier ({{ cartItems|length }} articles)</a>
-        {% else %}
-            <p class="empty-message">Votre panier est vide.</p>
-        {% endif %}
-
-        <!-- Affichage du dernier produit consulté uniquement si le panier n'est pas vide -->
-        {% if lastViewedProduct and cartItems is not empty %}
-            <div class="last-viewed">
-                <img src="{{ lastViewedProduct.image }}" alt="{{ lastViewedProduct.name }}">
-                <div class="last-viewed-details">
-                    <p><strong>{{ lastViewedProduct.name }}</strong></p>
-                    <p>Prix : {{ lastViewedProduct.price }} €</p>
-                </div>
-
-                <!-- Bouton "Voir" redirige maintenant vers la page des produits -->
-                <a href="{{ path('product_page') }}" class="btn btn-primary">Voir tous les produits</a>
-            </div>
-        {% endif %}
-    </div>
-{% endif %}
-
-
-    <!-- Section des produits les mieux notés -->
-    <div>
-        <h2 class="section-title">Produits les mieux notés</h2>
-        <div class="products-scroll">
-            {% for product in bestRatedProducts %}
-                {% if product.categoryId is defined %}
-
-                <a href="{{ path('product_detail', { id: product.id,category: product.categoryId }) }}" class="product-card">
-                   
- {% else %}
-                <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
-                {% endif %}
-                    {% if product.image %} 
-<img src="{{ product.image }}" alt="{{ product.name }}">
- {% else %}
-                        <img src="/path/to/default-image.jpg" alt="Image par défaut">
+    <div class="mt-5">
+        <h2 class="text-2xl mb-4 text-gray-800">Produits récemment consultés</h2>
+        <div class="flex gap-5 overflow-x-auto py-2">
+            {% for product in recentlyViewedProducts %}
+                <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                    {% if product.image %}
+                        <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                    {% else %}
+                        <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                     {% endif %}
-                    <h3>{{ product.name }}</h3>
-                    <p>{{ product.description }}</p>
-                    <strong>Note moyenne : {{ product.avgRating|number_format(1) }}</strong>
+                    <div class="p-2">
+                        <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ product.description }}</p>
+                        <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                    </div>
+                </a>
+            {% else %}
+                <p>Aucun produit récemment consulté.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl mb-4 text-gray-800">Nos produits les mieux notés</h2>
+        <div class="flex gap-5 overflow-x-auto py-2">
+            {% for product in bestRatedProducts %}
+                <a href="{{ path('product_detail', { id: product.id, category: product }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                    {% if product.image %}
+                        <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                    {% else %}
+                        <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                    {% endif %}
+                    <div class="p-2">
+                        <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ product.description }}</p>
+                        <strong class="block mt-1">Note moyenne : {{ product.avgRating|number_format(1) }}</strong>
+                    </div>
                 </a>
             {% else %}
                 <p>Aucun produit trouvé.</p>
@@ -196,29 +56,46 @@
         </div>
     </div>
 
-    <!-- Section des produits pas chers -->
     <div class="mt-5">
-        <h2 class="section-title">Produits pas chers</h2>
-        <div class="products-scroll">
-            {% for product in discountedProducts %}
-                {% if product.categoryId is defined %}
-
-                <a href="{{ path('product_detail', { id: product.id,category: product.categoryId }) }}" class="product-card">
-                   {% else %}
-                    <a href="{{ path('product_detail', { id: product.id }) }}" class="product-card">
-                {% endif %}
+        <h2 class="text-2xl mb-4 text-gray-800">Nos produits les moins chers</h2>
+        <div class="flex gap-5 overflow-x-auto py-2">
+            {% for product in cheapestProduct %}
+                <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
                     {% if product.image %}
-  <img src="{{ product.image }}" alt="{{ product.name }}">
-{% else %}
-                        <img src="/path/to/default-image.jpg" alt="Image par défaut">
+                        <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                    {% else %}
+                        <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                     {% endif %}
-                    <h3>{{ product.name }}</h3>
-                    <p>{{ product.description }}</p>
-                    <strong>Prix : {{ product.price }} €</strong>
+                    <div class="p-2">
+                        <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ product.description }}</p>
+                        <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                    </div>
                 </a>
             {% else %}
                 <p>Aucun produit pas cher actuellement.</p>
             {% endfor %}
         </div>
     </div>
+
+    <div class="mt-5">
+        <h2 class="text-2xl mb-4 text-gray-800">Produit le plus vendu</h2>
+        {% if mostSoldProduct %}
+            <a href="{{ path('product_detail', { id: mostSoldProduct.id, category: mostSoldProduct.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                {% if mostSoldProduct.image %}
+                    <img src="{{ mostSoldProduct.image }}" alt="{{ mostSoldProduct.name }}" class="w-full h-40 object-cover">
+                {% else %}
+                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                {% endif %}
+                <div class="p-2">
+                    <h3 class="text-lg font-medium">{{ mostSoldProduct.name }}</h3>
+                    <p class="text-sm text-gray-500">{{ mostSoldProduct.description }}</p>
+                    <strong class="block mt-1">Quantité vendue : {{ mostSoldProduct.totalSold }}</strong> <!-- Display total sold quantity -->
+                </div>
+            </a>
+        {% else %}
+            <p>Aucun produit vendu jusqu'à présent.</p>
+        {% endif %}
+    </div>
+
 {% endblock %}
