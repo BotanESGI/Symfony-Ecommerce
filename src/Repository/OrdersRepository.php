@@ -12,4 +12,14 @@ class OrdersRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Orders::class);
     }
+    public function findRecentOrders(): array
+    {
+        $yesterday = new \DateTimeImmutable('-1 day');
+
+        return $this->createQueryBuilder('o')
+            ->where('o.date >= :yesterday')
+            ->setParameter('yesterday', $yesterday)
+            ->getQuery()
+            ->getResult();
+    }
 }

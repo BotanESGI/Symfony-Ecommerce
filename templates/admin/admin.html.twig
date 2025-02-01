@@ -77,7 +77,6 @@
         </nav>
     </aside>
 
-    <!-- Main content -->
     <main class="flex-1 bg-gray-50 p-6">
         {% for message in app.flashes('success') %}
             <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
@@ -95,52 +94,47 @@
         <h1 class="text-2xl font-bold text-gray-700">Bienvenue sur le panneau d'administration</h1>
         <p class="mt-2 text-gray-600">Utilisez le menu à gauche pour naviguer entre les différentes sections.</p>
 
-        <!-- Notification de nouvelles commandes -->
-        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-6">
+        <!-- Graphe -->
+        <div class="bg-white p-4 shadow-md rounded-lg mt-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Évolution des Commandes</h2>
+            <canvas id="ordersChart" class="w-full h-48"></canvas> <!-- Hauteur ajustée -->
+        </div>
+
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mt-4 text-center">
             <strong>{{ newOrdersCount }}</strong> nouvelles commandes dans les dernières 24 heures.
         </div>
 
-        <!-- Layout -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <!-- Graphe -->
-            <div class="bg-white p-4 shadow-md rounded-lg">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4">Évolution des Commandes</h2>
-                <canvas id="ordersChart"></canvas>
-            </div>
-
-            <!-- Nouvelles commandes -->
-            <div class="bg-white p-4 shadow-md rounded-lg h-[400px] overflow-y-auto">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4">Nouvelles Commandes</h2>
-                {% if newOrdersCount > 0 %}
-                    {% for order in newOrdersDetails %}
-                        <div class="bg-gray-100 border p-3 rounded shadow-sm mb-3">
-                            <h3 class="text-sm font-bold">Commande #{{ order.id }}</h3>
-                            <p class="text-xs text-gray-600">Date : {{ order.date }}</p>
-                            <p class="text-xs text-gray-600">Total : {{ order.total }} €</p>
-                            <ul class="mt-2">
-                                {% for item in order.items %}
-                                    <li class="flex items-center mb-2">
-                                        <img src="{{ asset(item.product_image) }}" alt="{{ item.product_name }}" class="w-12 h-12 mr-3 rounded">
-                                        <div>
-                                            <p class="text-xs font-semibold">{{ item.product_name }}</p>
-                                            <p class="text-xs text-gray-500">{{ item.quantity }} x {{ item.product_price }} €</p>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="bg-gray-100 border border-gray-400 text-gray-600 px-4 py-3 rounded relative">
-                        Aucune nouvelle commande récente.
+        <!-- Nouvelles commandes -->
+        <div class="mt-4 bg-white p-4 shadow-md rounded-lg">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Nouvelles Commandes</h2>
+            {% if newOrdersCount > 0 %}
+                {% for order in newOrdersDetails %}
+                    <div class="bg-gray-100 border p-3 rounded shadow-sm mb-3">
+                        <h3 class="text-sm font-bold">Commande #{{ order.id }}</h3>
+                        <p class="text-xs text-gray-600">Date : {{ order.date }}</p>
+                        <p class="text-xs text-gray-600">Total : {{ order.total }} €</p>
+                        <ul class="mt-2">
+                            {% for item in order.items %}
+                                <li class="flex items-center mb-2">
+                                    <img src="{{ asset(item.product_image) }}" alt="{{ item.product_name }}" class="w-12 h-12 mr-3 rounded">
+                                    <div>
+                                        <p class="text-xs font-semibold">{{ item.product_name }}</p>
+                                        <p class="text-xs text-gray-500">{{ item.quantity }} x {{ item.product_price }} €</p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                {% endif %}
-            </div>
+                {% endfor %}
+            {% else %}
+                <div class="bg-gray-100 border border-gray-400 text-gray-600 px-4 py-3 rounded relative">
+                    Aucune nouvelle commande récente.
+                </div>
+            {% endif %}
         </div>
         {% endblock %}
     </main>
 </div>
-
 {% block javascripts %}
     {% if active_page == 'admin_index' %}
         <script>
