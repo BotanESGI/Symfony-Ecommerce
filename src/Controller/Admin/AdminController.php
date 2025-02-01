@@ -59,12 +59,42 @@ final class AdminController extends AbstractController
                 'amount' => $order->getTotal(),
             ];
         }
+// Détecter les nouvelles commandes (24 dernières heures)
+$yesterday = new \DateTimeImmutable('-1 day');
+$newOrders = $orderRepository->createQueryBuilder('o')
+    ->where('o.date >= :yesterday')
+    ->setParameter('yesterday', $yesterday)
+    ->getQuery()
+    ->getResult();
 
-        return $this->render('admin/admin.html.twig', [
-            'orders' => json_encode($data),
-            'active_page' => 'admin_index'
-        ]);
+// Récupérer les informations détaillées des nouvelles commandes
+$newOrdersDetails = [];
+foreach ($newOrders as $order) {
+    $orderItems = [];
+    foreach ($order->getOrderItems() as $item) {
+        $orderItems[] = [
+            'product_name' => $item->getProduct()->getName(),
+            'product_image' => $item->getProduct()->getImage(),
+            'product_price' => $item->getProduct()->getPrice(),
+            'quantity' => $item->getQuantity(),
+        ];
     }
+
+    $newOrdersDetails[] = [
+        'id' => $order->getId(),
+        'date' => $order->getDate()->format('Y-m-d H:i:s'),
+        'total' => $order->getTotal(),
+        'items' => $orderItems,
+    ];
+}
+
+return $this->render('admin/admin.html.twig', [
+    'orders' => json_encode($data),
+    'newOrdersCount' => count($newOrders),
+    'newOrdersDetails' => $newOrdersDetails, // Détails des nouvelles commandes
+    'active_page' => 'admin_index'
+]);
+}
 
     ////////////////////////////////////////////////
     ///////////////////Produits/////////////////////
