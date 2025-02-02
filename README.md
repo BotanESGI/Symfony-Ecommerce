@@ -44,7 +44,7 @@ ou bien :
 - Accéder à une API externe (IA ? SMS ? Autre ?) (Stripe) ✅
 
 ### Autre :
-- Avoir un minimum 1 test unitaire et 1 test fonctionnel
+- Avoir un minimum 1 test unitaire et 1 test fonctionnel✅
 - Avoir des requêtes personnalisées avec des query builder dans des repositories ✅
 - Utiliser des forms dynamiques ✅
 - Avoir un espace admin ✅
