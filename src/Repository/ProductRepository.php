@@ -33,7 +33,7 @@ class ProductRepository extends ServiceEntityRepository
             ->leftJoin('p.reviews', 'r')
             ->leftJoin('p.defaultCategory', 'c')
             ->addSelect('c')
-            ->select('p.id, p.name, p.description, p.image, AVG(r.rating) as avgRating, c.id as categoryId')
+            ->select('p.id, p.price, p.name, p.description, p.image, AVG(r.rating) as avgRating, c.id as categoryId')
             ->groupBy('p.id, c.id')
             ->orderBy('avgRating', 'DESC')
             ->setMaxResults($limit)
@@ -50,4 +50,36 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findMostSoldProduct(int $limit): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.description, p.image, p.price, SUM(oi.quantity) as sales_count, c.id as categoryId')
+            ->join('App\Entity\OrderItem', 'oi', 'WITH', 'oi.product = p')
+            ->leftJoin('p.defaultCategory', 'c')
+            ->groupBy('p.id, c.id, p.name, p.description, p.image, p.price')
+            ->orderBy('sales_count', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByTag($tagId)
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.tags', 't')
+            ->where('t.id = :tagId')
+            ->setParameter('tagId', $tagId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllProductByTag(int $tagId): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->innerJoin('p.tags', 't')
+            ->addSelect('t')
+            ->where('t.id = :tagId')
+            ->setParameter('tagId', $tagId);
+        return $qb->getQuery()->getResult();
+    }
 }

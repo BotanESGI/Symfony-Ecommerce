@@ -472,6 +472,20 @@ class AppFixtures extends Fixture
 
         $products = [];
 
+        //Tag
+        $tags = [];
+        $tagNames = ['SOLDE', 'BLACK FRIDAY', 'OPÉRATION SPÉCIALE', 'NOUVEAUTÉ', 'PROMO', 'EXCLUSIVITÉ'];
+        $colors = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#8E44AD', '#E67E22']; // Example colors
+
+        foreach ($tagNames as $tagName) {
+            $tag = new Tag();
+            $tag->setName($tagName);
+            $tag->setColor($colors[array_rand($colors)]);
+            $manager->persist($tag);
+            $tags[] = $tag;
+        }
+
+
         foreach ($productsData as $data) {
             if ($data['type'] === 'PHYSICAL') {
                 $product = new PhysicalProduct($categories[array_search($data['category'], $categoryNames)]);
@@ -492,19 +506,16 @@ class AppFixtures extends Fixture
             $category = $categories[array_search($data['category'], $categoryNames)];
             $product->addCategory($category);
 
-            // Tags
-            $tags = [];
-            $tagNames = ['SOLDE', 'BLACK FRIDAY', 'OPÉRATION SPÉCIALE', 'NOUVEAUTÉ', 'PROMO', 'EXCLUSIVITÉ'];
-            for ($i = 0; $i < 2; $i++) {
-                $tag = new Tag();
-                $tag->setName($tagNames[array_rand($tagNames)]);
-                $tag->setColor($colors[array_rand($colors)]);
-                $manager->persist($tag);
-                $tags[] = $tag;
-            }
+            //Ajout des tags
+            $numberOfTags = rand(1, count($tags));
+            $randomKeys = array_rand($tags, $numberOfTags);
 
-            foreach ($tags as $tag) {
-                $product->addTag($tag);
+            if ($numberOfTags === 1) {
+                $product->addTag($tags[$randomKeys]);
+            } else {
+                foreach ($randomKeys as $key) {
+                    $product->addTag($tags[$key]);
+                }
             }
 
             // Avis

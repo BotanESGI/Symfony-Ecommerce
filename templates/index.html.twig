@@ -13,89 +13,201 @@
     </div>
 
     <div class="mt-5">
-        <h2 class="text-2xl mb-4 text-gray-800">Produits récemment consultés</h2>
-        <div class="flex gap-5 overflow-x-auto py-2">
-            {% for product in recentlyViewedProducts %}
-                <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
-                    {% if product.image %}
-                        <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                    {% else %}
-                        <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
-                    {% endif %}
-                    <div class="p-2">
-                        <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                        <p class="text-sm text-gray-500">{{ product.description }}</p>
-                        <strong class="block mt-1">Prix : {{ product.price }} €</strong>
-                    </div>
-                </a>
-            {% else %}
-                <p>Aucun produit récemment consulté.</p>
-            {% endfor %}
-        </div>
-    </div>
+        <div class="tab-container">
+            <ul class="flex border-b mb-4">
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="recentlyViewed" :class="{'font-bold border-b-2 border-blue-500': isActive('recentlyViewed')}">
+                    Récemment Consultés
+                </li>
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="bestRated" :class="{'font-bold border-b-2 border-blue-500': isActive('bestRated')}">
+                    Les Mieux Notés
+                </li>
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="cheapest" :class="{'font-bold border-b-2 border-blue-500': isActive('cheapest')}">
+                    Les Moins Chers
+                </li>
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="mostSold" :class="{'font-bold border-b-2 border-blue-500': isActive('mostSold')}">
+                    Les Plus Vendus
+                </li>
+            </ul>
 
-    <div>
-        <h2 class="text-2xl mb-4 text-gray-800">Nos produits les mieux notés</h2>
-        <div class="flex gap-5 overflow-x-auto py-2">
-            {% for product in bestRatedProducts %}
-                <a href="{{ path('product_detail', { id: product.id, category: product }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
-                    {% if product.image %}
-                        <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                    {% else %}
-                        <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
-                    {% endif %}
-                    <div class="p-2">
-                        <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                        <p class="text-sm text-gray-500">{{ product.description }}</p>
-                        <strong class="block mt-1">Note moyenne : {{ product.avgRating|number_format(1) }}</strong>
+            <div class="tab-content">
+                <div class="tab-pane active" id="recentlyViewed">
+                    <h3 class="text-xl mb-2">Produits récemment consultés</h3>
+                    <div class="flex gap-5 overflow-x-auto py-2">
+                        {% for product in recentlyViewedProducts %}
+                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                {% else %}
+                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                {% endif %}
+                                <div class="p-2">
+                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
+                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                                </div>
+                            </a>
+                        {% else %}
+                            <p>Aucun produit récemment consulté.</p>
+                        {% endfor %}
                     </div>
-                </a>
-            {% else %}
-                <p>Aucun produit trouvé.</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="mt-5">
-        <h2 class="text-2xl mb-4 text-gray-800">Nos produits les moins chers</h2>
-        <div class="flex gap-5 overflow-x-auto py-2">
-            {% for product in cheapestProduct %}
-                <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
-                    {% if product.image %}
-                        <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                    {% else %}
-                        <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
-                    {% endif %}
-                    <div class="p-2">
-                        <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                        <p class="text-sm text-gray-500">{{ product.description }}</p>
-                        <strong class="block mt-1">Prix : {{ product.price }} €</strong>
-                    </div>
-                </a>
-            {% else %}
-                <p>Aucun produit pas cher actuellement.</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="mt-5">
-        <h2 class="text-2xl mb-4 text-gray-800">Produit le plus vendu</h2>
-        {% if mostSoldProduct %}
-            <a href="{{ path('product_detail', { id: mostSoldProduct.id, category: mostSoldProduct.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
-                {% if mostSoldProduct.image %}
-                    <img src="{{ mostSoldProduct.image }}" alt="{{ mostSoldProduct.name }}" class="w-full h-40 object-cover">
-                {% else %}
-                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
-                {% endif %}
-                <div class="p-2">
-                    <h3 class="text-lg font-medium">{{ mostSoldProduct.name }}</h3>
-                    <p class="text-sm text-gray-500">{{ mostSoldProduct.description }}</p>
-                    <strong class="block mt-1">Quantité vendue : {{ mostSoldProduct.totalSold }}</strong> <!-- Display total sold quantity -->
                 </div>
-            </a>
-        {% else %}
-            <p>Aucun produit vendu jusqu'à présent.</p>
-        {% endif %}
+
+                <div class="tab-pane hidden" id="bestRated">
+                    <h3 class="text-xl mb-2">Nos produits les mieux notés</h3>
+                    <div class="flex gap-5 overflow-x-auto py-2">
+                        {% for product in bestRatedProducts %}
+                            <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                {% else %}
+                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                {% endif %}
+                                <div class="p-2">
+                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
+                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                                    <strong class="block mt-1">Note moyenne : {{ product.avgRating|number_format(1) }}</strong>
+                                </div>
+                            </a>
+                        {% else %}
+                            <p>Aucun produit trouvé.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane hidden" id="cheapest">
+                    <h3 class="text-xl mb-2">Nos produits les moins chers</h3>
+                    <div class="flex gap-5 overflow-x-auto py-2">
+                        {% for product in cheapestProduct %}
+                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                {% else %}
+                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                {% endif %}
+                                <div class="p-2">
+                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
+                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                                </div>
+                            </a>
+                        {% else %}
+                            <p>Aucun produit pas cher actuellement.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane hidden" id="mostSold">
+                    <h3 class="text-xl mb-2">Produit les plus vendus</h3>
+                    <div class="flex gap-5 overflow-x-auto py-2">
+                        {% for product in mostSoldProducts %}
+                            <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                {% else %}
+                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                {% endif %}
+                                <div class="p-2">
+                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
+                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                                    <strong class="block mt-1">Quantité vendue : {{ product.sales_count }}</strong>
+                                </div>
+                            </a>
+                        {% else %}
+                            <p>Aucun produit vendu jusqu'à présent.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <div class="mt-5">
+        <div class="tab-container overflow-x-auto">
+            <ul class="flex border-b mb-4 whitespace-nowrap">
+                {% for tag in tags %}
+                    <li class="tag cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tag-id="{{ tag.id }}" id="tag-{{ tag.id }}" style="border-color: {{ tag.color }};">
+                        {{ tag.name }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="tagProducts" class="mt-5">
+            <h3 class="text-xl mb-2">Produits par tag</h3>
+            <div class="loading-indicator hidden text-center mb-4">
+                <p class="text-lg">Chargement des produits...</p>
+                <div class="loader mx-auto border-4 border-blue-500 border-t-transparent rounded-full w-8 h-8 animate-spin" style="border-left-color: #3b82f6;"></div>
+            </div>
+            <div class="flex gap-5 overflow-x-auto py-2">
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('font-bold', 'border-b-2', 'border-blue-500'));
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+
+                this.classList.add('font-bold', 'border-b-2', 'border-blue-500');
+                const activePane = document.getElementById(this.dataset.tab);
+                if (activePane) {
+                    activePane.classList.remove('hidden');
+                }
+            });
+        });
+
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function () {
+                document.querySelectorAll('.tag').forEach(t => {
+                    t.classList.remove('font-bold', 'border-b-2', 'border-blue-500');
+                });
+
+                this.classList.add('font-bold', 'border-b-2', 'border-blue-500');
+
+                const tagId = this.dataset.tagId;
+                const loadingIndicator = document.querySelector('.loading-indicator');
+                const productsContainer = document.querySelector('#tagProducts .flex');
+
+                loadingIndicator.classList.remove('hidden');
+                productsContainer.innerHTML = '';
+
+                fetch(`/tag-products/${tagId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        productsContainer.innerHTML = '';
+
+                        if (data.length > 0) {
+                            data.forEach(product => {
+                                const productCard = `
+                                    <a href="/product/${product.id}?category=${product.defaultCategoryId}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                                        <img src="${product.image || '/path/to/default-image.jpg'}" alt="${product.name}" class="w-full h-40 object-cover">
+                                        <div class="p-2">
+                                            <h3 class="text-lg font-medium">${product.name}</h3>
+                                            <p class="text-sm text-gray-500">${product.description}</p>
+                                            <strong class="block mt-1">Prix : ${product.price} €</strong>
+                                             <span class="bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1" style="background-color: ${product.tag_color}; color: #FFFF;">${product.tag_name}</span>
+                                        </div>
+                                    </a>
+                                `;
+                                productsContainer.innerHTML += productCard;
+                            });
+                        } else {
+                            productsContainer.innerHTML = '<p>Aucun produit trouvé pour ce tag.</p>';
+                        }
+                    })
+                    .catch(error => console.error('Error loading products:', error))
+                    .finally(() => {
+                        loadingIndicator.classList.add('hidden');
+                    });
+            });
+        });
+
+        const firstTag = document.querySelector('.tag');
+        if (firstTag) {
+            firstTag.click();
+        }
+    </script>
 {% endblock %}
