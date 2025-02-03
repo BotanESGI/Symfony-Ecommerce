@@ -60,36 +60,36 @@ final class AdminController extends AbstractController
                 'amount' => $order->getTotal(),
             ];
         }
-    $newOrders = $orderRepository->findRecentOrders();
+        $newOrders = $orderRepository->findRecentOrders();
 
 // Je récupérer les informations détaillées des nouvelles commandes
         $newOrdersDetails = [];
         foreach ($newOrders as $order) {
-        $orderItems = [];
-        foreach ($order->getOrderItems() as $item) {
-             $orderItems[] = [
-            'product_name' => $item->getProduct()->getName(),
-            'product_image' => $item->getProduct()->getImage(),
-            'product_price' => $item->getProduct()->getPrice(),
-            'quantity' => $item->getQuantity(),
-        ];
-    }
+            $orderItems = [];
+            foreach ($order->getOrderItems() as $item) {
+                $orderItems[] = [
+                    'product_name' => $item->getProduct()->getName(),
+                    'product_image' => $item->getProduct()->getImage(),
+                    'product_price' => $item->getProduct()->getPrice(),
+                    'quantity' => $item->getQuantity(),
+                ];
+            }
 
-        $newOrdersDetails[] = [
-            'id' => $order->getId(),
-            'date' => $order->getDate()->format('Y-m-d H:i:s'),
-            'total' => $order->getTotal(),
-            'items' => $orderItems,
-        ];
-}
+            $newOrdersDetails[] = [
+                'id' => $order->getId(),
+                'date' => $order->getDate()->format('Y-m-d H:i:s'),
+                'total' => $order->getTotal(),
+                'items' => $orderItems,
+            ];
+        }
 
         return $this->render('admin/admin.html.twig', [
             'orders' => json_encode($data),
             'newOrdersCount' => count($newOrders),
-            'newOrdersDetails' => $newOrdersDetails, 
+            'newOrdersDetails' => $newOrdersDetails,
             'active_page' => 'admin_index'
-]);
-}
+        ]);
+    }
 
     ////////////////////////////////////////////////
     ///////////////////Produits/////////////////////
@@ -112,7 +112,7 @@ final class AdminController extends AbstractController
         $defaultCategory = $this->entityManager->getRepository(Category::class)->find($defaultCategoryId);
 
         // Je cree une categorie par defaut si la category 1 (categorie par defaut) est supprimer exemple, on le change apres dans le ProductCreateType, c'est jutse pour initialiser car c'est obigatoire dans le constructeur, pour pas avoir d'erreur exemple si on supprime une category
-       //Requete préparé pour forcer id 1 car il existe pas et je peux pas le set via l'orm
+        //Requete préparé pour forcer id 1 car il existe pas et je peux pas le set via l'orm
         if (!$defaultCategory) {
             $categoryName = 'catégorie par défaut';
             $defaultColor = '#FFFFFF';
@@ -1044,6 +1044,57 @@ final class AdminController extends AbstractController
     ////////////////////////////////////////////////
     ///////////////////Utilisateur/////////////////////
     ////////////////////////////////////////////////
+    #[Route('/admin/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
+    public function deleteUser(Request $request, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            $this->addFlash('error', 'L\'utilisateur n\'existe pas.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token')))
+        {
+            $orders = $entityManager->getRepository(Orders::class)->findBy(['user' => $user]);
+            $invoices = $entityManager->getRepository(Invoice::class)->findBy(['user' => $user]);
+            if ($invoices || $orders) {
+                foreach ($invoices as $invoice) {
+                    $entityManager->getConnection()->executeStatement(
+                        'UPDATE "invoice" SET "order_id" = NULL WHERE "id" = :id',
+                        ['id' => $invoice->getId()]
+                    );
+                }
+
+                foreach ($orders as $order) {
+                    $entityManager->getConnection()->executeStatement(
+                        'UPDATE "orders" SET "invoice_id" = NULL WHERE "id" = :id',
+                        ['id' => $order->getId()]
+                    );
+                }
+
+                foreach ($orders as $order) {
+                    $entityManager->getConnection()->executeStatement(
+                        'DELETE FROM "orders" WHERE "id" = :id',
+                        ['id' => $order->getId()]
+                    );
+                }
+
+                foreach ($invoices as $invoice) {
+                    $entityManager->getConnection()->executeStatement(
+                        'DELETE FROM "invoice" WHERE "id" = :id',
+                        ['id' => $invoice->getId()]
+                    );
+                }
+            }
+            $entityManager->remove($user);
+            $entityManager->flush();
+            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+        }
+        $request->getSession()->invalidate();
+        return $this->redirectToRoute('admin_users');
+    }
+
     #[Route('/admin/users', name: 'admin_users', methods: ['GET'])]
     public function CRUDUser(): Response
     {
@@ -1115,24 +1166,5 @@ final class AdminController extends AbstractController
             'is_edit' => true,
             'active_page' => 'admin_users',
         ]);
-    }
-
-    #[Route('/admin/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
-    public function deleteUser(Request $request, int $id, EntityManagerInterface $entityManager): Response
-    {
-        $user = $entityManager->getRepository(User::class)->find($id);
-
-        if (!$user) {
-            $this->addFlash('error', 'L\'utilisateur n\'existe pas.');
-            return $this->redirectToRoute('admin_users');
-        }
-
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($user);
-            $entityManager->flush();
-            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
-        }
-        $request->getSession()->invalidate();
-        return $this->redirectToRoute('admin_users');
     }
 }
