@@ -3,7 +3,9 @@
 1. Lancer `docker compose build --no-cache` pour construire le docker
 2. Lancer `docker compose up --pull always -d --wait` pour lancer le docker
 3. Lancer `docker-compose exec php php bin/console commande_personnalise_setup_projet` pour setup et configurer le projet
-4. Lancer `http://localhost:8000/`
+4. Lancer `docker-compose exec php php vendor/bin/phpunit tests/UserTest.php` pour lancer les tests unitaires
+5. Lancer `docker-compose exec php php vendor/bin/phpunit tests/Controller/AdminControllerTest.php` pour lancer les tests fonctionnels
+6. Lancer `http://localhost:8000/`
 
 ou bien :
 
@@ -12,7 +14,9 @@ ou bien :
 3. Lancer `composer install` pour installer composer
 4. Lancer `docker-compose exec php php bin/console doctrine:migrations:migrate` pour creer les tables dans la bdd
 5. Lancer `docker-compose exec php php bin/console doctrine:fixtures:load` pour lancer les fixtures
-6. Lancer `http://localhost:8000/`
+6. Lancer `docker-compose exec php php vendor/bin/phpunit tests/UserTest.php` pour lancer les tests unitaires
+7. Lancer `docker-compose exec php php vendor/bin/phpunit tests/Controller/AdminControllerTest.php` pour lancer les tests fonctionnels
+8. Lancer `http://localhost:8000/`
 
 
 ### Comptes de test (Role / Email / Mot de passe) :
