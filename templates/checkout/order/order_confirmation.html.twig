@@ -30,6 +30,7 @@
                         <th class="px-6 py-3 text-left">Quantité</th>
                         <th class="px-6 py-3 text-left">Prix Unitaire</th>
                         <th class="px-6 py-3 text-left">Total</th>
+                        <th class="px-6 py-3 text-left">Statut</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -47,6 +48,13 @@
                             <td class="px-6 py-4">{{ orderItem.quantity }}</td>
                             <td class="px-6 py-4">{{ orderItem.product.price | number_format(2, ',', ' ') }} €</td>
                             <td class="px-6 py-4">{{ (orderItem.product.price * orderItem.quantity) | number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">
+                                {% if orderItem.product.getProductType() == 'Produit digital' %}
+                                    <a href="{{ orderItem.product.downloadLink }}" class="text-blue-600 hover:underline">Télécharger</a>
+                                {% else %}
+                                    <span class="text-yellow-600">Commande en cours de préparation</span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

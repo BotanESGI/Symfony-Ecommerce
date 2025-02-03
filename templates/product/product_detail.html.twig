@@ -31,6 +31,17 @@
             </li>
             <li class="text-gray-500">{{ product.name }}</li>
         </ol>
+
+            <!-- Voter personnalisé -->
+            {% if is_granted('EDIT', product) %}
+            <div class="ml-auto">
+                <a href="{{ path('admin_products_edit', { id: product.id }) }}"
+                   class="text-black hover:text-gray-700"
+                   title="Modifier le produit">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+            </div>
+            {% endif %}
     </nav>
 
 

@@ -34,16 +34,16 @@
                     <h3 class="text-xl mb-2">Produits récemment consultés</h3>
                     <div class="flex gap-5 overflow-x-auto py-2">
                         {% for product in recentlyViewedProducts %}
-                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
                                     <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
                                     <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
-                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
-                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                                    <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500 truncate">{{ product.description }}</p>
+                                    <strong class="block mt-1 truncate">Prix : {{ product.price }} €</strong>
                                 </div>
                             </a>
                         {% else %}
@@ -56,17 +56,17 @@
                     <h3 class="text-xl mb-2">Nos produits les mieux notés</h3>
                     <div class="flex gap-5 overflow-x-auto py-2">
                         {% for product in bestRatedProducts %}
-                            <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                            <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
                                     <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
                                     <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
-                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
-                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
-                                    <strong class="block mt-1">Note moyenne : {{ product.avgRating|number_format(1) }}</strong>
+                                    <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500 truncate">{{ product.description }}</p>
+                                    <strong class="block mt-1 truncate">Prix : {{ product.price }} €</strong>
+                                    <strong class="block mt-1 truncate">Note moyenne : {{ product.avgRating|number_format(1) }}</strong>
                                 </div>
                             </a>
                         {% else %}
@@ -79,16 +79,16 @@
                     <h3 class="text-xl mb-2">Nos produits les moins chers</h3>
                     <div class="flex gap-5 overflow-x-auto py-2">
                         {% for product in cheapestProduct %}
-                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
                                     <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
                                     <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
-                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
-                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
+                                    <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500 truncate">{{ product.description }}</p>
+                                    <strong class="block mt-1 truncate">Prix : {{ product.price }} €</strong>
                                 </div>
                             </a>
                         {% else %}
@@ -101,17 +101,17 @@
                     <h3 class="text-xl mb-2">Produit les plus vendus</h3>
                     <div class="flex gap-5 overflow-x-auto py-2">
                         {% for product in mostSoldProducts %}
-                            <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                            <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
                                     <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
                                     <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
-                                    <h3 class="text-lg font-medium">{{ product.name }}</h3>
-                                    <p class="text-sm text-gray-500">{{ product.description }}</p>
-                                    <strong class="block mt-1">Prix : {{ product.price }} €</strong>
-                                    <strong class="block mt-1">Quantité vendue : {{ product.sales_count }}</strong>
+                                    <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500 truncate">{{ product.description }}</p>
+                                    <strong class="block mt-1 truncate">Prix : {{ product.price }} €</strong>
+                                    <strong class="block mt-1 truncate">Quantité vendue : {{ product.sales_count }}</strong>
                                 </div>
                             </a>
                         {% else %}
@@ -182,13 +182,13 @@
                         if (data.length > 0) {
                             data.forEach(product => {
                                 const productCard = `
-                                    <a href="/product/${product.id}?category=${product.defaultCategoryId}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105">
+                                    <a href="/product/${product.id}?category=${product.defaultCategoryId}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article ${product.name}">
                                         <img src="${product.image || '/path/to/default-image.jpg'}" alt="${product.name}" class="w-full h-40 object-cover">
                                         <div class="p-2">
-                                            <h3 class="text-lg font-medium">${product.name}</h3>
-                                            <p class="text-sm text-gray-500">${product.description}</p>
-                                            <strong class="block mt-1">Prix : ${product.price} €</strong>
-                                             <span class="bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1" style="background-color: ${product.tag_color}; color: #FFFF;">${product.tag_name}</span>
+                                            <h3 class="text-lg font-medium truncate">${product.name}</h3>
+                                            <p class="text-sm text-gray-500 truncate">${product.description}</p>
+                                            <strong class="block mt-1 truncate">Prix : ${product.price} €</strong>
+                                             <span class="block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 text-center w-full" style="background-color: ${product.tag_color}; color: #FFFF;">${product.tag_name}</span>
                                         </div>
                                     </a>
                                 `;

@@ -25,7 +25,7 @@ class CartController extends AbstractController
         // Vérifie si connecté et récupère le panier de l'utilisateur
         $user = $this->getUser();
         if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour ajouter au panier.');
+            $this->addFlash('warning', 'Vous devez être afficher le panier.');
             return $this->redirectToRoute('login');
         }
         $cart = $cartRepository->findOneBy(['user' => $user]);
@@ -83,7 +83,7 @@ class CartController extends AbstractController
         // Verifie si connecté et récupérer le panier de l'utilisateur
         $user = $this->getUser();
         if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour ajouter un produit au panier.');
+            $this->addFlash('warning', 'Vous devez être connecté pour ajouter un produit au panier.');
             return $this->redirectToRoute('login');
         }
         $cart = $cartRepository->findOneBy(['user' => $user]);
@@ -130,7 +130,7 @@ class CartController extends AbstractController
         //verifie si connecter
         $user = $this->getUser();
         if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour modifier votre panier.');
+            $this->addFlash('warning', 'Vous devez être connecté pour modifier votre panier.');
             return $this->redirectToRoute('login');
         }
 
@@ -173,7 +173,7 @@ class CartController extends AbstractController
         //Verifie si connecter
         $user = $this->getUser();
         if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour supprimer un élément de votre panier.');
+            $this->addFlash('warning', 'Vous devez être connecté pour supprimer un élément de votre panier.');
             return $this->redirectToRoute('login');
         }
 

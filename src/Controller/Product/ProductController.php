@@ -2,6 +2,8 @@
 
 namespace App\Controller\Product;
 
+use App\Entity\DigitalProduct;
+use App\Entity\PhysicalProduct;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ReviewRepository;
@@ -21,53 +23,91 @@ class ProductController extends AbstractController
     }
 
     #[Route('/product', name: 'product_page')]
-    public function index(Request $request, ProductRepository $productRepository, CategoryRepository $categoryRepository): Response {
+    public function index(Request $request, ProductRepository $productRepository, CategoryRepository $categoryRepository): Response
+    {
         if ($this->isGranted('ROLE_BANNED')) {
             return $this->redirectToRoute('default');
         }
 
-        //Récupere le panier
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
-        // Récupération des paramètres de requête
         $searchTerm = $request->query->get('search');
         $categoryId = $request->query->get('category');
+        $type = $request->query->get('type');
+        $minPrice = $request->query->get('min_price');
+        $maxPrice = $request->query->get('max_price');
+        $priceSort = $request->query->get('price_sort');
 
-        // Récupérer toutes les catégories pour le filtre
         $categories = $categoryRepository->findAll();
+        $products = $productRepository->findAll();
 
-        // Récupérer les produits
         if ($categoryId) {
             $products = $productRepository->findByCategory($categoryId);
             $defaultCategoryProducts = $productRepository->findBy(['defaultCategory' => $categoryId]);
 
-            // Créer un tableau pour stocker les identifiants des produits déjà présents
-            $existingProductIds = array_map(function($product) {
+            $existingProductIds = array_map(function ($product) {
                 return $product->getId();
             }, $products);
 
-            // Ajouter les produits de la catégorie par défaut uniquement s'ils ne sont pas déjà présents pour eviter les doublons
             foreach ($defaultCategoryProducts as $defaultProduct) {
                 if (!in_array($defaultProduct->getId(), $existingProductIds)) {
                     $products[] = $defaultProduct;
                 }
             }
-        } else {
-            $products = $productRepository->findAll();
         }
 
-        // Filtrer les produits par mot-clé
+        $selectedCategoryName = null;
+        if ($categoryId) {
+            $selectedCategory = $categoryRepository->find($categoryId);
+            if ($selectedCategory) {
+                $selectedCategoryName = $selectedCategory->getName();
+            }
+        }
+
+
+        if ($type) {
+            $products = array_filter($products, function ($product) use ($type) {
+                if ($type === 'digital') {
+                    return $product instanceof DigitalProduct;
+                } elseif ($type === 'physical') {
+                    return $product instanceof PhysicalProduct;
+                }
+                return true;
+            });
+        }
+
         if ($searchTerm) {
             $products = array_filter($products, function ($product) use ($searchTerm) {
                 return stripos($product->getName(), $searchTerm) !== false;
             });
         }
 
+        if ($minPrice && is_numeric($minPrice)) {
+            $products = array_filter($products, function ($product) use ($minPrice) {
+                return $product->getPrice() >= $minPrice;
+            });
+        }
+
+        if ($maxPrice && is_numeric($maxPrice)) {
+            $products = array_filter($products, function ($product) use ($maxPrice) {
+                return $product->getPrice() <= $maxPrice;
+            });
+        }
+
+        if ($priceSort) {
+            if ($priceSort === 'asc') {
+                usort($products, fn($a, $b) => $a->getPrice() <=> $b->getPrice());
+            } elseif ($priceSort === 'desc') {
+                usort($products, fn($a, $b) => $b->getPrice() <=> $a->getPrice());
+            }
+        }
+
         return $this->render('product/product.html.twig', [
             'products' => $products,
             'categories' => $categories,
             'selectedCategoryId' => $categoryId,
+            'selectedCategoryName' => $selectedCategoryName,
             'cartItems' => $cartItems,
             'cartTotal' => $cartTotal,
         ]);

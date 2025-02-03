@@ -116,7 +116,7 @@ class OrderController extends AbstractController
         // Vérifie si l'utilisateur a des adresses
         $addresses = $user->getAddresses();
         if ($addresses->isEmpty()) {
-            $this->addFlash('error', 'Ajoutez une adresse avant de continuer.');
+            $this->addFlash('warning', 'Ajoutez une adresse avant de continuer.');
             $session->getFlashBag()->add('referer_from_process_order', 'yes');
             return $this->redirectToRoute('create_address');
         }

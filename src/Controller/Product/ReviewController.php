@@ -31,7 +31,7 @@ class ReviewController extends AbstractController
 
         // Vérifie si l'utilisateur est connecté
         if (!$this->getUser()) {
-            $this->addFlash('error', 'Vous devez être connecté pour soumettre un avis.');
+            $this->addFlash('warning', 'Vous devez être connecté pour soumettre un avis.');
             return $this->redirectToRoute('login');
         }
 
@@ -84,7 +84,7 @@ class ReviewController extends AbstractController
         //Verifie si connecté
         $user = $this->getUser();
         if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour supprimer un avis.');
+            $this->addFlash('warning', 'Vous devez être connecté pour supprimer un avis.');
             return $this->redirectToRoute('login');
         }
 

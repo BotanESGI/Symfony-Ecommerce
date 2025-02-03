@@ -26,6 +26,7 @@
                         <th class="px-6 py-3 text-left">Quantité</th>
                         <th class="px-6 py-3 text-left">Prix Unitaire</th>
                         <th class="px-6 py-3 text-left">Total</th>
+                        <th class="px-6 py-3 text-left">Statut</th>
                         <th class="px-6 py-3 text-left">Action</th>
                     </tr>
                     </thead>
@@ -42,6 +43,13 @@
                             <td class="px-6 py-4">{{ item.quantity }}</td>
                             <td class="px-6 py-4">{{ item.product.price|number_format(2, ',', ' ') }} €</td>
                             <td class="px-6 py-4">{{ (item.product.price * item.quantity)|number_format(2, ',', ' ') }} €</td>
+                            <td class="px-6 py-4">
+                                {% if item.product.getProductType() == 'Produit digital' %}
+                                    <a href="{{ item.product.downloadLink }}" class="text-blue-600 hover:underline">Télécharger</a>
+                                {% else %}
+                                    <span class="text-yellow-600">Commande en cours de préparation</span>
+                                {% endif %}
+                            </td>
                             <td class="px-6 py-4">
                                 <a href="{{ path('product_detail', {'id': item.product.id, 'category': item.product.defaultCategory.id}) }}" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
                                     Afficher l'article

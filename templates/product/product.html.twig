@@ -1,10 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nos produits{% endblock %}
+{% block title %}Tous nos produits{% endblock %}
 
 {% block body %}
-    <h1 class="text-2xl font-bold mb-4">Nos produits</h1>
-    <p class="text-gray-700 mb-6">Explorez nos catégories :</p>
+    <h1 class="text-center text-2xl font-bold mb-4">
+        Nos produits
+        {% if app.request.get('category') %}
+            de la catégorie : {{ selectedCategoryName }}
+        {% endif %}
+    </h1>
+    <p class="text-gray-700 mb-1">Explorez nos catégories :</p>
 
     <!-- Category -->
     <div class="overflow-x-auto whitespace-nowrap scrollbar-hide mb-6 cursor-grab" id="scrollable-menu">
@@ -12,13 +17,13 @@
             <ul class="flex space-x-4 border-b pb-2">
                 <li>
                     <a href="{{ path('product_page') }}"
-                       class="px-4 py-2 rounded border hover:bg-gray-100 {% if selectedCategoryId is null %}bg-blue-500 text-white{% else %}text-gray-700{% endif %}">
+                       class="px-4 py-2 rounded border hover:bg-gray-100 {% if selectedCategoryId is null and app.request.get('type') is null %}bg-blue-500 text-white{% else %}text-gray-700{% endif %}">
                         Tous
                     </a>
                 </li>
                 {% for category in categories %}
                     <li>
-                        <a href="{{ path('product_page', { category: category.id }) }}"
+                        <a href="{{ path('product_page', { category: category.id, type: app.request.get('type') }) }}"
                            class="px-4 py-2 rounded border text-white hover:opacity-90"
                            style="background-color: {{ category.color }};">
                             {{ category.name }}
@@ -29,10 +34,36 @@
         </nav>
     </div>
 
-    <!-- Recherche de produits -->
-    <form method="GET" action="{{ path('product_page') }}" class="mb-4 flex items-center">
+    <!-- Filter -->
+    <p class="text-gray-700 mb-1">Filtre de recherche :</p>
+    <form method="GET" action="{{ path('product_page') }}" class="mb-4 flex items-center space-x-4">
         <input type="text" name="search" placeholder="Rechercher un produit..."
-               class="border rounded px-4 py-2 w-full max-w-md mr-2">
+               class="border rounded px-4 py-2 w-full max-w-md mr-2" value="{{ app.request.get('search') }}">
+
+        <select name="type" class="border rounded px-4 py-2">
+            <option value="">Tous les types</option>
+            <option value="digital" {% if app.request.get('type') == 'digital' %}selected{% endif %}>Digital</option>
+            <option value="physical" {% if app.request.get('type') == 'physical' %}selected{% endif %}>Physique</option>
+        </select>
+
+        <div class="flex space-x-4">
+            <input type="number" name="min_price" placeholder="Prix min"
+                   class="border rounded px-4 py-2 w-full max-w-xs" value="{{ app.request.get('min_price') }}">
+
+            <input type="number" name="max_price" placeholder="Prix max"
+                   class="border rounded px-4 py-2 w-full max-w-xs" value="{{ app.request.get('max_price') }}">
+        </div>
+
+        <select name="price_sort" class="border rounded px-4 py-2">
+            <option value="">Trier par prix</option>
+            <option value="asc" {% if app.request.get('price_sort') == 'asc' %}selected{% endif %}>Croissant</option>
+            <option value="desc" {% if app.request.get('price_sort') == 'desc' %}selected{% endif %}>Décroissant</option>
+        </select>
+
+        {% if app.request.get('category') %}
+        <input type="hidden" name="category" value="{{ app.request.get('category') }}">
+        {% endif %}
+
         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Rechercher
         </button>
@@ -54,16 +85,16 @@
                     </div>
                 </a>
 
-                <!-- voter personnalisé -->
-                <div class="absolute bottom-2 right-2">
-                    {% if is_granted('EDIT', product) %}
+                <!-- Admin Edit Option -->
+                {% if is_granted('EDIT', product) %}
+                    <div class="absolute bottom-2 right-2">
                         <a href="{{ path('admin_products_edit', { id: product.id }) }}"
                            class="text-black hover:text-gray-700"
                            title="Modifier le produit">
                             <i class="fas fa-pencil-alt"></i>
                         </a>
-                    {% endif %}
-                </div>
+                    </div>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
