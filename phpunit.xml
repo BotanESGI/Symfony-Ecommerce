@@ -16,7 +16,7 @@
     <php>
         <env name="KERNEL_CLASS" value="App\Kernel"/>
         <env name="APP_ENV" value="test"/>
-        <env name="DATABASE_URL" value="postgresql://postgresql://root:root@database:5432/app_test?"/>
+        <env name="DATABASE_URL" value="postgresql://root:root@database:5432/app"/>
     </php>
 
     <testsuites>
