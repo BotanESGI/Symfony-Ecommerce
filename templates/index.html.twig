@@ -15,16 +15,20 @@
     <div class="mt-5">
         <div class="tab-container">
             <ul class="flex border-b mb-4">
-                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="recentlyViewed" :class="{'font-bold border-b-2 border-blue-500': isActive('recentlyViewed')}">
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors border-b-2 border-transparent"
+                    data-tab="recentlyViewed">
                     Récemment Consultés
                 </li>
-                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="bestRated" :class="{'font-bold border-b-2 border-blue-500': isActive('bestRated')}">
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors border-b-2 border-transparent"
+                    data-tab="bestRated">
                     Les Mieux Notés
                 </li>
-                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="cheapest" :class="{'font-bold border-b-2 border-blue-500': isActive('cheapest')}">
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors border-b-2 border-transparent"
+                    data-tab="cheapest">
                     Les Moins Chers
                 </li>
-                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors" data-tab="mostSold" :class="{'font-bold border-b-2 border-blue-500': isActive('mostSold')}">
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors border-b-2 border-transparent"
+                    data-tab="mostSold">
                     Les Plus Vendus
                 </li>
             </ul>
@@ -146,19 +150,29 @@
 
 
     <script>
+        const defaultTab = document.querySelector('.tab[data-tab="recentlyViewed"]');
+        if (defaultTab) {
+            defaultTab.classList.add('font-bold', 'text-blue-500', 'border-blue-500');
+            defaultTab.classList.remove('text-gray-600', 'border-transparent');
+
+            document.getElementById('recentlyViewed').classList.remove('hidden');
+        }
+
+
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function () {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('font-bold', 'border-b-2', 'border-blue-500'));
-                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('font-bold', 'text-blue-500', 'border-blue-500');
+                    t.classList.add('text-gray-600', 'border-transparent');
+                });
 
-                this.classList.add('font-bold', 'border-b-2', 'border-blue-500');
-                const activePane = document.getElementById(this.dataset.tab);
-                if (activePane) {
-                    activePane.classList.remove('hidden');
-                }
+                this.classList.add('font-bold', 'text-blue-500', 'border-blue-500');
+                this.classList.remove('text-gray-600', 'border-transparent');
+
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+                document.getElementById(this.dataset.tab).classList.remove('hidden');
             });
         });
-
         document.querySelectorAll('.tag').forEach(tag => {
             tag.addEventListener('click', function () {
                 document.querySelectorAll('.tag').forEach(t => {
