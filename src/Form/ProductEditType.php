@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class ProductEditType extends AbstractType
 {
@@ -111,6 +112,14 @@ class ProductEditType extends AbstractType
                         'class' => 'w-full p-2 border border-gray-300 rounded-lg',
                     ]
                 ]);
+                $form->add('createdAt', DateTimeType::class, [
+                    'label' => 'Date de création',
+                    'required' => false,
+                    'widget' => 'single_text',
+                    'attr' => [
+                        'class' => 'w-full p-2 border border-gray-300 rounded-lg',
+                    ],
+                ]);
             } elseif ($product instanceof PhysicalProduct) {
                 $form->add('characteristics', TextareaType::class, [
                     'required' => false,
@@ -123,6 +132,14 @@ class ProductEditType extends AbstractType
                     'data' => $product->getCharacteristics()
                         ? json_encode($product->getCharacteristics(), JSON_PRETTY_PRINT)
                         : null,
+                ]);
+                $form->add('createdAt', DateTimeType::class, [
+                    'label' => 'Date de création',
+                    'required' => false,
+                    'widget' => 'single_text',
+                    'attr' => [
+                        'class' => 'w-full p-2 border border-gray-300 rounded-lg',
+                    ],
                 ]);
             }
         });

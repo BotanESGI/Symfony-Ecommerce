@@ -53,6 +53,7 @@ class HomeController extends AbstractController
         $bestRatedProducts = $productRepository->findByBestRated(10);
         $cheapestProduct = $productRepository->findByPriceASC(10);
         $mostSoldProducts = $productRepository->findMostSoldProduct(10);
+        $latestProducts = $productRepository->findLatestProducts(10);
 
         $session = $this->requestStack->getCurrentRequest()->getSession();
         $recentlyViewedIds = $session->get('recently_viewed', []);
@@ -68,6 +69,7 @@ class HomeController extends AbstractController
             'cheapestProduct' => $cheapestProduct,
             'recentlyViewedProducts' => $recentlyViewedProducts,
             'mostSoldProducts' => $mostSoldProducts,
+            'latestProducts' => $latestProducts,
             'tags' => $tags,
         ]);
     }

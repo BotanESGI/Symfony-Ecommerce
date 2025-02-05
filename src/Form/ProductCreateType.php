@@ -20,6 +20,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class ProductCreateType extends AbstractType
 {
@@ -119,6 +120,14 @@ class ProductCreateType extends AbstractType
                         'class' => 'w-full p-2 border border-gray-300 rounded-lg',
                     ]
                 ]);
+                $form->add('createdAt', DateTimeType::class, [
+                    'label' => 'Date de création',
+                    'required' => false,
+                    'widget' => 'single_text',
+                    'attr' => [
+                        'class' => 'w-full p-2 border border-gray-300 rounded-lg',
+                    ],
+                ]);
                 $form->add('submit', SubmitType::class, [
                     'label' => 'Créer le produit digital',
                     'attr' => [
@@ -137,6 +146,14 @@ class ProductCreateType extends AbstractType
                     'data' => $product->getCharacteristics()
                         ? json_encode($product->getCharacteristics(), JSON_PRETTY_PRINT)
                         : null,
+                ]);
+                $form->add('createdAt', DateTimeType::class, [
+                    'label' => 'Date de création',
+                    'required' => false,
+                    'widget' => 'single_text',
+                    'attr' => [
+                        'class' => 'w-full p-2 border border-gray-300 rounded-lg',
+                    ],
                 ]);
                 $form->add('submit', SubmitType::class, [
                     'label' => 'Créer le produit physique',

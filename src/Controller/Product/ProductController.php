@@ -38,6 +38,7 @@ class ProductController extends AbstractController
         $minPrice = $request->query->get('min_price');
         $maxPrice = $request->query->get('max_price');
         $priceSort = $request->query->get('price_sort');
+        $dateSort = $request->query->get('date_sort');
 
         $categories = $categoryRepository->findAll();
         $products = $productRepository->findAll();
@@ -100,6 +101,14 @@ class ProductController extends AbstractController
                 usort($products, fn($a, $b) => $a->getPrice() <=> $b->getPrice());
             } elseif ($priceSort === 'desc') {
                 usort($products, fn($a, $b) => $b->getPrice() <=> $a->getPrice());
+            }
+        }
+
+        if ($dateSort) {
+            if ($dateSort === 'asc') {
+                usort($products, fn($a, $b) => $a->getCreatedAt() <=> $b->getCreatedAt());
+            } elseif ($dateSort === 'desc') {
+                usort($products, fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
             }
         }
 

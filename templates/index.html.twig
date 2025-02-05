@@ -31,6 +31,10 @@
                     data-tab="mostSold">
                     Les Plus Vendus
                 </li>
+                <li class="tab cursor-pointer py-2 px-4 text-gray-600 hover:text-blue-500 transition-colors border-b-2 border-transparent"
+                    data-tab="latestProducts">
+                    Les Derniers Ajouts
+                </li>
             </ul>
 
             <div class="tab-content">
@@ -120,6 +124,28 @@
                             </a>
                         {% else %}
                             <p>Aucun produit vendu jusqu'à présent.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane hidden" id="latestProducts">
+                    <h3 class="text-xl mb-2">Derniers Ajouts</h3>
+                    <div class="flex gap-5 overflow-x-auto py-2">
+                        {% for product in latestProducts %}
+                            <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                {% else %}
+                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                {% endif %}
+                                <div class="p-2">
+                                    <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
+                                    <p class="text-sm text-gray-500 truncate">{{ product.description }}</p>
+                                    <strong class="block mt-1 truncate">Prix : {{ product.price }} €</strong>
+                                </div>
+                            </a>
+                        {% else %}
+                            <p>Aucun produit récemment ajouté.</p>
                         {% endfor %}
                     </div>
                 </div>

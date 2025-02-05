@@ -28,6 +28,7 @@ use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\OrdersRepository;
 use App\Repository\ProductRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -157,6 +158,10 @@ final class AdminController extends AbstractController
                 }
             }
 
+            if ($product->getCreatedAt() === null) {
+                $product->setCreatedAt(new DateTime());
+            }
+
             $this->entityManager->persist($product);
             $this->entityManager->flush();
 
@@ -210,6 +215,10 @@ final class AdminController extends AbstractController
                 } else {
                     $product->setCharacteristics([]);
                 }
+            }
+
+            if ($product->getCreatedAt() === null) {
+                $product->setCreatedAt(new DateTime());
             }
 
             $this->entityManager->persist($product);

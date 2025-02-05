@@ -96,6 +96,11 @@
             {% endif %}
         </div>
     {% endif %}
+    <div class="mb-4">
+        {{ form_label(form.createdAt) }}
+        {{ form_widget(form.createdAt) }}
+        <div class="error">{{ form_errors(form.createdAt) }}</div>
+    </div>
 
     <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300 shadow-lg">
         Sauvegarder
