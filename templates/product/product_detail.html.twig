@@ -50,7 +50,7 @@
         <span class="absolute top-2 left-2 bg-gray-800 text-white text-sm font-medium px-2 py-1 rounded-lg z-10">
           {{ product.getProductType() }}
         </span>
-            <img src="{{ product.image }}" alt="Image de {{ product.name }}" class="w-full h-auto max-h-80 object-cover rounded-lg mb-6">
+            <img src="{{ asset(product.image) }}" alt="Image de {{ product.name }}" class="w-full h-auto max-h-80 object-cover rounded-lg mb-6">
         </div>
         <div class="md:w-1/2 md:pl-6">
             <div class="mb-2">

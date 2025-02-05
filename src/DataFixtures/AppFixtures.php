@@ -98,7 +98,8 @@ class AppFixtures extends Fixture
                     'couleur' => 'Noir'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Marshall_Monitor_Headphone_-_5._details_%282013-05-08_08.38.08_by_Dave_Kobrehel%29.jpg/1920px-Marshall_Monitor_Headphone_-_5._details_%282013-05-08_08.38.08_by_Dave_Kobrehel%29.jpg',
-                'category' => 'Électronique',
+                'default_category' => 'Électronique',
+                'category' => ['Électronique', 'Musique'],
             ],
             [
                 'name' => 'Ordinateur portable',
@@ -115,7 +116,8 @@ class AppFixtures extends Fixture
                     'couleur' => 'Argent'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Samsung_QX-511_%282%29.JPG/1920px-Samsung_QX-511_%282%29.JPG',
-                'category' => 'Électronique',
+                'default_category' => 'Électronique',
+                'category' => ['Électronique', 'Éducation'],
             ],
             [
                 'name' => 'Smartphone',
@@ -131,6 +133,7 @@ class AppFixtures extends Fixture
                     'couleur' => 'Bleu'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Samsung_Galaxy_S10%2B.jpg/1024px-Samsung_Galaxy_S10%2B.jpg',
+                'default_category' => 'Électronique',
                 'category' => 'Électronique',
             ],
             [
@@ -147,6 +150,7 @@ class AppFixtures extends Fixture
                     'couleur' => 'Noir'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Smartwatch-828786.jpg/1920px-Smartwatch-828786.jpg',
+                'default_category' => 'Électronique',
                 'category' => 'Électronique',
             ],
             [
@@ -163,7 +167,8 @@ class AppFixtures extends Fixture
                     'couleur' => 'Multicolore'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/f8/COCINAR_CON_EL_LIBRO.png',
-                'category' => 'Livres',
+                'default_category' => 'Livres',
+                'category' => ['Livres', 'Éducation'],
             ],
             [
                 'name' => 'Roman d\'aventure',
@@ -179,7 +184,8 @@ class AppFixtures extends Fixture
                     'couleur' => 'Multicolore'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/8/86/Verne_Tour_du_Monde.jpg',
-                'category' => 'Livres',
+                'default_category' => 'Livres',
+                'category' => ['Livres', 'Éducation'],
             ],
             [
                 'name' => 'Livre de science-fiction',
@@ -195,7 +201,8 @@ class AppFixtures extends Fixture
                     'couleur' => 'Multicolore'
                 ],
                 'image' => 'https://marketplace.canva.com/EADzX_z4AWg/1/0/1003w/canva-fonc%C3%A9-bleu-science-fiction-livre-couverture-smN23L-N62g.jpg',
-                'category' => 'Livres',
+                'default_category' => 'Livres',
+                'category' => ['Livres', 'Éducation'],
             ],
             [
                 'name' => 'Jeu de construction',
@@ -211,7 +218,8 @@ class AppFixtures extends Fixture
                     'color'               => 'Multicolore'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Constri.JPG/1920px-Constri.JPG',
-                'category' => 'Jouets',
+                'default_category' => 'Jouets',
+                'category' => ['Jouets', 'Éducation'],
             ],
             [
                 'name' => 'Poupée',
@@ -226,6 +234,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Rose'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Pierotti_wax_doll_from_Frederic_Aldis%2C_London%2C_01%2C_sitting_doll%2C_vested.jpg/1024px-Pierotti_wax_doll_from_Frederic_Aldis%2C_London%2C_01%2C_sitting_doll%2C_vested.jpg',
+                'default_category' => 'Jouets',
                 'category' => 'Jouets',
             ],
             [
@@ -242,7 +251,8 @@ class AppFixtures extends Fixture
                     'color'               => 'Multicolore'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Museum_Ravensburger_14.jpg/1280px-Museum_Ravensburger_14.jpg',
-                'category' => 'Jouets',
+                'default_category' => 'Jouets',
+                'category' => ['Jouets', 'Éducation'],
             ],
             [
                 'name' => 'T-shirt',
@@ -257,6 +267,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Blanc'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/2/24/Blue_Tshirt.jpg',
+                'default_category' => 'Mode',
                 'category' => 'Mode',
             ],
             [
@@ -272,6 +283,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Bleu'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Levi%27s_501_raw_jeans.jpg/800px-Levi%27s_501_raw_jeans.jpg',
+                'default_category' => 'Mode',
                 'category' => 'Mode',
             ],
             [
@@ -287,6 +299,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Noir'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/New-613-Schott_Perfecto-cut-out-and-shaded.jpg/640px-New-613-Schott_Perfecto-cut-out-and-shaded.jpg',
+                'default_category' => 'Mode',
                 'category' => 'Mode',
             ],
             [
@@ -302,6 +315,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Rouge'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Tennis_racket_and_ball.JPG/255px-Tennis_racket_and_ball.JPG',
+                'default_category' => 'Sports',
                 'category' => 'Sports',
             ],
             [
@@ -317,6 +331,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Noir et blanc'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Football_Pallo_valmiina-cropped.jpg',
+                'default_category' => 'Sports',
                 'category' => 'Sports',
             ],
             [
@@ -332,7 +347,8 @@ class AppFixtures extends Fixture
                     'color'               => 'Violet'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/0/06/Ardha-Nav%C4%81sana.JPG',
-                'category' => 'Sports',
+                'default_category' => 'Sports',
+                'category' => ['Sports', 'Bien-être'],
             ],
             [
                 'name' => 'Mixeur',
@@ -347,6 +363,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Noir'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/0/06/ElectricBlender.jpg',
+                'default_category' => 'Appareils ménagers',
                 'category' => 'Appareils ménagers',
             ],
             [
@@ -362,6 +379,7 @@ class AppFixtures extends Fixture
                     'color'               => 'Brun'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Table_pliante.jpg/1920px-Table_pliante.jpg',
+                'default_category' => 'Jardin',
                 'category' => 'Jardin',
             ],
             [
@@ -377,7 +395,8 @@ class AppFixtures extends Fixture
                     'color'               => 'Vert'
                 ],
                 'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/V%C3%A9lo_enfant_%C3%A0_courroie_et_cadre_aluminium.jpg/360px-V%C3%A9lo_enfant_%C3%A0_courroie_et_cadre_aluminium.jpg',
-                'category' => 'Sports',
+                'default_category' => 'Bien-être',
+                'category' => ['Sports', 'Bien-être'],
             ],
                 [
                     'name' => 'E-book de cuisine',
@@ -388,7 +407,8 @@ class AppFixtures extends Fixture
                     'fileType' => ".PDF",
                     'downloadLink' => 'https://ebook.com/ebook_cuisine.pdf',
                     'image' => 'https://marketplace.canva.com/EADzX1V0eZo/1/0/1003w/canva-rouge-et-blanc-livre-de-cuisine-livre-couverture--84IPJPPzYE.jpg',
-                    'category' => 'Livres',
+                    'default_category' => 'Livres',
+                    'category' => ['Livres', 'Éducation'],
                 ],
                 [
                     'name' => 'Jeu vidéo',
@@ -399,6 +419,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".EXE",
                     'downloadLink' => 'https://jeu.com/downloads/jeu_video.exe',
                     'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Vg_history_icon_alt.svg/1280px-Vg_history_icon_alt.svg.png',
+                    'default_category' => 'Jeux',
                     'category' => 'Jeux',
                 ],
                 [
@@ -410,6 +431,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".ZIP",
                     'downloadLink' => 'https://logiciel.com/downloads/logiciel-montage-vidéo.zip',
                     'image' => 'https://static-cse.canva.com/blob/1145314/Montagevideo.jpg',
+                    'default_category' => 'Électronique',
                     'category' => 'Électronique',
                 ],
                 [
@@ -421,6 +443,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".MP3",
                     'downloadLink' => 'https://album.com/downloads/album-musique.mp3',
                     'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Audio_a.svg/2560px-Audio_a.svg.png',
+                    'default_category' => 'Musique',
                     'category' => 'Musique',
                 ],
                 [
@@ -432,6 +455,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".PDF",
                     'downloadLink' => 'https://cours.com/downloads/cours-programmation.pdf',
                     'image' => 'https://upload.wikimedia.org/wikipedia/commons/a/a4/JavaScript_code.png',
+                    'default_category' => 'Éducation',
                     'category' => 'Éducation',
                 ],
                 [
@@ -443,6 +467,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".APK",
                     'downloadLink' => 'https://application.com/downloads/application_meditation.apk',
                     'image' => 'https://www.conseil-d-assureur.fr/wp-content/uploads/2022/02/app-meditation-petit-bambou.jpg',
+                    'default_category' => 'Bien-être',
                     'category' => 'Bien-être',
                 ],
                 [
@@ -454,6 +479,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".HTML",
                     'downloadLink' => 'https://template.com/downloads/template_site.html',
                     'image' => 'https://marketplace.canva.com/EAE6WTyrSQ0/2/0/1600w/canva-light-beige-sleek-and-simple-blogger-personal-website--7Q4-7tyJj4.jpg',
+                    'default_category' => 'Électronique',
                     'category' => 'Électronique',
                 ],
                 [
@@ -465,6 +491,7 @@ class AppFixtures extends Fixture
                     'fileType' => ".MP4",
                     'downloadLink' => 'https://formation.com/downloads/video_formation_marketing_digital.mp4',
                     'image' => 'https://media.licdn.com/dms/image/v2/C4D12AQFwOmSy4XaXbg/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1621165601697?e=2147483647&v=beta&t=3EdRZZOvjZ3vAoEkEZPl9vwjXHPU88lQD8LEVrbX2mY',
+                    'default_category' => 'Éducation',
                     'category' => 'Éducation',
                 ],
         ];
@@ -488,10 +515,10 @@ class AppFixtures extends Fixture
 
         foreach ($productsData as $data) {
             if ($data['type'] === 'PHYSICAL') {
-                $product = new PhysicalProduct($categories[array_search($data['category'], $categoryNames)]);
+                $product = new PhysicalProduct($categories[array_search($data['default_category'], $categoryNames)]);
                 $product->setCharacteristics($data['characteristics']); // Utilisation des caractéristiques
             } else {
-                $product = new DigitalProduct($categories[array_search($data['category'], $categoryNames)]);
+                $product = new DigitalProduct($categories[array_search($data['default_category'], $categoryNames)]);
                 $product->setFilesize($data['fileSize']);
                 $product->setFiletype($data['fileType']);
                 $product->setDownloadLink($data['downloadLink']);
@@ -502,9 +529,17 @@ class AppFixtures extends Fixture
             $product->setPrice($data['price']);
             $product->setImage($data['image']);
 
-            // Ajout de la catégorie
-            $category = $categories[array_search($data['category'], $categoryNames)];
-            $product->addCategory($category);
+            // Ajout de la catégorie ou les catégories
+            $categoriesArray = is_array($data['category']) ? $data['category'] : [$data['category']];
+
+            foreach ($categoriesArray as $cat)
+            {
+                $category = $categories[array_search($cat, $categoryNames)];
+                if ($category !== false)
+                {
+                    $product->addCategory($category);
+                }
+            }
 
             //Ajout des tags
             $numberOfTags = rand(1, count($tags));

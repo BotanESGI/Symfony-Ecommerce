@@ -44,9 +44,9 @@
                         {% for product in recentlyViewedProducts %}
                             <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
-                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
-                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                    <img src="/images/blank.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
                                     <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
@@ -66,9 +66,14 @@
                         {% for product in bestRatedProducts %}
                             <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
-                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    {% set image_path = product.image %}
+                                    {% if image_path starts with 'https://' or image_path starts with '/image/' %}
+                                        <img src="{{ asset(image_path) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    {% else %}
+                                        <img src="{{ asset('/images/' ~ image_path) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    {% endif %}
                                 {% else %}
-                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                    <img src="/images/blank.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
                                     <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
@@ -89,9 +94,9 @@
                         {% for product in cheapestProduct %}
                             <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
-                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
-                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                    <img src="/images/blank.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
                                     <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
@@ -111,9 +116,14 @@
                         {% for product in mostSoldProducts %}
                             <a href="{{ path('product_detail', { id: product.id, category: product.categoryId }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
-                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    {% set image_path = product.image %}
+                                    {% if image_path starts with 'https://' or image_path starts with '/image/' %}
+                                        <img src="{{ asset(image_path) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    {% else %}
+                                        <img src="{{ asset('/images/' ~ image_path) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    {% endif %}
                                 {% else %}
-                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                    <img src="/images/blank.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
                                     <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
@@ -134,9 +144,9 @@
                         {% for product in latestProducts %}
                             <a href="{{ path('product_detail', { id: product.id, category: product.defaultCategory.id }) }}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article {{ product.name }}">
                                 {% if product.image %}
-                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                                    <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
                                 {% else %}
-                                    <img src="/path/to/default-image.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
+                                    <img src="/images/blank.jpg" alt="Image par défaut" class="w-full h-40 object-cover">
                                 {% endif %}
                                 <div class="p-2">
                                     <h3 class="text-lg font-medium truncate">{{ product.name }}</h3>
@@ -223,7 +233,7 @@
                             data.forEach(product => {
                                 const productCard = `
                                     <a href="/product/${product.id}?category=${product.defaultCategoryId}" class="flex-none w-48 border border-gray-300 rounded-lg overflow-hidden bg-white shadow-md transition-transform transform hover:scale-105" title="Cliquer ici pour en savoir plus sur l'article ${product.name}">
-                                        <img src="${product.image || '/path/to/default-image.jpg'}" alt="${product.name}" class="w-full h-40 object-cover">
+                                        <img src="${product.image || '/images/blank.jpg'}" alt="${product.name}" class="w-full h-40 object-cover">
                                         <div class="p-2">
                                             <h3 class="text-lg font-medium truncate">${product.name}</h3>
                                             <p class="text-sm text-gray-500 truncate">${product.description}</p>

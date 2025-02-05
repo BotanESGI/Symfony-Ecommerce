@@ -44,8 +44,8 @@ ou bien :
 
 ### API :
 - Avoir au moins un controller dédie pour une API (JSON, normalizer, denormalizer) ✅
-- Avoir un envoi de mail (local pour l'instant) ✅
-- Accéder à une API externe (IA ? SMS ? Autre ?) (Stripe) ✅
+- Avoir un envoi de mail ✅
+- Accéder à une API externe (IA ? SMS ? Autre ?) (Utilisation de Stripe) ✅
 
 ### Autre :
 - Avoir un minimum 1 test unitaire et 1 test fonctionnel✅
@@ -54,6 +54,7 @@ ou bien :
 - Avoir un espace admin ✅
 - Minimum 10 pages différentes ✅
 
+(Pas obligatoire)
 ### CI/CD :
 - Projet déployé
 - Une CI qui fait tourner les tests, l'analyse statique PHPStan, un linter ... ?
