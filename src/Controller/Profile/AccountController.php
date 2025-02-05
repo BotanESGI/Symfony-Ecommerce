@@ -3,6 +3,8 @@
 
 namespace App\Controller\Profile;
 
+use App\Entity\Invoice;
+use App\Entity\Orders;
 use App\Entity\User;
 use App\Form\UserFrontType;
 use App\Service\CartService;
@@ -14,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -78,7 +81,7 @@ class AccountController extends AbstractController
     }
 
     #[Route('profile/account/delete', name: 'account_delete', methods: ['POST'])]
-    public function delete(Request $request, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage): Response
     {
         // Vérifie si l'utilisateur est banni
         if ($this->isGranted('ROLE_BANNED')) {
@@ -96,8 +99,46 @@ class AccountController extends AbstractController
             }
             return $this->redirect($referer);
         }
+
+        $orders = $entityManager->getRepository(Orders::class)->findBy(['user' => $user]);
+        $invoices = $entityManager->getRepository(Invoice::class)->findBy(['user' => $user]);
+        if ($invoices || $orders) {
+            foreach ($invoices as $invoice) {
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "invoice" SET "order_id" = NULL WHERE "id" = :id',
+                    ['id' => $invoice->getId()]
+                );
+            }
+
+            foreach ($orders as $order) {
+                $entityManager->getConnection()->executeStatement(
+                    'UPDATE "orders" SET "invoice_id" = NULL WHERE "id" = :id',
+                    ['id' => $order->getId()]
+                );
+            }
+
+            foreach ($orders as $order) {
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "orders" WHERE "id" = :id',
+                    ['id' => $order->getId()]
+                );
+            }
+
+            foreach ($invoices as $invoice) {
+                $entityManager->getConnection()->executeStatement(
+                    'DELETE FROM "invoice" WHERE "id" = :id',
+                    ['id' => $invoice->getId()]
+                );
+            }
+        }
+
+        // Maintenant, supprimer l'utilisateur
         $entityManager->remove($user);
         $entityManager->flush();
+
+        //fix cart service erreor
+        $tokenStorage->setToken(null);
+        $request->getSession()->invalidate();
 
         $this->addFlash('success', 'Votre compte a été supprimé.');
 

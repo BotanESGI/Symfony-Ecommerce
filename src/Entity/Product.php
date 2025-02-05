@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,12 +72,17 @@ abstract class Product
     #[Assert\NotBlank(message: "La category par defaut ne doit pas être vide.")]
     private Category $defaultCategory;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['product:read', 'product:write'])]
+    private ?\DateTimeInterface $createdAt = null;
+
     public function __construct(Category $defaultCategory)
     {
         $this->defaultCategory = $defaultCategory;
         $this->reviews = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -237,5 +243,16 @@ abstract class Product
         }
 
         return 'Type de produit inconnu';
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
     }
 }

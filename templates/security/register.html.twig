@@ -4,16 +4,16 @@
 
 {% block body %}
     <div class="container mx-auto mt-10">
+        <div class="border border-orange-500 bg-orange-100 text-gray-700 p-3 rounded mb-4 max-w-lg mx-auto mt-10" style="background: #e0e0ff">
+            <p class="font-bold">Votre mot de passe doit respecter les règles suivantes :</p>
+            <ul class="list-disc list-inside">
+                <li>Au moins 8 caractères</li>
+                <li>Au moins une lettre majuscule</li>
+                <li>Au moins un chiffre</li>
+                <li>Au moins un caractère spécial</li>
+            </ul>
+        </div>
         <h1 class="text-2xl font-bold text-center mb-4">Créer un compte</h1>
-        <p class="text-gray-600 text-sm mb-4">
-            Votre mot de passe doit respecter les règles suivantes :
-        </p>
-        <ul class="list-disc list-inside">
-            <li>Au moins 8 caractères</li>
-            <li>Au moins une lettre majuscule</li>
-            <li>Au moins un chiffre</li>
-            <li>Au moins un caractère spécial</li>
-        </ul>
         {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'}}) }}
 
         <div class="mb-4">

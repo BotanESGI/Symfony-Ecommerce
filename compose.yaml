@@ -9,6 +9,7 @@ services:
             - .:/app:rw
         ports:
             - "8000:8000"
+        command: sh -c "/usr/local/bin/init_db_test.sh && symfony server:start --port=8000 --dir=./public --listen-ip=0.0.0.0"
     
     database:
         image: postgres:16-alpine
@@ -16,6 +17,7 @@ services:
             POSTGRES_DB: app
             POSTGRES_PASSWORD: root
             POSTGRES_USER: root
+            POSTGRES_DB_TEST: app_test
         volumes:
             - database_data:/var/lib/postgresql/data:rw
         ports:

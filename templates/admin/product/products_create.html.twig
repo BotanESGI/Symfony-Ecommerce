@@ -63,11 +63,21 @@
             {{ form_widget(form.filetype) }}
             <div class="error">{{ form_errors(form.filetype) }}</div>
         </div>
+        <div>
+            {{ form_label(form.createdAt) }}
+            {{ form_widget(form.createdAt) }}
+            <div class="error">{{ form_errors(form.createdAt) }}</div>
+        </div>
     {% elseif productType == 'Produit physique' %}
         <div>
             {{ form_label(form.characteristics) }}
             {{ form_widget(form.characteristics) }}
             <div class="error">{{ form_errors(form.characteristics) }}</div>
+        </div>
+        <div>
+            {{ form_label(form.createdAt) }}
+            {{ form_widget(form.createdAt) }}
+            <div class="error">{{ form_errors(form.createdAt) }}</div>
         </div>
     {% endif %}
 

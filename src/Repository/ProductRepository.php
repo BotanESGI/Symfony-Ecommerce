@@ -82,4 +82,14 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('tagId', $tagId);
         return $qb->getQuery()->getResult();
     }
+
+    public function findLatestProducts($limit): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 
 #[AsCommand(
     name: 'commande_personnalise_setup_projet',
@@ -34,11 +35,19 @@ class CommandePersonnaliseSetupProjetCommand extends Command
             $io->section('1) Installation des dépendances Composer...');
             $this->runCommand(['composer', 'install'], $output);
 
-            $io->section('2) Suppression du schéma existant...');
-            $this->runCommand(['php', 'bin/console', 'doctrine:schema:drop', '--force'], $output);
+            // Vérifie si la table doctrine_migration_versions existe (1er installation du projet ou reinstaliisation du projet)
+            $schemaManager = $this->entityManager->getConnection()->getSchemaManager();
+            $tableExists = $schemaManager->tablesExist(['doctrine_migration_versions']);
 
-            $io->section('3) Suppression des entrées dans doctrine_migration_versions...');
-            $this->clearMigrationVersionsTable();
+            if ($tableExists) {
+                $io->section('2) Suppression du schéma existant...');
+                $this->runCommand(['php', 'bin/console', 'doctrine:schema:drop', '--force'], $output);
+
+                $io->section('3) Suppression des entrées dans doctrine_migration_versions...');
+                $this->clearMigrationVersionsTable();
+            } else {
+                $io->note('La table "doctrine_migration_versions" n\'existe pas. Passer cette étape.');
+            }
 
             $io->section('4) Exécution des migrations...');
             $this->runCommand(['php', 'bin/console', 'doctrine:migrations:migrate', '--no-interaction'], $output);

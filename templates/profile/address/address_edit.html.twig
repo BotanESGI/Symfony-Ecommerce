@@ -8,7 +8,23 @@
 
         {{ form_start(form) }}
         <div class="space-y-4">
-            {{ form_widget(form) }}
+            {% for field in form %}
+                {% if field.vars.name != '_token' %}
+                    <div>
+                        {{ form_label(field) }}
+                        {{ form_widget(field) }}
+
+                        {% if field.vars.errors|length > 0 %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {{ form_errors(field) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    {{ form_widget(field) }}
+                {% endif %}
+            {% endfor %}
+
             <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600">
                 Enregistrer les modifications
             </button>

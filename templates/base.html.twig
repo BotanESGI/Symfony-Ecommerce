@@ -141,8 +141,11 @@
         {% block body %}{% endblock %}
     </main>
 {% else %}
-    <h1>Accès Refusé</h1>
-    <p>Votre compte a été banni. Pour plus d'informations, contactez l'administrateur.</p>
+    <div class="bg-white text-center text-gray-800 p-8 rounded-lg mb-8 shadow-md mt-5">
+        <h1 class="text-4xl font-bold">Votre compte a été suspendu.</h1>
+        <p class="text-xl mt-2">Votre compte a été banni. Pour plus d'informations, contactez l'administrateur.</p>
+        <a href="{{ path('logout') }}" class="text-blue-500 hover:text-blue-700 mt-2 inline-block">Déconnexion</a>
+    </div>
 {% endif %}
 
 <footer class="bg-gray-800 text-white py-4">
