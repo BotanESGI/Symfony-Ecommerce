@@ -9,7 +9,6 @@ services:
             - .:/app:rw
         ports:
             - "8000:8000"
-        command: sh -c "until pg_isready -h database -p 5432; do sleep 2; done; /usr/local/bin/init_db_test.sh && symfony server:start --port=8000 --dir=./public --listen-ip=0.0.0.0"
     
     database:
         image: postgres:16-alpine
@@ -21,8 +20,8 @@ services:
         volumes:
             - database_data:/var/lib/postgresql/data:rw
         ports:
-            - "5432:5432"    
-
+            - "5432:5432"
+    
     mailer:
         image: axllent/mailpit
         ports:
@@ -31,7 +30,7 @@ services:
         environment:
             MP_SMTP_AUTH_ACCEPT_ANY: 1
             MP_SMTP_AUTH_ALLOW_INSECURE: 1
-            
+    
     adminer:
         image: adminer
         ports:

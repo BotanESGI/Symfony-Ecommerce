@@ -12,6 +12,7 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash && \
 # Copier le contenu de l'application, y compris le répertoire public
 COPY . .
 
+
 # Définir le répertoire de travail
 WORKDIR /app
 
