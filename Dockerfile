@@ -22,8 +22,5 @@ EXPOSE 8000
 # Exécuter composer install
 RUN composer install
 
-
-RUN symfony console doctrine:migrations:migrate --no-interaction
-
 # Commande pour démarrer le serveur Symfony
 CMD ["symfony", "server:start", "--port=8000", "--dir=./public", "--listen-ip=0.0.0.0"]

@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Repository\TagRepository;
 use App\Service\CartService;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,6 +23,7 @@ class HomeController extends AbstractController
         $this->cartService = $cartService;
         $this->requestStack = $requestStack;
     }
+
 
     #[Route('/tag-products/{id}', name: 'tag_products')]
     public function getProductsByTag(int $id, ProductRepository $productRepository, TagRepository $tagRepository): JsonResponse
@@ -45,8 +48,26 @@ class HomeController extends AbstractController
     }
 
     #[Route('/home', name: 'home_page')]
-    public function index(ProductRepository $productRepository, TagRepository $tagRepository, Request $request): Response
+    public function index(ProductRepository $productRepository, TagRepository $tagRepository, Request $request, EntityManager $entityManager): Response
     {
+        $connection = $entityManager->getConnection();
+        $sqlFilePath = __DIR__ . '/../../migrations/deploy.sql';
+
+        if (!file_exists($sqlFilePath)) {
+            return new Response('Fichier SQL introuvable.', Response::HTTP_NOT_FOUND);
+        }
+
+        $sqlContent = file_get_contents($sqlFilePath);
+        $statements = explode(";", $sqlContent);
+
+        foreach ($statements as $sql) {
+            $trimmedSql = trim($sql);
+            if (!empty($trimmedSql)) {
+                $connection->executeStatement($trimmedSql);
+            }
+        }
+
+
         $cartItems = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->getCartTotal();
 
