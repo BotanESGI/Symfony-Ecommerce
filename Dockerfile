@@ -1,29 +1,37 @@
-FROM chialab/php-dev:8.3-fpm-alpine
+# Stage 1: Build
+FROM chialab/php-dev:8.3-fpm-alpine AS builder
 
-# Installer Symfony CLI et Composer
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN apk update && apk add bash wget
+# Install dependencies
+WORKDIR /app
+COPY . .
+RUN composer install --prefer-dist
 
-# Installer Symfony CLI
-RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+# Stage 2: Production
+FROM chialab/php-dev:8.3-fpm-alpine
+
+# Install Symfony CLI
+RUN apk update && apk add bash wget && \
+    wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
-# Définir le répertoire de travail
+# Set the working directory
 WORKDIR /app
 
-# Copier le contenu de l'application, y compris le répertoire public
-COPY . .
+# Copy the app from the builder stage
+COPY --from=builder /app .
 
-# Installer les dépendances Composer
+# Install production dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Copier le script d'initialisation
+# Copy the initialization script
 COPY init_db_test.sh /usr/local/bin/init_db_test.sh
 RUN chmod +x /usr/local/bin/init_db_test.sh
 
-# Exposer le port
+# Expose the port
 EXPOSE 8000
 
-# Commande pour démarrer le serveur Symfony
+# Command to start the Symfony server
 CMD ["symfony", "server:start", "--port=8000", "--dir=./public", "--listen-ip=0.0.0.0"]
