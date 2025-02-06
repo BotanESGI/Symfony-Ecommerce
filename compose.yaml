@@ -9,6 +9,8 @@ services:
             - .:/app:rw
         ports:
             - "8000:8000"
+        networks:
+            - my_network
     
     database:
         image: postgres:16-alpine
@@ -21,6 +23,8 @@ services:
             - database_data:/var/lib/postgresql/data:rw
         ports:
             - "5432:5432"
+        networks:
+            - my_network
     
     mailer:
         image: axllent/mailpit
@@ -30,11 +34,19 @@ services:
         environment:
             MP_SMTP_AUTH_ACCEPT_ANY: 1
             MP_SMTP_AUTH_ALLOW_INSECURE: 1
+        networks:
+            - my_network
     
     adminer:
         image: adminer
         ports:
             - "8080:8080"  # Adminer accessible sur http://localhost:8080
+        networks:
+            - my_network
 
 volumes:
     database_data:
+
+networks:
+    my_network: 
+        driver: bridge 
