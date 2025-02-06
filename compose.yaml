@@ -9,7 +9,7 @@ services:
             - .:/app:rw
         ports:
             - "8000:8000"
-        command: sh -c "/usr/local/bin/init_db_test.sh && symfony server:start --port=8000 --dir=./public --listen-ip=0.0.0.0"
+        command: sh -c "until pg_isready -h database -p 5432; do sleep 2; done; /usr/local/bin/init_db_test.sh && symfony server:start --port=8000 --dir=./public --listen-ip=0.0.0.0"
     
     database:
         image: postgres:16-alpine
