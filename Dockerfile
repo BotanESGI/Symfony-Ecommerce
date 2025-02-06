@@ -1,9 +1,9 @@
 FROM chialab/php-dev:8.3-fpm-alpine
 
-# Installer Symfony CLI, Composer et le client PostgreSQL
+# Installer Symfony CLI et Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN apk update && apk add bash wget postgresql-client
+RUN apk update && apk add bash wget
 
 # Installer Symfony CLI
 RUN wget https://get.symfony.com/cli/installer -O - | bash && \
@@ -12,11 +12,11 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash && \
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Copier le contenu de l'application, y compris le répertoire public
-COPY . .
+RUN composer install --optimize-autoloader
 
 # Installer les dépendances Composer
-RUN composer install --optimize-autoloader
+# Copier le contenu de l'application, y compris le répertoire public
+COPY . .
 
 # Copier le script d'initialisation
 COPY init_db_test.sh /usr/local/bin/init_db_test.sh
