@@ -19,8 +19,8 @@ RUN chmod +x /usr/local/bin/init_db_test.sh
 # Exposer le port
 EXPOSE 8000
 
-# Exécuter la commande personnalisée pour configurer le projet
-RUN docker-compose exec php php bin/console commande_personnalise_setup_projet
+# Exécuter composer install
+RUN composer install
 
 
 # Commande pour démarrer le serveur Symfony
