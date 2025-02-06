@@ -12,6 +12,9 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash && \
 # Définir le répertoire de travail
 WORKDIR /app
 
+# Copier le contenu de l'application, y compris le répertoire public
+COPY . .
+
 # Copier le script d'initialisation
 COPY init_db_test.sh /usr/local/bin/init_db_test.sh
 RUN chmod +x /usr/local/bin/init_db_test.sh
