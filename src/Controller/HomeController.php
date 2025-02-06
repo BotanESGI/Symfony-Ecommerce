@@ -48,7 +48,7 @@ class HomeController extends AbstractController
     }
 
     #[Route('/home', name: 'home_page')]
-    public function index(ProductRepository $productRepository, TagRepository $tagRepository, Request $request, EntityManager $entityManager): Response
+    public function index(ProductRepository $productRepository, TagRepository $tagRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $connection = $entityManager->getConnection();
         $sqlFilePath = __DIR__ . '/../../migrations/deploy.sql';
