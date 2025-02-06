@@ -28,7 +28,7 @@ ou bien :
 ### Documentation :
 
 - Un cahier des charges (à adapter car les entités ont été modifiées) ✅
-- Un schéma de la BDD (En cours)
+- Un schéma de la BDD ✅
 - Des fixtures ✅
 - Un guide (readme) pour installer le projet en local, le démarrer, les comptes de tests, process de validation ✅
 
