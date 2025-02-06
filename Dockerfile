@@ -15,6 +15,9 @@ WORKDIR /app
 # Copier le contenu de l'application, y compris le répertoire public
 COPY . .
 
+# Installer les dépendances Composer
+RUN composer install --no-dev --optimize-autoloader
+
 # Copier le script d'initialisation
 COPY init_db_test.sh /usr/local/bin/init_db_test.sh
 RUN chmod +x /usr/local/bin/init_db_test.sh
