@@ -1,8 +1,3 @@
-CREATE INDEX "idx_f0fe25271ad5cdbf" ON "public"."cart_item" USING btree ("cart_id");
-
-CREATE INDEX "idx_f0fe25274584665a" ON "public"."cart_item" USING btree ("product_id");
-
-
 CREATE SEQUENCE category_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."category" (
