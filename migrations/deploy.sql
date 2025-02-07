@@ -1,23 +1,3 @@
-CREATE TABLE "public"."category" (
-                                     "id" integer DEFAULT nextval('category_id_seq') NOT NULL,
-                                     "name" character varying(255) NOT NULL,
-                                     "color" character varying(7),
-                                     CONSTRAINT "category_pkey" PRIMARY KEY ("id")
-) WITH (oids = false);
-
-INSERT INTO "category" ("id", "name", "color") VALUES
-                                                   (1,	'Électronique',	'#FF5733'),
-                                                   (2,	'Appareils ménagers',	'#33FF57'),
-                                                   (3,	'Livres',	'#3357FF'),
-                                                   (4,	'Jouets',	'#FF33A1'),
-                                                   (5,	'Mode',	'#FFC300'),
-                                                   (6,	'Sports',	'#581845'),
-                                                   (7,	'Jardin',	'#DAF7A6'),
-                                                   (8,	'Musique',	'#C70039'),
-                                                   (9,	'Bien-être',	'#900C3F'),
-                                                   (10,	'Voyage',	'#2E86C1'),
-                                                   (11,	'Éducation',	'#FF5733');
-
 CREATE TABLE "public"."digital_product" (
                                             "id" integer NOT NULL,
                                             "download_link" character varying(255) NOT NULL,
