@@ -1,5 +1,3 @@
-CREATE SEQUENCE category_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
 CREATE TABLE "public"."category" (
                                      "id" integer DEFAULT nextval('category_id_seq') NOT NULL,
                                      "name" character varying(255) NOT NULL,
