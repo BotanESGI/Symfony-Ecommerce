@@ -1,30 +1,3 @@
--- Adminer 4.8.1 PostgreSQL 16.6 dump
-CREATE SEQUENCE address_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."address" (
-                                    "id" integer DEFAULT nextval('address_id_seq') NOT NULL,
-                                    "user_id" integer NOT NULL,
-                                    "street" character varying(255) NOT NULL,
-                                    "city" character varying(255) NOT NULL,
-                                    "postal_code" character varying(10) NOT NULL,
-                                    CONSTRAINT "address_pkey" PRIMARY KEY ("id")
-) WITH (oids = false);
-
-CREATE INDEX "idx_d4e6f81a76ed395" ON "public"."address" USING btree ("user_id");
-
-TRUNCATE "address";
-INSERT INTO "address" ("id", "user_id", "street", "city", "postal_code") VALUES
-                                                                             (1,	1,	'Rue 0 Principale',	'Ville 0',	'75000'),
-                                                                             (2,	2,	'Rue 1 Principale',	'Ville 1',	'75001'),
-                                                                             (3,	3,	'Rue 2 Principale',	'Ville 2',	'75002'),
-                                                                             (4,	4,	'Rue 3 Principale',	'Ville 3',	'75003'),
-                                                                             (5,	5,	'Rue 4 Principale',	'Ville 4',	'75004'),
-                                                                             (6,	6,	'Rue 5 Principale',	'Ville 5',	'75005'),
-                                                                             (7,	7,	'Rue 6 Principale',	'Ville 6',	'75006'),
-                                                                             (8,	8,	'Rue 7 Principale',	'Ville 7',	'75007'),
-                                                                             (9,	9,	'Rue 8 Principale',	'Ville 8',	'75008'),
-                                                                             (10,	10,	'Rue 9 Principale',	'Ville 9',	'75009');
-
 CREATE SEQUENCE cart_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."cart" (
