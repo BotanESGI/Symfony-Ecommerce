@@ -1,4 +1,17 @@
-TRUNCATE "category";
+CREATE INDEX "idx_f0fe25271ad5cdbf" ON "public"."cart_item" USING btree ("cart_id");
+
+CREATE INDEX "idx_f0fe25274584665a" ON "public"."cart_item" USING btree ("product_id");
+
+
+CREATE SEQUENCE category_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."category" (
+                                     "id" integer DEFAULT nextval('category_id_seq') NOT NULL,
+                                     "name" character varying(255) NOT NULL,
+                                     "color" character varying(7),
+                                     CONSTRAINT "category_pkey" PRIMARY KEY ("id")
+) WITH (oids = false);
+
 INSERT INTO "category" ("id", "name", "color") VALUES
                                                    (1,	'Électronique',	'#FF5733'),
                                                    (2,	'Appareils ménagers',	'#33FF57'),
@@ -20,7 +33,6 @@ CREATE TABLE "public"."digital_product" (
                                             CONSTRAINT "digital_product_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-TRUNCATE "digital_product";
 INSERT INTO "digital_product" ("id", "download_link", "filesize", "filetype") VALUES
                                                                                   (20,	'https://ebook.com/ebook_cuisine.pdf',	4,	'.PDF'),
                                                                                   (21,	'https://jeu.com/downloads/jeu_video.exe',	2,	'.EXE'),
@@ -38,7 +50,6 @@ CREATE TABLE "public"."doctrine_migration_versions" (
                                                         CONSTRAINT "doctrine_migration_versions_pkey" PRIMARY KEY ("version")
 ) WITH (oids = false);
 
-TRUNCATE "doctrine_migration_versions";
 INSERT INTO "doctrine_migration_versions" ("version", "executed_at", "execution_time") VALUES
                                                                                            ('DoctrineMigrations\Version20250120224337',	'2025-02-06 23:19:35',	434),
                                                                                            ('DoctrineMigrations\Version20250121084325',	'2025-02-06 23:19:35',	3),
@@ -70,7 +81,6 @@ CREATE TABLE "public"."invoice" (
 
 CREATE INDEX "idx_90651744a76ed395" ON "public"."invoice" USING btree ("user_id");
 
-TRUNCATE "invoice";
 INSERT INTO "invoice" ("id", "user_id", "total_amount", "pdf_path", "order_id") VALUES
                                                                                     (1,	1,	291,	'/path/to/invoices/invoice_1.pdf',	1),
                                                                                     (2,	2,	803,	'/path/to/invoices/invoice_2.pdf',	2),
@@ -97,7 +107,6 @@ CREATE INDEX "idx_52ea1f094584665a" ON "public"."order_item" USING btree ("produ
 
 CREATE INDEX "idx_52ea1f098d9f6d38" ON "public"."order_item" USING btree ("order_id");
 
-TRUNCATE "order_item";
 INSERT INTO "order_item" ("id", "order_id", "product_id", "quantity") VALUES
                                                                           (1,	1,	14,	3),
                                                                           (2,	1,	18,	1),
@@ -136,7 +145,6 @@ CREATE INDEX "idx_e52ffdeea76ed395" ON "public"."orders" USING btree ("user_id")
 
 COMMENT ON COLUMN "public"."orders"."date" IS '(DC2Type:datetime_immutable)';
 
-TRUNCATE "orders";
 INSERT INTO "orders" ("id", "user_id", "total", "date", "invoice_id") VALUES
                                                                           (1,	1,	291.00,	'2025-02-06 23:19:37',	1),
                                                                           (2,	2,	803.00,	'2025-02-06 23:19:38',	2),
@@ -155,7 +163,6 @@ CREATE TABLE "public"."physical_product" (
                                              CONSTRAINT "physical_product_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-TRUNCATE "physical_product";
 INSERT INTO "physical_product" ("id", "characteristics") VALUES
                                                              (1,	'{"poids":"0.3 kg","dimensions":"20x15x8 cm","autonomie_batterie":"20 heures","annulation_de_bruit":"Oui","temps_de_charge":"2 heures","port\u00e9e":"10 m\u00e8tres","couleur":"Noir"}'),
                                                              (2,	'{"poids":"2 kg","dimensions":"35x24x2 cm","autonomie_batterie":"10 heures","processeur":"Intel i7","ram":"16 Go","stockage":"512 Go SSD","couleur":"Argent"}'),
@@ -193,7 +200,6 @@ CREATE TABLE "public"."product" (
 
 CREATE INDEX "idx_d34a04adc6b58e54" ON "public"."product" USING btree ("default_category_id");
 
-TRUNCATE "product";
 INSERT INTO "product" ("id", "name", "description", "price", "image", "product_type", "default_category_id", "created_at") VALUES
                                                                                                                                (1,	'Casque audio',	'Casque audio sans fil avec réduction de bruit.',	150,	'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Marshall_Monitor_Headphone_-_5._details_%282013-05-08_08.38.08_by_Dave_Kobrehel%29.jpg/1920px-Marshall_Monitor_Headphone_-_5._details_%282013-05-08_08.38.08_by_Dave_Kobrehel%29.jpg',	'physical',	1,	'2025-02-06 23:19:37'),
                                                                                                                                (2,	'Ordinateur portable',	'Ordinateur portable puissant pour les professionnels.',	1200,	'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Samsung_QX-511_%282%29.JPG/1920px-Samsung_QX-511_%282%29.JPG',	'physical',	1,	'2025-02-06 23:19:37'),
@@ -233,7 +239,6 @@ CREATE INDEX "idx_cdfc735612469de2" ON "public"."product_category" USING btree (
 
 CREATE INDEX "idx_cdfc73564584665a" ON "public"."product_category" USING btree ("product_id");
 
-TRUNCATE "product_category";
 INSERT INTO "product_category" ("product_id", "category_id") VALUES
                                                                  (1,	1),
                                                                  (1,	8),
@@ -283,7 +288,6 @@ CREATE INDEX "idx_e3a6e39c4584665a" ON "public"."product_tag" USING btree ("prod
 
 CREATE INDEX "idx_e3a6e39cbad26311" ON "public"."product_tag" USING btree ("tag_id");
 
-TRUNCATE "product_tag";
 INSERT INTO "product_tag" ("product_id", "tag_id") VALUES
                                                        (1,	1),
                                                        (1,	2),
@@ -391,7 +395,6 @@ CREATE INDEX "idx_794381c64584665a" ON "public"."review" USING btree ("product_i
 
 CREATE INDEX "idx_794381c6a76ed395" ON "public"."review" USING btree ("user_id");
 
-TRUNCATE "review";
 INSERT INTO "review" ("id", "user_id", "product_id", "content", "rating", "status", "date_publication") VALUES
                                                                                                             (1,	1,	1,	'Produit excellent, je recommande !',	5,	'VALIDATED',	'2025-02-06 23:19:37'),
                                                                                                             (2,	2,	1,	'Produit excellent, je recommande !',	5,	'VALIDATED',	'2025-02-06 23:19:37'),
@@ -673,7 +676,6 @@ CREATE TABLE "public"."tag" (
                                 CONSTRAINT "tag_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-TRUNCATE "tag";
 INSERT INTO "tag" ("id", "name", "color") VALUES
                                               (1,	'SOLDE',	'#FF5733'),
                                               (2,	'BLACK FRIDAY',	'#FF5733'),
@@ -698,7 +700,6 @@ CREATE TABLE "public"."user" (
                                  CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-TRUNCATE "user";
 INSERT INTO "user" ("id", "email", "password", "roles", "name", "lastname", "reset_token", "confirmation_token", "is_verified") VALUES
                                                                                                                                     (1,	'utilisateur0@exemple.com',	'$2y$10$vX7cVDwDqgutm9iqPQtHQ.aVo4RCc3hDcR09.YRF5rt9O78js4yi6',	'["ROLE_USER"]',	'Botan',	'ESGI',	NULL,	NULL,	't'),
                                                                                                                                     (2,	'utilisateur1@exemple.com',	'$2y$10$trl2sCGXQdZpG7MrqdDi2uQQ88X2TRpZe0LkE1Kzsp5EgH4tCLBdi',	'["ROLE_USER"]',	'Jane',	'Doe',	NULL,	NULL,	't'),
@@ -744,4 +745,4 @@ ALTER TABLE ONLY "public"."product_tag" ADD CONSTRAINT "fk_e3a6e39cbad26311" FOR
 ALTER TABLE ONLY "public"."review" ADD CONSTRAINT "fk_794381c64584665a" FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."review" ADD CONSTRAINT "fk_794381c6a76ed395" FOREIGN KEY (user_id) REFERENCES "user"(id) NOT DEFERRABLE;
 
--- 2025-02-07 08:30:50.25874+00
+-- 2025-02-07 08:52:23.765479+00
