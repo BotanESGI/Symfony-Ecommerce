@@ -1,3 +1,5 @@
+### Merci de clone la branche main, la branche test-de-deploy est destiné à la prod
+
 ### Installation & Démarrage :
 
 1. Lancer `docker compose build --no-cache` pour construire le docker
@@ -54,7 +56,8 @@ ou bien :
 - Avoir un espace admin ✅
 - Minimum 10 pages différentes ✅
 
-(Pas obligatoire)
+(On pas eu le temps de configurer la prod donc beaucoup de fonctionnalité marche pas)
+https://symfony-ecommerce-uzaw.onrender.com/
 ### CI/CD :
 - Projet déployé
 - Une CI qui fait tourner les tests, l'analyse statique PHPStan, un linter ... ?
