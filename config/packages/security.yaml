@@ -22,13 +22,6 @@ security:
         main:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-            lazy: true
-            provider: users_in_database
-            form_login:
-                login_path: login
-                check_path: login
-                enable_csrf: false
-                default_target_path: post_login_check
 
             logout:
                 path: logout
