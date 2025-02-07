@@ -25,7 +25,7 @@ security:
             form_login:
                 login_path: login
                 check_path: login
-                csrf_token_generator: security.csrf.token_manager
+                enable_csrf: true
                 default_target_path: post_login_check
 
             logout:
