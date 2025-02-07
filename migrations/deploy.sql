@@ -1,6 +1,4 @@
 -- Adminer 4.8.1 PostgreSQL 16.6 dump
-DROP TABLE IF EXISTS "address";
-DROP SEQUENCE IF EXISTS address_id_seq;
 CREATE SEQUENCE address_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."address" (
@@ -27,8 +25,6 @@ INSERT INTO "address" ("id", "user_id", "street", "city", "postal_code") VALUES
                                                                              (9,	9,	'Rue 8 Principale',	'Ville 8',	'75008'),
                                                                              (10,	10,	'Rue 9 Principale',	'Ville 9',	'75009');
 
-DROP TABLE IF EXISTS "cart";
-DROP SEQUENCE IF EXISTS cart_id_seq;
 CREATE SEQUENCE cart_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."cart" (
@@ -41,8 +37,6 @@ CREATE INDEX "idx_ba388b7a76ed395" ON "public"."cart" USING btree ("user_id");
 
 TRUNCATE "cart";
 
-DROP TABLE IF EXISTS "cart_item";
-DROP SEQUENCE IF EXISTS cart_item_id_seq;
 CREATE SEQUENCE cart_item_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."cart_item" (
@@ -59,8 +53,6 @@ CREATE INDEX "idx_f0fe25274584665a" ON "public"."cart_item" USING btree ("produc
 
 TRUNCATE "cart_item";
 
-DROP TABLE IF EXISTS "category";
-DROP SEQUENCE IF EXISTS category_id_seq;
 CREATE SEQUENCE category_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."category" (
@@ -84,7 +76,6 @@ INSERT INTO "category" ("id", "name", "color") VALUES
                                                    (10,	'Voyage',	'#2E86C1'),
                                                    (11,	'Éducation',	'#FF5733');
 
-DROP TABLE IF EXISTS "digital_product";
 CREATE TABLE "public"."digital_product" (
                                             "id" integer NOT NULL,
                                             "download_link" character varying(255) NOT NULL,
@@ -104,7 +95,6 @@ INSERT INTO "digital_product" ("id", "download_link", "filesize", "filetype") VA
                                                                                   (26,	'https://template.com/downloads/template_site.html',	4,	'.HTML'),
                                                                                   (27,	'https://formation.com/downloads/video_formation_marketing_digital.mp4',	4,	'.MP4');
 
-DROP TABLE IF EXISTS "doctrine_migration_versions";
 CREATE TABLE "public"."doctrine_migration_versions" (
                                                         "version" character varying(191) NOT NULL,
                                                         "executed_at" timestamp(0),
@@ -130,8 +120,6 @@ INSERT INTO "doctrine_migration_versions" ("version", "executed_at", "execution_
                                                                                            ('DoctrineMigrations\Version20250130162923',	'2025-02-06 23:19:36',	7),
                                                                                            ('DoctrineMigrations\Version20250204161345',	'2025-02-06 23:19:36',	2);
 
-DROP TABLE IF EXISTS "invoice";
-DROP SEQUENCE IF EXISTS invoice_id_seq;
 CREATE SEQUENCE invoice_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."invoice" (
@@ -159,8 +147,6 @@ INSERT INTO "invoice" ("id", "user_id", "total_amount", "pdf_path", "order_id") 
                                                                                     (9,	9,	360,	'/path/to/invoices/invoice_9.pdf',	9),
                                                                                     (10,	10,	183,	'/path/to/invoices/invoice_10.pdf',	10);
 
-DROP TABLE IF EXISTS "order_item";
-DROP SEQUENCE IF EXISTS order_item_id_seq;
 CREATE SEQUENCE order_item_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."order_item" (
@@ -198,8 +184,6 @@ INSERT INTO "order_item" ("id", "order_id", "product_id", "quantity") VALUES
                                                                           (19,	10,	15,	3),
                                                                           (20,	10,	19,	3);
 
-DROP TABLE IF EXISTS "orders";
-DROP SEQUENCE IF EXISTS orders_id_seq;
 CREATE SEQUENCE orders_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."orders" (
@@ -229,7 +213,6 @@ INSERT INTO "orders" ("id", "user_id", "total", "date", "invoice_id") VALUES
                                                                           (9,	9,	360.00,	'2025-02-06 23:19:38',	9),
                                                                           (10,	10,	183.00,	'2025-02-06 23:19:38',	10);
 
-DROP TABLE IF EXISTS "physical_product";
 CREATE TABLE "public"."physical_product" (
                                              "id" integer NOT NULL,
                                              "characteristics" json,
@@ -258,8 +241,6 @@ INSERT INTO "physical_product" ("id", "characteristics") VALUES
                                                              (18,	'{"poids":"15 kg","dimensions":"150x90x75 cm","mat\u00e9riau":"Bois","capacite":"6 personnes","color":"Brun"}'),
                                                              (19,	'{"poids":"12 kg","dimensions":"175x60x100 cm","mat\u00e9riau":"Aluminium","vitesse":"21 vitesses","color":"Vert"}');
 
-DROP TABLE IF EXISTS "product";
-DROP SEQUENCE IF EXISTS product_id_seq;
 CREATE SEQUENCE product_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."product" (
@@ -306,7 +287,6 @@ INSERT INTO "product" ("id", "name", "description", "price", "image", "product_t
                                                                                                                                (26,	'Template de site web',	'Template professionnel pour créer un site web facilement.',	30,	'https://marketplace.canva.com/EAE6WTyrSQ0/2/0/1600w/canva-light-beige-sleek-and-simple-blogger-personal-website--7Q4-7tyJj4.jpg',	'digital',	1,	'2025-02-06 23:19:37'),
                                                                                                                                (27,	'Video formation en marketing digital',	'Apprenez les stratégies de marketing digital.',	75,	'https://media.licdn.com/dms/image/v2/C4D12AQFwOmSy4XaXbg/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1621165601697?e=2147483647&v=beta&t=3EdRZZOvjZ3vAoEkEZPl9vwjXHPU88lQD8LEVrbX2mY',	'digital',	11,	'2025-02-06 23:19:37');
 
-DROP TABLE IF EXISTS "product_category";
 CREATE TABLE "public"."product_category" (
                                              "product_id" integer NOT NULL,
                                              "category_id" integer NOT NULL,
@@ -357,7 +337,6 @@ INSERT INTO "product_category" ("product_id", "category_id") VALUES
                                                                  (26,	1),
                                                                  (27,	11);
 
-DROP TABLE IF EXISTS "product_tag";
 CREATE TABLE "public"."product_tag" (
                                         "product_id" integer NOT NULL,
                                         "tag_id" integer NOT NULL,
@@ -459,8 +438,6 @@ INSERT INTO "product_tag" ("product_id", "tag_id") VALUES
                                                        (27,	5),
                                                        (27,	6);
 
-DROP TABLE IF EXISTS "review";
-DROP SEQUENCE IF EXISTS review_id_seq;
 CREATE SEQUENCE review_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."review" (
@@ -751,8 +728,6 @@ INSERT INTO "review" ("id", "user_id", "product_id", "content", "rating", "statu
                                                                                                             (269,	9,	27,	'Produit excellent, je recommande !',	5,	'VALIDATED',	'2025-02-06 23:19:37'),
                                                                                                             (270,	10,	27,	'Produit excellent, je recommande !',	5,	'VALIDATED',	'2025-02-06 23:19:37');
 
-DROP TABLE IF EXISTS "tag";
-DROP SEQUENCE IF EXISTS tag_id_seq;
 CREATE SEQUENCE tag_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."tag" (
@@ -771,8 +746,6 @@ INSERT INTO "tag" ("id", "name", "color") VALUES
                                               (5,	'PROMO',	'#3357FF'),
                                               (6,	'EXCLUSIVITÉ',	'#33FF57');
 
-DROP TABLE IF EXISTS "user";
-DROP SEQUENCE IF EXISTS user_id_seq;
 CREATE SEQUENCE user_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."user" (
@@ -835,4 +808,4 @@ ALTER TABLE ONLY "public"."product_tag" ADD CONSTRAINT "fk_e3a6e39cbad26311" FOR
 ALTER TABLE ONLY "public"."review" ADD CONSTRAINT "fk_794381c64584665a" FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."review" ADD CONSTRAINT "fk_794381c6a76ed395" FOREIGN KEY (user_id) REFERENCES "user"(id) NOT DEFERRABLE;
 
--- 2025-02-06 23:21:24.413754+00
+-- 2025-02-07 08:30:50.25874+00
