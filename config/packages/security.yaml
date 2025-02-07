@@ -22,7 +22,7 @@ security:
             form_login:
                 login_path: login
                 check_path: login
-                enable_csrf: true
+                enable_csrf: false
                 default_target_path: post_login_check
         main:
             lazy: true
@@ -30,7 +30,7 @@ security:
             form_login:
                 login_path: login
                 check_path: login
-                enable_csrf: true
+                enable_csrf: false
                 default_target_path: post_login_check
 
             logout:
